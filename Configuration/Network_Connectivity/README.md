@@ -14,5 +14,8 @@ Executing the scriptPermalink
 To execute the script simply add the “-Path” parameter to specifiy the path to the CheckList.csv template.
 
 PS C:\techblog> &"Check-Ports.ps1" -Path "CheckList.csv"
+
+
+
 Important:Permalink
 This script requires Power Shell version 5
