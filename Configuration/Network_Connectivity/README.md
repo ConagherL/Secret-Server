@@ -17,5 +17,6 @@ PS C:\techblog> &"Check-Ports.ps1" -Path "CheckList.csv"
 
 
 
-Important:Permalink
+#Important:
+
 This script requires Power Shell version 5
