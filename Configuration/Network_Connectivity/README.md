@@ -5,7 +5,7 @@ Simply add the hostname and TCP port to the “CheckList.csv” and the script c
 
 The script will generate an output file for the same path containing the suffix “Report_” with the test results.
 
- ![CheckList.csv:]([https://myoctocat.com/assets/images/base-octocat.svg])
+ ![CheckList.csv:](https://myoctocat.com/assets/images/base-octocat.svg)
 
 Report_CheckList.csv generated after script execution: Report_CheckList.csv
 
