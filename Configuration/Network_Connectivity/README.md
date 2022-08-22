@@ -5,11 +5,13 @@ Simply add the hostname and TCP port to the “CheckList.csv” and the script c
 
 The script will generate an output file for the same path containing the suffix “Report_” with the test results.
 
-CheckList.csv
- ![CheckList.csv:](https://tech.nicolonsky.ch/content/images//2017/10/2017-10-18_1242.png)
+CheckList.csv:
+
+![CheckList.csv:](https://tech.nicolonsky.ch/content/images//2017/10/2017-10-18_1242.png)
 
 Report_CheckList.csv generated after script execution:
- ![Report_CheckList.csv:](https://tech.nicolonsky.ch/content/images//2017/10/2017-10-18_1252.png)
+
+![Report_CheckList.csv:](https://tech.nicolonsky.ch/content/images//2017/10/2017-10-18_1252.png)
 
 # Executing the script
 
