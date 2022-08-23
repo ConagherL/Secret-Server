@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-16"?>
+<secrettype xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <name>ServiceNow</name>
+    <active>true</active>
+    <fields>
+        <field isexpirationfield="false">
+            <displayname>URL</displayname>
+            <description>The online address where the information is being secured.</description>
+            <name>URL</name>
+            <mustencrypt>true</mustencrypt>
+            <isurl>true</isurl>
+            <ispassword>false</ispassword>
+            <isnotes>false</isnotes>
+            <isfile>false</isfile>
+            <passwordcharacterset />
+            <passwordlength>10</passwordlength>
+            <historylength>2147483647</historylength>
+            <isindexable>true</isindexable>
+            <editablepermission>2</editablepermission>
+            <required>true</required>
+            <fieldslugname>url</fieldslugname>
+            <hideonview>false</hideonview>
+        </field>
+        <field isexpirationfield="false">
+            <displayname>UserName</displayname>
+            <description>The name associated with the web password.</description>
+            <name>UserName</name>
+            <mustencrypt>true</mustencrypt>
+            <isurl>false</isurl>
+            <ispassword>false</ispassword>
+            <isnotes>false</isnotes>
+            <isfile>false</isfile>
+            <passwordcharacterset />
+            <passwordlength>10</passwordlength>
+            <historylength>2147483647</historylength>
+            <isindexable>true</isindexable>
+            <editablepermission>2</editablepermission>
+            <required>true</required>
+            <fieldslugname>username</fieldslugname>
+            <hideonview>false</hideonview>
+        </field>
+        <field isexpirationfield="false">
+            <displayname>Password</displayname>
+            <description>The password used to access the URL.</description>
+            <name>Password</name>
+            <mustencrypt>true</mustencrypt>
+            <isurl>false</isurl>
+            <ispassword>true</ispassword>
+            <isnotes>false</isnotes>
+            <isfile>false</isfile>
+            <passwordcharacterset />
+            <passwordlength>10</passwordlength>
+            <historylength>2147483647</historylength>
+            <isindexable>false</isindexable>
+            <editablepermission>2</editablepermission>
+            <required>true</required>
+            <fieldslugname>password</fieldslugname>
+            <hideonview>false</hideonview>
+        </field>
+        <field isexpirationfield="false">
+            <displayname>Notes</displayname>
+            <description>Any comments or additional information for the secret.</description>
+            <name>Notes</name>
+            <mustencrypt>true</mustencrypt>
+            <isurl>false</isurl>
+            <ispassword>false</ispassword>
+            <isnotes>true</isnotes>
+            <isfile>false</isfile>
+            <passwordcharacterset />
+            <passwordlength>10</passwordlength>
+            <historylength>2147483647</historylength>
+            <isindexable>true</isindexable>
+            <editablepermission>2</editablepermission>
+            <required>false</required>
+            <fieldslugname>notes</fieldslugname>
+            <hideonview>false</hideonview>
+        </field>
+    </fields>
+    <expirationdays>0</expirationdays>
+    <secretnamehistorylength>0</secretnamehistorylength>
+    <imageclass>fa-globe</imageclass>
+    <onetimepasswordenabled xsi:nil="true" />
+    <onetimepasswordcodelength xsi:nil="true" />
+    <onetimepassworddurationseconds xsi:nil="true" />
+    <onetimepasswordhashmode xsi:nil="true" />
+    <validatepasswordrequirementsoncreate>false</validatepasswordrequirementsoncreate>
+    <validatepasswordrequirementsonedit>false</validatepasswordrequirementsonedit>
+    <permissions />
+</secrettype>
