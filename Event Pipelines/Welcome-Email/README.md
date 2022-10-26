@@ -49,3 +49,7 @@ Once the policy has been created. Click Add Pipeline | Create New Pipeline
 | Email Template  | Welcome Email                                                                              |
 | Pipeline Name  | User-Welcome Email                                                                            |
 
+
+# Testing Critera
+
+Disable a user in the target group and then re enable them
