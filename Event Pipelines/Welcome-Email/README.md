@@ -49,5 +49,3 @@ Once the policy has been created. Click Add Pipeline | Create New Pipeline
 | Email Template  | Welcome Email                                                                              |
 | Pipeline Name  | User-Welcome Email                                                                            |
 
-
-# Tested on version 11.3
