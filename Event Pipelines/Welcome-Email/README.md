@@ -1,6 +1,6 @@
 # Introduction
 
-Automate welcome email to all new SS users.
+Automate welcome email to all new SS users. This version has been tested on 11.3
 
 ## Permissions
 
@@ -24,15 +24,30 @@ Once created, modify the following fields
 | Subject | Welcome to Secret Server - $TargetUser.DisplayName                                              |
 | Body    |  Paste contents of the RPC script [Email_Template.html](Email_Template.html)                                                                               |
 
-### Build Event pipeline
+### Build Event Policy
 Navigate to Admin | Notification Rules and templates | Rules and create a new rule using the following settings
 
 | Field       | Value                                                                                           |
 | ----------- | ----------------------------------------------------------------------------------------------- |
-| Rule Name   | Welcome Email                                                                     |
-| Message Type | Event Pipeline Send Email Task                                               |
-| Template    | Welcome Email                                                                                      |
+| Action  | Create New Policy                                                                     |
+| Policy Name | Welcome Email for All New users                                           |
+| Policy Description | Generates a welcome email with relevant information                                             |
+| Policy Type   | User                                                                                      |
 
+#### Target
+Set target as the AD/SS Local group specified that syncs in new users. This will filter the entire policy to only users in this group that will be enabled
+
+### Build Event Pipeline
+Once the policy has been created. Click Add Pipeline | Create New Pipeline
+
+| Field       | Value                                                                                           |
+| ----------- | ----------------------------------------------------------------------------------------------- |
+| Trigger  | Enable                                                                    |
+| Filter | NA                                          |
+| Tasks | Target User: Send Email to Target User                                            |
+| Email Format  | Email Template                                                                                 |
+| Email Template  | Welcome Email                                                                              |
+| Pipeline Name  | User-Welcome Email                                                                            |
 
 
 # Tested on version 11.3
