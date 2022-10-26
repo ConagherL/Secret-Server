@@ -22,7 +22,7 @@ Once created, modify the following fields
 | ----------- | ----------------------------------------------------------------------------------------------- |
 | Language  | English                                                                 |
 | Subject | Welcome to Secret Server - $TargetUser.DisplayName                                              |
-| Body    |  Paste contents of the RPC script [Email_Template.htmll](Email_Template.html)                                                                               |
+| Body    |  Paste contents of the RPC script [Email_Template.html](Email_Template.html)                                                                               |
 
 ### Build Event pipeline
 Navigate to Admin | Notification Rules and templates | Rules and create a new rule using the following settings
