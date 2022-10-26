@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Welcome Email</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+  /**
+   * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
+   */
+  @media screen {
+    @font-face {
+      font-family: 'Source Sans Pro';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+    }
+ 
+    @font-face {
+      font-family: 'Source Sans Pro';
+      font-style: normal;
+      font-weight: 700;
+      src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+    }
+  }
+ 
+  /**
+   * Avoid browser level font resizing.
+   * 1. Windows Mobile
+   * 2. iOS / OSX
+   */
+  body,
+  table,
+  td,
+  a {
+    -ms-text-size-adjust: 100%; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+  }
+ 
+  /**
+   * Remove extra space added to tables and cells in Outlook.
+   */
+  table,
+  td {
+    mso-table-rspace: 0pt;
+    mso-table-lspace: 0pt;
+  }
+ 
+  /**
+   * Better fluid images in Internet Explorer.
+   */
+  img {
+    -ms-interpolation-mode: bicubic;
+  }
+ 
+  /**
+   * Remove blue links for iOS devices.
+   */
+  a[x-apple-data-detectors] {
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+ 
+  /**
+   * Fix centering issues in Android 4.4.
+   */
+  div[style*="margin: 16px 0;"] {
+    margin: 0 !important;
+  }
+ 
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+ 
+  /**
+   * Collapse table borders to avoid space between cells.
+   */
+  table {
+    border-collapse: collapse !important;
+  }
+ 
+  a {
+    color: black;
+  }
+ 
+  img {
+    height: auto;
+    line-height: 100%;
+    text-decoration: none;
+    border: 0;
+    outline: none;
+  }
+  </style>
+ 
+</head>
+<body style="background-color: #e9ecef;">
+ 
+  <!-- start preheader -->
+  <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
+    A preheader is the short summary text that follows the subject line when an email is viewed in the inbox.
+  </div>
+  <!-- end preheader -->
+ 
+  <!-- start body -->
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+ 
+    <!-- start logo -->
+    <tr>
+      <td align="center" bgcolor="#e9ecef">
+        <!--[if (gte mso 9)|(IE)]>
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+        <td align="center" valign="top" width="600">
+        <![endif]-->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+          <tr>
+            <td align="center" valign="top" style="padding: 36px 24px;">
+              <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" style="display: inline-block;">
+                <img src="data:image/png;base64,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" alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
+              </a>
+            </td>
+          </tr>
+        </table>
+        <!--[if (gte mso 9)|(IE)]>
+        </td>
+        </tr>
+        </table>
+        <![endif]-->
+      </td>
+    </tr>
+    <!-- end logo -->
+ 
+    <!-- start hero -->
+    <tr>
+      <td align="center" bgcolor="#e9ecef">
+        <!--[if (gte mso 9)|(IE)]>
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+        <td align="center" valign="top" width="600">
+        <![endif]-->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+          <tr>
+            <td bgcolor="#ffffff" align="left">
+              <img src="https://img.freepik.com/free-vector/set-people-welcoming-illustrated_52683-36326.jpg?w=1380&t=st=1662474334~exp=1662474934~hmac=ef18d672f556a5048017f9d947c696d95624f06765e3b430b8d3941e0676afdb" alt="Welcome" width="600" style="display: block; width: 100%; max-width: 100%;">
+            </td>
+          </tr>
+        </table>
+        <!--[if (gte mso 9)|(IE)]>
+        </td>
+        </tr>
+        </table>
+        <![endif]-->
+      </td>
+    </tr>
+    <!-- end hero -->
+ 
+    <!-- start copy block -->
+    <tr>
+      <td align="center" bgcolor="#e9ecef">
+        <!--[if (gte mso 9)|(IE)]>
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+        <td align="center" valign="top" width="600">
+        <![endif]-->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+ 
+          <!-- start copy -->
+          <tr>
+            <td bgcolor="#ffffff" align="left" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+              <h1 style="margin: 0 0 12px; font-size: 32px; font-weight: 400; line-height: 48px;">Welcome, Beau Lepley!</h1>
+              <p style="margin: 0;">Welcome to Secret Server. Home to all your PAM needs.</p>
+            </td>
+          </tr>
+          <!-- end copy -->
+ 
+          <!-- start button -->
+          <tr>
+            <td align="left" bgcolor="#ffffff">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                          <a href="https://ss.blttechnologies.com/SecretServer" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Access Secret Server</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- end button -->
+ 
+          <!-- start copy -->
+          <tr>
+            <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
+              <p style="margin: 0;">Cheers,<br> Secret Server Admin Team</p>
+            </td>
+          </tr>
+          <!-- end copy -->
+ 
+        </table>
+        <!--[if (gte mso 9)|(IE)]>
+        </td>
+        </tr>
+        </table>
+        <![endif]-->
+      </td>
+    </tr>
+    <!-- end copy block -->
+ 
+    <!-- start footer -->
+    <tr>
+      <td align="center" bgcolor="#e9ecef" style="padding: 24px;">
+        <!--[if (gte mso 9)|(IE)]>
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+        <td align="center" valign="top" width="600">
+        <![endif]-->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+ 
+          <!-- start permission -->
+          <tr>
+            <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
+              <p style="margin: 0;">You received this email because we received a request for [type_of_action] for your account. If you didn't request [type_of_action] you can safely delete this email.</p>
+            </td>
+          </tr>
+          <!-- end permission -->
+ 
+ 
+        </table>
+        <!--[if (gte mso 9)|(IE)]>
+        </td>
+        </tr>
+        </table>
+        <![endif]-->
+      </td>
+    </tr>
+    <!-- end footer -->
+ 
+  </table>
+  <!-- end body -->
+ 
+</body>
+</html>
