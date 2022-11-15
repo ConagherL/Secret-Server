@@ -35,7 +35,7 @@ Navigate to Admin | Notification Rules and templates | Rules and create a new ru
 | Policy Type   | User                                                                                      |
 
 #### Target
-Set target as the AD/SS Local group specified that syncs in new users. This will filter the entire policy to only users in this group that will be enabled
+> Set target as the AD/SS Local group specified that syncs in new users. This will filter the entire policy to only users in this group that will be enabled
 
 ### Build Event Pipeline
 Once the policy has been created. Click Add Pipeline | Create New Pipeline
