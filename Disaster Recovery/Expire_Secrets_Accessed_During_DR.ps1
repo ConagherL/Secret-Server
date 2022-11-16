@@ -14,13 +14,13 @@ $prodsession = New-TssSession -SecretServer $prouri -Credential $prodcred
 
 ### DR Authentication
 $drcred = Get-Credential
-$druri = 'https://ssdr.blt.local/SecretServer'
+$druri = 'http://ssdr.blt.local/SecretServer'
 $drsession = New-TssSession -SecretServer $druri -Credential $drcred
 
 
 ### Grab all secrets access during the DR window
 
-$DRreportid = 116
+$DRreportid = 94
 $DRFileName = 'DR_Secrets.csv'
 $ExportDirectory = 'C:\Temp'
 $Path = $ExportDirectory + '\' + $DRFileName
@@ -39,11 +39,9 @@ Invoke-TssReport -TssSession $DRsession -Id $DRReportID | Export-Csv $Path -NoCl
 ### Loop through all secret names and execute a expiration action
 ###$secretnames = Import-Csv -Path $Path 
 foreach ($name in (Import-Csv -Path $Path )) {
-    Find-TssSecret -TssSession $prodsession -SearchText $name.secretname | Invoke-TssRestApi -Uri $prouri/internals/secret-detail/$/password -PersonalAccessToken $Session.AccessToken -Method POST
+    $target = Find-TssSecret -TssSession $prodsession -SearchText $name.'Secret Name'
+    Invoke-TssRestApi -Uri "$prouri/api/v1/secrets/$($target.id)/expire" -PersonalAccessToken $prodSession.AccessToken -Method POST
+    $target=$null
 
 }
 
-
-
-
-Invoke-TssRestApi -Uri $prouri/internals/secret-detail/$/password -PersonalAccessToken $Session.AccessToken -Method POST
