@@ -9,12 +9,12 @@ catch {
 
 ### Production Authentication
 $prodcred = Get-Credential
-$prouri = 'https://blt.secretservercloud.com'
+$prouri = 'https://YOURSSURL'
 $prodsession = New-TssSession -SecretServer $prouri -Credential $prodcred
 
 ### DR Authentication
 $drcred = Get-Credential
-$druri = 'http://ssdr.blt.local/SecretServer'
+$druri = 'http://YOURSSURL'
 $drsession = New-TssSession -SecretServer $druri -Credential $drcred
 
 
@@ -30,18 +30,18 @@ if (Test-Path $Path) {
     write-host "$Path has been deleted"
   }
 else {
-    Write-Host "$path doesn't exsit. Creating file"
+    Write-Host "$path doesn't exsit. Creating DR_Secrets.csv file"
 }
 # Execute the report and create a file called DR_Secrets.csv with the contents of the report
 Invoke-TssReport -TssSession $DRsession -Id $DRReportID | Export-Csv $Path -NoClobber -NoTypeInformation
 
 
 ### Loop through all secret names and execute a expiration action
-###$secretnames = Import-Csv -Path $Path 
 foreach ($name in (Import-Csv -Path $Path )) {
     $target = Find-TssSecret -TssSession $prodsession -SearchText $name.'Secret Name'
     Invoke-TssRestApi -Uri "$prouri/api/v1/secrets/$($target.id)/expire" -PersonalAccessToken $prodSession.AccessToken -Method POST
     $target=$null
 
 }
+
 
