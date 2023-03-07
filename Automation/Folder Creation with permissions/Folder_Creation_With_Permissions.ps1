@@ -1,5 +1,5 @@
 #   Authentication  #
-$SecretServerURL = "https://blt.secretservercloud.com"
+$SecretServerURL = "YOUR SS URL"
 $cred = Get-Credential
 
 #   Folder and Group Arguments  #
