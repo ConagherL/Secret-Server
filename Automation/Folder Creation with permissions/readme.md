@@ -25,4 +25,4 @@ The script checks if the subfolder already exists by using the `Search-TssFolder
 The script sets the owners of the subfolder using the `Add-TssFolderPermission` command and the list of group names.
 
 ## Usage
-To use this script, the user should replace the `$SecretServerURL`, `$ParentPolicyID`, and `$SubPolicyID` variables with the appropriate values for their Secret Server environment. The user should also enter the name
+To use this script, the user should replace the `$SecretServerURL`, `$ParentPolicyID`, and `$SubPolicyID` variables with the appropriate values for their Secret Server environment. The user should also enter the name of the parent folder, the name of the new subfolder, and the list of group names when prompted. The script can be executed using a PowerShell console or ISE.
