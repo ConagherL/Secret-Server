@@ -34,3 +34,4 @@
 (\\Wavesor Software).*;
 (S-1-5-21-\d+-\d+\-\d+\-\d+).*;
 (\\Lenovo\Lenovo Service Bridge\\).*;
+({\w{8}-\w{4}-\w{4}-\w{4}-\w{12}});
