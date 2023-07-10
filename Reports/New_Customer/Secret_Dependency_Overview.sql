@@ -1,4 +1,4 @@
-SELECT    ISNULL(fp.FolderPath, 'No folder assigned') as [Folder Path]     
+SELECT   ISNULL(fp.FolderPath, 'No folder assigned') as [Folder Path]     
 ,s.SecretName AS [Secret Name]     
 ,st.SecretTypeName AS [Secret Template]     
 ,s.SecretId  
