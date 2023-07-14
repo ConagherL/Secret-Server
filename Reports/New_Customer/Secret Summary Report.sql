@@ -1,6 +1,10 @@
 SELECT
   s.SecretName AS 'Secret Name',
   s.SecretId AS 'SecretId',
+      CASE
+        WHEN s.Active = 1 THEN 'Enabled'
+        ELSE 'Not Enabled'
+    END AS Status,
   s.EnableInheritSecretPolicy AS [Inheriting Policy],
   CASE
     WHEN sp.SecretPolicyId IS NULL THEN 'No Policy'
@@ -34,7 +38,7 @@ FROM
   LEFT JOIN tbFolder f WITH (NOLOCK) ON s.FolderId = f.FolderId
   LEFT JOIN tbSecretPolicy sp WITH (NOLOCK) ON sp.SecretPolicyId = s.SecretPolicyId
 WHERE
-  s.Active = 1
+-----Remove the WHERE clause to grab every secret
+	s.Active = 1
 ORDER BY
   1, 2, 3, 4, 5, 6
-
