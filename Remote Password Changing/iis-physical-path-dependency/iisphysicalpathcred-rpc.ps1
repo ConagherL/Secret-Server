@@ -9,8 +9,8 @@ $scriptBlock = {
     Import-Module WebAdministration
     $username = ($using:domain + "\" + $using:username)
     try {
-        Set-WebConfigurationProperty -Filter $using:filter -Name "userName" -Value $using:username
-        Set-WebConfigurationProperty -Filter $using:filter -Name "password" -Value $using:password
+        Set-WebConfigurationProperty -Filter "system.applicationHost/sites/site[@name=$using:filter]/application[@path='/']/virtualDirectory[@path='/']" -Name "userName" -Value $username
+        Set-WebConfigurationProperty -Filter "system.applicationHost/sites/site[@name=$using:filter]/application[@path='/']/virtualDirectory[@path='/']" -Name "password" -Value $using:password
     } catch [Exception] {
         throw $_.Exception.Message
     }
