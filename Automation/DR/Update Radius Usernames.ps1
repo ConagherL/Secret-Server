@@ -49,7 +49,7 @@ try {
 
 } catch {
     Write-Host "Error in script: $_"
-}
+
 } finally {
     # Optional: Expire the session tokens after processing
     $sourceSession.SessionExpire()
