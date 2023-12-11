@@ -1,6 +1,6 @@
 # Script parameters
-$sourceServerUrl = 'https://blt.secretservercloud.com/'
-$targetServerUrl = 'https://ss.blt.com/SecretServerDR'
+$sourceServerUrl = 'https://XXXXX'
+$targetServerUrl = 'https://XXXXX'
 
 # Import the Thycotic Secret Server module
 Import-Module Thycotic.SecretServer
