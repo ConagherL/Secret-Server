@@ -1,9 +1,9 @@
 # Configuration Variables
-$Global:YourServerURL = "https://blt.secretservercloud.com"  # Replace with your actual Secret Server URL
+$Global:YourServerURL = "https://XXXX.DOMAIN.COM"  # Replace with your actual Secret Server URL
 $Global:ReportID = "148"                                     # Replace with your actual Report ID
 $Global:ExportPath = "C:\temp\Export"                        # Replace with your desired export path
-$Global:SmtpServer = "smtp.freesmtpservers.com"              # Replace with your SMTP server
-$Global:FromAddress = "ITAdmins@blt.com"                     # Replace with your from email address
+$Global:SmtpServer = "smtp.XXXXXXX.com"              # Replace with your SMTP server
+$Global:FromAddress = "ITAdmins@XXXX.com"                     # Replace with your from email address
 
 <#
 .SYNOPSIS
