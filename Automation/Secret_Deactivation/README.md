@@ -32,4 +32,7 @@ List the key features of your project.
 - Requires "Administer Reports" permissions in SS
 - API account used must have access to all secrets within scope (Owner Rights)
 
-
+```bash
+$ git clone https://github.com/yourusername/yourproject.git
+$ cd yourproject
+$ npm install
