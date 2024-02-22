@@ -12,8 +12,6 @@ This code is not meant to be automated but used on an ad-hoc basis to address de
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction
 
