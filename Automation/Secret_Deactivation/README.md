@@ -46,10 +46,10 @@ InvokeAndDeactivateSecrets
 
 ## Notify Secret Owners
 
-Test-Notify-SecretOwners sends notification emails to the owners of the secrets being deactivated.
+Notify-SecretOwners sends notification emails to the owners of the secrets being deactivated.
 
 ```powershell
-Test-Notify-SecretOwners
+Notify-SecretOwners
 ```
 
 ## Send Secure Mail
