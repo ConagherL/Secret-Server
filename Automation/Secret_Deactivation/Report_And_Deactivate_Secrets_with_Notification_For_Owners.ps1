@@ -170,7 +170,7 @@ This example sends notifications to secret owners based on the report specified 
 .NOTES
 Relies on $Global:session, $Global:ReportID, $Global:SmtpServer, and $Global:FromAddress being set prior to invocation.
 #>
-function Test-Notify-SecretOwners {
+function Notify-SecretOwners {
     Write-Host "Checking session validity..." -ForegroundColor Cyan
     if (-not $Global:session -or $Global:session.Expired) {
         Write-Host "Session is not valid or has expired. Please re-establish the session." -ForegroundColor Red
