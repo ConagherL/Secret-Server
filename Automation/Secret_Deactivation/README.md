@@ -31,11 +31,22 @@ List the key features of your project.
 - Requires "Administer Reports" permissions in SS
 - API account used must have access to all secrets within scope (Owner Rights)
 
-```bash
-$ git clone https://github.com/yourusername/yourproject.git
-$ cd yourproject
-$ npm install
+markdown
+Copy code
+# Thycotic Secret Server Script
 
+This PowerShell script is designed to manage secret deactivation and owner notification in Thycotic Secret Server. It establishes a session with the server, invokes a specified report, deactivates secrets based on the report data, and sends notifications to the secret owners.
+
+## Configuration
+
+Before running the script, ensure the following variables are set according to your environment:
+
+```powershell
+$Global:YourServerURL = "https://XXXX.DOMAIN.COM"  # Your Secret Server URL
+$Global:ReportID = "148"                          # The Report ID to invoke
+$Global:ExportPath = "C:\temp\Export"             # Path to export results
+$Global:SmtpServer = "smtp.XXXXXXX.com"           # Your SMTP server
+$Global:FromAddress = "ITAdmins@XXXX.com"         # Email address for notifications
 Prerequisites
 Thycotic.SecretServer PowerShell module installed.
 PowerShell 5.1 or higher.
