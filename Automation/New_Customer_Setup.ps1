@@ -6,7 +6,6 @@
 
 
 ###### Download and install the DE headless Service
-Invoke-WebRequest -Uri "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5.3/npp.8.5.3.Installer.x64.exe" -OutFile "C:\temp\gdesvcu.msi"
 
 #### Add install steps  #####
 
