@@ -302,53 +302,6 @@ Your IT Team
     }
 }
 
-function Test-Notify-SecretOwners {
-    $outputPath = Join-Path -Path $Global:ExportPath -ChildPath "SecretOwnersNotifications.csv"
-    $notifications = @()
-
-    Write-Host "Checking session validity..." -ForegroundColor Cyan
-    if (-not $Global:session -or $Global:session.Expired) {
-        Write-Host "Session is not valid or has expired. Please re-establish the session." -ForegroundColor Red
-        return
-    }
-
-    Write-Host "Fetching new report data for test..." -ForegroundColor Cyan
-    $Global:reportData = Invoke-Report
-
-    Write-Host "Report data retrieved successfully. Preparing notifications for CSV export..." -ForegroundColor Green
-    foreach ($secret in $Global:reportData) {
-        $emailAddresses = $secret.EmailAddresses -split ','  
-        $secretName = $secret.'Secret Name'
-        $uniqueEmails = @{}
-
-        if (-not $secretName) {
-            Write-Host "Secret Name is missing for Secret ID: $($secret.secretid)" -ForegroundColor Yellow
-            continue
-        }
-
-        foreach ($emailAddress in $emailAddresses) {
-            $emailAddress = $emailAddress.Trim()
-            if ($emailAddress -and -not $uniqueEmails.ContainsKey($emailAddress)) {
-                $uniqueEmails[$emailAddress] = $true
-
-                $notification = [PSCustomObject]@{
-                    SecretName   = $secretName
-                    OwnerEmail = $emailAddress
-                }
-                $notifications += $notification
-
-                Write-Host "Prepared notification for Secret: $secretName to owner at $emailAddress" -ForegroundColor Magenta
-            } elseif (-not $emailAddress) {
-                Write-Host "Invalid email address found for Secret: $secretName" -ForegroundColor Yellow
-            }
-        }
-    }
-
-    $notifications | Export-Csv -Path $outputPath -NoTypeInformation
-    Write-Host "All notifications exported to $outputPath" -ForegroundColor Green
-}
-
-
 <#
 .SYNOPSIS
 Sends an email using specified SMTP settings.
