@@ -20,11 +20,12 @@ $Global:FromAddress = "ITAdmins@XXXX.com"         # Email address for notificati
 - SQL Database Compatibility Level = 140
 - Requires "Administer Reports" permissions in SS
 - API account used must have access to all secrets within scope (Owner Rights)
+-   Optionally, if you want a "report" only mode, then the API account must have "View" rights
 
 ## Usage
 Load the Thycotic Secret Server Module
 
-Ensure the Thycotic Secret Server module is loaded. If not, the script will terminate with an error message.
+Please make sure the Thycotic Secret Server module is loaded. If not, the script will terminate with an error message.
 
 ## Establish a Session
 
@@ -39,7 +40,7 @@ Invoke-Report
 ```
 ## Deactivate Secrets
 
-The InvokeAndDeactivateSecrets function deactivates secrets listed in the report and exports the results.
+The InvokeAndDeactivateSecrets function deactivates the secrets listed in the report and exports the results.
 
 ```powershell
 InvokeAndDeactivateSecrets
