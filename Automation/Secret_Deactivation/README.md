@@ -17,6 +17,7 @@ $Global:FromAddress = "ITAdmins@XXXX.com"         # Email address for notificati
 ##Prerequisites
 - This code is dependent on the Thycotic Secret Server PowerShell Module. Please review any additional requirements [HERE](https://thycotic-ps.github.io/thycotic.secretserver/getting_started/install.html)
 - PowerShell 7.1 or higher.
+- SQL Database Compatibility Level = 140
 - Requires "Administer Reports" permissions in SS
 - API account used must have access to all secrets within scope (Owner Rights)
 
