@@ -25,7 +25,7 @@ Ensure the Thycotic.SecretServer PowerShell module is installed and accessible b
 # Ensure the Thycotic Secret Server module is loaded
 if (-not (Get-Module -ListAvailable -Name Thycotic.SecretServer)) {
     Write-Error "Thycotic.SecretServer module is not installed. Please install it to proceed."
-    return
+    return                        
 }
 Import-Module Thycotic.SecretServer
 
@@ -157,20 +157,96 @@ function InvokeAndDeactivateSecrets {
 
 <#
 .SYNOPSIS
+Tests the notification process for secret owners by exporting details to a CSV file, including a summary of notifications per owner.
+
+.DESCRIPTION
+This function simulates the notification process for secret owners without sending actual emails. It generates a CSV file containing the notification details for each secret owner. At the end of the CSV file, a summary is appended that lists each owner's email address and the count of notifications intended for them. This allows for reviewing the notification process and the distribution of notifications among secret owners.
+
+.EXAMPLE
+Test-Notify-SecretOwners
+
+This example demonstrates how to invoke the Test-Notify-SecretOwners function to generate the CSV file with notification details and the summary of notifications per owner.
+
+.PARAMETER ExportPath
+The path where the CSV file will be exported. This should be set globally before calling the function.
+
+.NOTES
+Ensure that the global variables such as $Global:session, $Global:ExportPath, and $Global:ReportID are properly set before invoking this function. The function relies on these variables to fetch report data, construct notifications, and determine the export path for the CSV file.
+
+#>
+
+function Test-Notify-SecretOwners {
+    $outputPath = Join-Path -Path $Global:ExportPath -ChildPath "SecretOwnersNotifications.csv"
+    $notifications = @()
+    $emailCount = @{}
+
+    Write-Host "Fetching new report data for test..." -ForegroundColor Cyan
+    $Global:reportData = Invoke-Report
+
+    Write-Host "Report data retrieved successfully. Preparing notifications for CSV export..." -ForegroundColor Green
+    foreach ($secret in $Global:reportData) {
+        $emailAddresses = $secret.EmailAddresses -split ','  
+        $secretName = $secret.'Secret Name'
+        $uniqueEmails = @{}
+
+        if (-not $secretName) {
+            Write-Host "Secret Name is missing for Secret ID: $($secret.secretid)" -ForegroundColor Yellow
+            continue
+        }
+
+        foreach ($emailAddress in $emailAddresses) {
+            $emailAddress = $emailAddress.Trim()
+            if ($emailAddress -and -not $uniqueEmails.ContainsKey($emailAddress)) {
+                $uniqueEmails[$emailAddress] = $true
+
+                $notification = [PSCustomObject]@{
+                    SecretName   = $secretName
+                    OwnerEmail = $emailAddress
+                }
+                $notifications += $notification
+
+                # Increment email count
+                if (-not $emailCount.ContainsKey($emailAddress)) {
+                    $emailCount[$emailAddress] = 1
+                } else {
+                    $emailCount[$emailAddress]++
+                }
+
+                Write-Host "Prepared notification for Secret: $secretName to owner at $emailAddress" -ForegroundColor Magenta
+            } elseif (-not $emailAddress) {
+                Write-Host "Invalid email address found for Secret: $secretName" -ForegroundColor Yellow
+            }
+        }
+    }
+
+    # Export the main notification details to CSV
+    $notifications | Export-Csv -Path $outputPath -NoTypeInformation
+
+    # Append the email counts to the end of the CSV as plain text
+    Add-Content -Path $outputPath -Value "`nEmail Notification Summary:"
+    foreach ($email in $emailCount.Keys) {
+        Add-Content -Path $outputPath -Value "$email, $($emailCount[$email])"
+    }
+
+    Write-Host "All notifications and summary exported to $outputPath" -ForegroundColor Green
+}
+
+<#
+.SYNOPSIS
 Notifies the owners of secrets about the pending deactivation.
 
 .DESCRIPTION
 This function sends notification emails to the owners of secrets listed in the specified report, indicating the deactivation of their secrets. If a users email is listed multiple times, then we only email once
 
 .EXAMPLE
-Test-Notify-SecretOwners
+Send-EmailtoSecretOwners
 
 This example sends notifications to secret owners based on the report specified by $Global:ReportID, using the SMTP settings defined in the global variables.
 
 .NOTES
 Relies on $Global:session, $Global:ReportID, $Global:SmtpServer, and $Global:FromAddress being set prior to invocation.
 #>
-function Notify-SecretOwners {
+function Send-EmailtoSecretOwners {
     Write-Host "Checking session validity..." -ForegroundColor Cyan
     if (-not $Global:session -or $Global:session.Expired) {
         Write-Host "Session is not valid or has expired. Please re-establish the session." -ForegroundColor Red
@@ -225,6 +301,53 @@ Your IT Team
         Write-Host "Total unique emails sent for Secret '$secretName': $emailsSentCount" -ForegroundColor Green
     }
 }
+
+function Test-Notify-SecretOwners {
+    $outputPath = Join-Path -Path $Global:ExportPath -ChildPath "SecretOwnersNotifications.csv"
+    $notifications = @()
+
+    Write-Host "Checking session validity..." -ForegroundColor Cyan
+    if (-not $Global:session -or $Global:session.Expired) {
+        Write-Host "Session is not valid or has expired. Please re-establish the session." -ForegroundColor Red
+        return
+    }
+
+    Write-Host "Fetching new report data for test..." -ForegroundColor Cyan
+    $Global:reportData = Invoke-Report
+
+    Write-Host "Report data retrieved successfully. Preparing notifications for CSV export..." -ForegroundColor Green
+    foreach ($secret in $Global:reportData) {
+        $emailAddresses = $secret.EmailAddresses -split ','  
+        $secretName = $secret.'Secret Name'
+        $uniqueEmails = @{}
+
+        if (-not $secretName) {
+            Write-Host "Secret Name is missing for Secret ID: $($secret.secretid)" -ForegroundColor Yellow
+            continue
+        }
+
+        foreach ($emailAddress in $emailAddresses) {
+            $emailAddress = $emailAddress.Trim()
+            if ($emailAddress -and -not $uniqueEmails.ContainsKey($emailAddress)) {
+                $uniqueEmails[$emailAddress] = $true
+
+                $notification = [PSCustomObject]@{
+                    SecretName   = $secretName
+                    OwnerEmail = $emailAddress
+                }
+                $notifications += $notification
+
+                Write-Host "Prepared notification for Secret: $secretName to owner at $emailAddress" -ForegroundColor Magenta
+            } elseif (-not $emailAddress) {
+                Write-Host "Invalid email address found for Secret: $secretName" -ForegroundColor Yellow
+            }
+        }
+    }
+
+    $notifications | Export-Csv -Path $outputPath -NoTypeInformation
+    Write-Host "All notifications exported to $outputPath" -ForegroundColor Green
+}
+
 
 <#
 .SYNOPSIS
