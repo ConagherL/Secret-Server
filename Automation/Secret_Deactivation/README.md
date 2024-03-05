@@ -1,6 +1,6 @@
 ```markdown
 
-# Thycotic Secret Server Script
+# Delinea Secret Server Inactive Secrets Report/Action
 
 This PowerShell script is designed to manage secret deactivation and owner notification in Delinea Secret Server. It establishes a session with the server, invokes a specified report, deactivates secrets based on the report data, and sends notifications to the secret owners.
 
