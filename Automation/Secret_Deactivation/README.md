@@ -48,7 +48,7 @@ InvokeAndDeactivateSecrets
 
 ## Notify Secret Owners
 
-Notify-SecretOwners sends notification emails to the owners of the secrets being deactivated.
+Notify-SecretOwners sends notification emails to the owners of the secrets being deactivated. Only one email is sent per owner with a summary in the output of each secret.
 
 ```powershell
 Notify-SecretOwners
