@@ -33,14 +33,14 @@ The script will prompt for credentials to establish a new session with the Secre
 
 ## Invoke the Report
 
-Use the Invoke-Report function to invoke a specified report from the Secret Server.
+Use the Invoke-Report function to invoke a specified report from the Secret Server. User must have permissions to utilize the report
 
 ```powershell
 Invoke-Report
 ```
 ## Deactivate Secrets
 
-The InvokeAndDeactivateSecrets function deactivates the secrets listed in the report and exports the results.
+The InvokeAndDeactivateSecrets function deactivates the secrets listed in the report and exports the results. Execution must be by a user with "Owner" rights
 
 ```powershell
 InvokeAndDeactivateSecrets
