@@ -157,24 +157,25 @@ function InvokeAndDeactivateSecrets {
 
 <#
 .SYNOPSIS
-Tests the notification process for secret owners by exporting details to a CSV file, including a summary of notifications per owner.
+Aggregates secret ownership information and prepares a notification summary for each owner.
 
 .DESCRIPTION
-This function simulates the notification process for secret owners without sending actual emails. It generates a CSV file containing the notification details for each secret owner. At the end of the CSV file, a summary is appended that lists each owner's email address and the count of notifications intended for them. This allows for reviewing the notification process and the distribution of notifications among secret owners.
+The Test-Notify-SecretOwners function fetches report data, aggregates secrets by owner, and prepares a CSV file with detailed secret information for each owner. It ensures each owner is notified once with a summary of all their secrets, improving the efficiency of communication.
+
+.PARAMETER Global:ExportPath
+Specifies the path where the notification summary CSV will be exported.
+
+.PARAMETER Global:reportData
+Contains the report data used to prepare notifications. This data should include secret names and owner email addresses.
 
 .EXAMPLE
 Test-Notify-SecretOwners
 
-This example demonstrates how to invoke the Test-Notify-SecretOwners function to generate the CSV file with notification details and the summary of notifications per owner.
-
-.PARAMETER ExportPath
-The path where the CSV file will be exported. This should be set globally before calling the function.
+This example runs the function using the report data stored in $Global:reportData and exports the notification summary to the path specified in $Global:ExportPath.
 
 .NOTES
-Ensure that the global variables such as $Global:session, $Global:ExportPath, and $Global:ReportID are properly set before invoking this function. The function relies on these variables to fetch report data, construct notifications, and determine the export path for the CSV file.
-
+Ensure the report data is available in $Global:reportData before running this function. The function requires the Thycotic.SecretServer PowerShell module to interact with the Secret Server for report data fetching.
 #>
-
 function Test-Notify-SecretOwners {
     $outputPath = Join-Path -Path $Global:ExportPath -ChildPath "SecretOwnersNotifications.csv"
     $notifications = @()
@@ -187,8 +188,7 @@ function Test-Notify-SecretOwners {
     foreach ($secret in $Global:reportData) {
         $emailAddresses = $secret.EmailAddresses -split ','  
         $secretName = $secret.'Secret Name'
-        $uniqueEmails = @{}
-
+        
         if (-not $secretName) {
             Write-Host "Secret Name is missing for Secret ID: $($secret.secretid)" -ForegroundColor Yellow
             continue
@@ -196,36 +196,41 @@ function Test-Notify-SecretOwners {
 
         foreach ($emailAddress in $emailAddresses) {
             $emailAddress = $emailAddress.Trim()
-            if ($emailAddress -and -not $uniqueEmails.ContainsKey($emailAddress)) {
-                $uniqueEmails[$emailAddress] = $true
+            if ($emailAddress -and -not $emailCount.ContainsKey($emailAddress)) {
+                # Initialize aggregation for the owner if it doesn't exist
+                $emailCount[$emailAddress] = @()
+            }
+            if ($emailAddress) {
+                # Add secret to the owner's aggregation
+                $emailCount[$emailAddress] += $secretName
 
-                $notification = [PSCustomObject]@{
-                    SecretName   = $secretName
-                    OwnerEmail = $emailAddress
-                }
-                $notifications += $notification
-
-                # Increment email count
-                if (-not $emailCount.ContainsKey($emailAddress)) {
-                    $emailCount[$emailAddress] = 1
-                } else {
-                    $emailCount[$emailAddress]++
-                }
-
-                Write-Host "Prepared notification for Secret: $secretName to owner at $emailAddress" -ForegroundColor Magenta
-            } elseif (-not $emailAddress) {
+                Write-Host "Aggregated Secret: $secretName for owner at $emailAddress" -ForegroundColor Magenta
+            } else {
                 Write-Host "Invalid email address found for Secret: $secretName" -ForegroundColor Yellow
             }
         }
     }
 
-    # Export the main notification details to CSV
+    # Prepare notifications with aggregated information for each owner
+    foreach ($emailAddress in $emailCount.Keys) {
+        foreach ($secretName in $emailCount[$emailAddress]) {
+            $notification = [PSCustomObject]@{
+                SecretName  = $secretName
+                OwnerEmail  = $emailAddress
+            }
+            $notifications += $notification
+        }
+    }
+
+    # Export the notification details to CSV
     $notifications | Export-Csv -Path $outputPath -NoTypeInformation
 
-    # Append the email counts to the end of the CSV as plain text
+    # Append a summary with the actual count of unique secrets per owner to the end of the CSV
     Add-Content -Path $outputPath -Value "`nEmail Notification Summary:"
     foreach ($email in $emailCount.Keys) {
-        Add-Content -Path $outputPath -Value "$email, $($emailCount[$email])"
+        # The count of unique secrets per owner is the length of the array in each hashtable entry
+        $uniqueSecretsCount = $emailCount[$email].Count
+        Add-Content -Path $outputPath -Value "$email, $uniqueSecretsCount"
     }
 
     Write-Host "All notifications and summary exported to $outputPath" -ForegroundColor Green
@@ -260,45 +265,52 @@ function Send-EmailtoSecretOwners {
     $Global:reportData = Invoke-Report
 
     Write-Host "Report data retrieved successfully. Notifying secret owners..." -ForegroundColor Green
+
+    $ownersEmailData = @{}
+
     foreach ($secret in $Global:reportData) {
         $emailAddresses = $secret.EmailAddresses -split ','  
-        $secretName = $secret.'Secret Name'
-        $emailsSentCount = 0
-        $uniqueEmails = @{}
-
-        if (-not $secretName) {
-            Write-Host "Secret Name is missing for Secret ID: $($secret.secretid)" -ForegroundColor Yellow
-            continue
-        }
+        $secretInfo = "Secret Name: $($secret.'Secret Name') | ID: $($secret.ID) | Folder Path: $($secret.'Folder Path') | Secret Template: $($secret.'Secret Template') | Days Since Last Accessed: $($secret.'Day Since last Accessed')"
 
         foreach ($emailAddress in $emailAddresses) {
             $emailAddress = $emailAddress.Trim()
-            if ($emailAddress -and -not $uniqueEmails.ContainsKey($emailAddress)) {
-                $uniqueEmails[$emailAddress] = $true
+            if ($emailAddress) {
+                if (-not $ownersEmailData.ContainsKey($emailAddress)) {
+                    $ownersEmailData[$emailAddress] = @()
+                }
+                $ownersEmailData[$emailAddress] += $secretInfo
+            } else {
+                Write-Host "Invalid email address found for Secret: $($secret.'Secret Name')" -ForegroundColor Yellow
+            }
+        }
+    }
 
-                Write-Host "Notifying owner of Secret: $secretName at $emailAddress" -ForegroundColor Magenta
-
-                $emailBody = @"
+    foreach ($emailAddress in $ownersEmailData.Keys) {
+        $emailBody = @"
 Dear Secret Owner,
 
-This is a notification that the secret '$secretName' is scheduled for deactivation.
+Please review the following details for the secrets scheduled for deactivation:
+
+Secret Name | ID | Folder Path | Secret Template | Days Since Last Accessed
+"@
+
+        foreach ($info in $ownersEmailData[$emailAddress]) {
+            $emailBody += "$info`r`n"
+        }
+
+        $emailBody += @"
 
 Best regards,
 Your IT Team
 "@
 
-                try {
-                    Send-SecureMail -To $emailAddress -From $Global:FromAddress -Subject "Secret Deactivation Notification" -Body $emailBody -SmtpServer $Global:SmtpServer
-                    $emailsSentCount++
-                } catch {
-                    Write-Host "Failed to send email to $emailAddress for Secret: $secretName" -ForegroundColor Red
-                }
-            } elseif (-not $emailAddress) {
-                Write-Host "Invalid email address found for Secret: $secretName" -ForegroundColor Yellow
-            }
+        try {
+            Write-Host "Notifying owner at $emailAddress" -ForegroundColor Magenta
+            Send-SecureMail -To $emailAddress -From $Global:FromAddress -Subject "Secret Deactivation Notification" -Body $emailBody -SmtpServer $Global:SmtpServer
+            Write-Host "Email sent to $emailAddress" -ForegroundColor Green
+        } catch {
+            Write-Host "Failed to send email to $emailAddress" -ForegroundColor Red
         }
-
-        Write-Host "Total unique emails sent for Secret '$secretName': $emailsSentCount" -ForegroundColor Green
     }
 }
 
@@ -307,15 +319,30 @@ Your IT Team
 Sends an email using specified SMTP settings.
 
 .DESCRIPTION
-This function sends an email to a specified recipient using the SMTP server settings defined in the global variables.
+The Send-SecureMail function sends an email message to the specified recipient using the .NET System.Net.Mail functionality. It allows specifying the sender, recipient, subject, body, and the SMTP server to use for sending the email. The function is designed for non-SSL SMTP connections by default.
+
+.PARAMETER To
+The email address of the recipient.
+
+.PARAMETER From
+The email address of the sender.
+
+.PARAMETER Subject
+The subject line of the email message.
+
+.PARAMETER Body
+The body content of the email message.
+
+.PARAMETER SmtpServer
+The hostname or IP address of the SMTP server used to send the email.
 
 .EXAMPLE
-Send-SecureMail -To "recipient@example.com" -From $Global:FromAddress -Subject "Test Email" -Body "This is a test email." -SmtpServer $Global:SmtpServer
+Send-SecureMail -To 'recipient@example.com' -From 'sender@example.com' -Subject 'Test Email' -Body 'This is a test email.' -SmtpServer 'smtp.example.com'
 
-This example sends a test email to "recipient@example.com" using the SMTP server and from address specified in the global variables.
+This example sends a simple email from 'sender@example.com' to 'recipient@example.com' with the subject 'Test Email' and a body of 'This is a test email.' using 'smtp.example.com' as the SMTP server.
 
 .NOTES
-Relies on $Global:SmtpServer and $Global:FromAddress being set prior to invocation.
+Ensure that the SMTP server specified is accessible and allows non-SSL connections on port 25. Adjust the SMTP client configuration as necessary for your environment.
 #>
 function Send-SecureMail {
     param (
