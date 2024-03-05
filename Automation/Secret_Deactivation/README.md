@@ -38,6 +38,7 @@ Use the Invoke-Report function to invoke a specified report from the Secret Serv
 ```powershell
 Invoke-Report
 ```
+
 ## Deactivate Secrets
 
 The InvokeAndDeactivateSecrets function deactivates the secrets listed in the report and exports the results. Execution must be by a user with "Owner" rights
@@ -46,12 +47,23 @@ The InvokeAndDeactivateSecrets function deactivates the secrets listed in the re
 InvokeAndDeactivateSecrets
 ```
 
-## Notify Secret Owners
+## TEST - Notify Secret Owners
 
-Notify-SecretOwners sends notification emails to the owners of the secrets being deactivated. Only one email is sent per owner with a summary in the output of each secret.
+Generates notifications for secret owners regarding scheduled secret deactivation events. Notifications can be sent via email or exported to a CSV file.
 
 ```powershell
-Notify-SecretOwners
+Test-Notify-SecretOwners -EmailOutput
+```
+```powershell
+Test-Notify-SecretOwners
+```
+
+## Send-EmailtoSecretOwners
+
+Notifies secret owners via email about scheduled secret deactivation events. One email is sent with a summary of secrets.
+
+```powershell
+Send-EmailtoSecretOwners
 ```
 
 ## Send Secure Mail
@@ -61,6 +73,15 @@ The Send-SecureMail function is used internally by the script to send emails. It
 ```powershell
 Send-SecureMail -To "recipient@example.com" -From $Global:FromAddress -Subject "Test Email" -Body "This is a test email." -SmtpServer $Global:SmtpServer
 ```
+
+## Send-SecureMail-ToFile
+
+Saves an email message to a specified folder in EML format.
+
+```powershell
+Send-SecureMail-ToFile -To "recipient@example.com" -From "sender@example.com" -Subject "Test Email" -Body "This is a test email message."
+```
+
 ## Notes
 - Ensure all global variables are set correctly before running the script.
 - The script relies on the Thycotic.SecretServer PowerShell module; ensure it's installed and accessible.
