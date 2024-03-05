@@ -270,7 +270,8 @@ function Send-EmailtoSecretOwners {
 
     foreach ($secret in $Global:reportData) {
         $emailAddresses = $secret.EmailAddresses -split ','  
-        $secretInfo = "Secret Name: $($secret.'Secret Name') | ID: $($secret.ID) | Folder Path: $($secret.'Folder Path') | Secret Template: $($secret.'Secret Template') | Days Since Last Accessed: $($secret.'Day Since last Accessed')"
+        $secretInfo = "$($secret.'Secret Name') | $($secret.ID) | $($secret.'Folder Path') | $($secret.'Secret Template') | $($secret.'Day Since last Accessed')"
+
 
         foreach ($emailAddress in $emailAddresses) {
             $emailAddress = $emailAddress.Trim()
