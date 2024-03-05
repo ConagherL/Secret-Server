@@ -7,19 +7,24 @@ $Global:FromAddress = "ITAdmins@XXXX.com"                     # Replace with you
 
 <#
 .SYNOPSIS
-This script manages secret deactivation and owner notification in Delinea Secret Server.
+This script interacts with Delinea Secret Server to manage secrets and notify secret owners about scheduled deactivation events.
 
 .DESCRIPTION
-The script establishes a session with Thycotic Secret Server, invokes a specified report, deactivates secrets based on the report data, and sends notifications to the secret owners. It uses predefined global variables for configuration.
+The script contains several functions to interact with Delinea Secret Server. It first ensures that the Thycotic Secret Server module is loaded and establishes a session with the server using provided credentials. The main functions include:
+1. Invoke-Report: Invokes a specified report from Delinea Secret Server and returns the report data.
+2. InvokeAndDeactivateSecrets: Deactivates secrets based on a specified report and exports the results.
+3. Test-Notify-SecretOwners: Generates notifications for secret owners regarding scheduled secret deactivation events. Notifications can be sent via email or exported to a CSV file.
+4. Send-EmailtoSecretOwners: Notifies secret owners via email about scheduled secret deactivation events.
+5. Send-SecureMail: Sends an email using specified SMTP settings.
+6. Send-SecureMail-ToFile: Saves an email message to a specified folder in EML format.
 
-.EXAMPLE
-# Run the script
-.\Report_And_Deactivate_Secrets_with_Notification_For_Owners.ps1
-
-This will invoke the specified report, deactivate the secrets, and notify the owners as per the configurations set in the global variables.
+.PARAMETER None
+This script does not accept any parameters.
 
 .NOTES
-Ensure the Thycotic.SecretServer PowerShell module is installed and accessible before running this script.
+- The script requires the Thycotic Secret Server module to be installed.
+- Global variables such as $Global:session, $Global:ReportID, and $Global:ExportPath need to be set before invoking certain functions.
+- Error handling is implemented to manage exceptions during script execution.
 #>
 
 # Ensure the Thycotic Secret Server module is loaded
@@ -157,91 +162,149 @@ function InvokeAndDeactivateSecrets {
 
 <#
 .SYNOPSIS
-Aggregates secret ownership information and prepares a notification summary for each owner.
+Test-Notify-SecretOwners function generates notifications for secret owners regarding scheduled secret deactivation events.
 
 .DESCRIPTION
-The Test-Notify-SecretOwners function fetches report data, aggregates secrets by owner, and prepares a CSV file with detailed secret information for each owner. It ensures each owner is notified once with a summary of all their secrets, improving the efficiency of communication.
+This PowerShell function simulates the notification process for secret owners about scheduled secret deactivation events. It retrieves report data and processes it to generate notifications. Depending on the presence of the -EmailOutput switch, notifications are either sent via email or exported to a CSV file.
 
-.PARAMETER Global:ExportPath
-Specifies the path where the notification summary CSV will be exported.
+.PARAMETER EmailOutput
+Specifies whether to send notifications via email. If this switch is present, notifications are sent via email; otherwise, notifications are exported to a CSV file.
 
-.PARAMETER Global:reportData
-Contains the report data used to prepare notifications. This data should include secret names and owner email addresses.
+.EXAMPLE
+Test-Notify-SecretOwners -EmailOutput
+
+This example triggers the function to generate notifications for secret owners via email. These are exported as a .EML file.
 
 .EXAMPLE
 Test-Notify-SecretOwners
 
-This example runs the function using the report data stored in $Global:reportData and exports the notification summary to the path specified in $Global:ExportPath.
+This example triggers the function to generate notifications for secret owners and export them to a CSV file.
 
 .NOTES
-Ensure the report data is available in $Global:reportData before running this function. The function requires the Thycotic.SecretServer PowerShell module to interact with the Secret Server for report data fetching.
+- The function relies on the Invoke-Report function to fetch the latest report data.
+- Each secret owner receives a notification detailing the secrets scheduled for deactivation.
+- Notification content is formatted in HTML for readability.
+- Secret owner email addresses and secret details are extracted from the report data.
+- The Send-SecureMail-ToFile function is utilized for sending emails.
+- Error handling is implemented to handle any failures during notification generation or export to CSV.
 #>
 function Test-Notify-SecretOwners {
-    $outputPath = Join-Path -Path $Global:ExportPath -ChildPath "SecretOwnersNotifications.csv"
-    $notifications = @()
-    $emailCount = @{}
+    param (
+        [switch]$EmailOutput
+    )
 
     Write-Host "Fetching new report data for test..." -ForegroundColor Cyan
     $Global:reportData = Invoke-Report
 
-    Write-Host "Report data retrieved successfully. Preparing notifications for CSV export..." -ForegroundColor Green
+    if (-not $Global:reportData) {
+        Write-Host "Failed to fetch report data." -ForegroundColor Red
+        return
+    }
+
+    Write-Host "Report data retrieved successfully. Processing notifications..." -ForegroundColor Green
+
+    $ownersEmailData = @{}
+
     foreach ($secret in $Global:reportData) {
         $emailAddresses = $secret.EmailAddresses -split ','  
         $secretName = $secret.'Secret Name'
         
-        if (-not $secretName) {
-            Write-Host "Secret Name is missing for Secret ID: $($secret.secretid)" -ForegroundColor Yellow
-            continue
-        }
-
         foreach ($emailAddress in $emailAddresses) {
             $emailAddress = $emailAddress.Trim()
-            if ($emailAddress -and -not $emailCount.ContainsKey($emailAddress)) {
-                # Initialize aggregation for the owner if it doesn't exist
-                $emailCount[$emailAddress] = @()
-            }
             if ($emailAddress) {
-                # Add secret to the owner's aggregation
-                $emailCount[$emailAddress] += $secretName
-
-                Write-Host "Aggregated Secret: $secretName for owner at $emailAddress" -ForegroundColor Magenta
+                if (-not $ownersEmailData.ContainsKey($emailAddress)) {
+                    $ownersEmailData[$emailAddress] = @()
+                }
+                $uniqueSecretKey = "$($secret.secretid):$($secretName)"
+                if (-not $ownersEmailData[$emailAddress].Contains($uniqueSecretKey)) {
+                    $ownersEmailData[$emailAddress] += $uniqueSecretKey
+                }
             } else {
                 Write-Host "Invalid email address found for Secret: $secretName" -ForegroundColor Yellow
             }
         }
     }
 
-    # Prepare notifications with aggregated information for each owner
-    foreach ($emailAddress in $emailCount.Keys) {
-        foreach ($secretName in $emailCount[$emailAddress]) {
-            $notification = [PSCustomObject]@{
-                SecretName  = $secretName
-                OwnerEmail  = $emailAddress
+    # If the -EmailOutput switch is used, send the notifications by email
+    if ($EmailOutput) {
+        foreach ($emailAddress in $ownersEmailData.Keys) {
+            $emailBody = @"
+<html>
+<body>
+Dear Secret Owner,<br><br>
+
+Please review the following details for the secrets scheduled for deactivation:<br><br>
+
+<table border="1">
+<tr><th>Secret Name</th><th>ID</th><th>Folder Path</th><th>Secret Template</th><th>Days Since Last Accessed</th></tr>
+"@
+
+            foreach ($secretKey in $ownersEmailData[$emailAddress]) {
+                $secretData = $secretKey -split ":"
+                $secretID = $secretData[0]
+                $secretName = $secretData[1]
+                $emailBody += "<tr><td>$secretName</td><td>$secretID</td><td>$($secret.'Folder Path')</td><td>$($secret.'Secret Template')</td><td>$($secret.'Days Since Last View')</td></tr>"
             }
-            $notifications += $notification
+
+            $emailBody += @"
+</table><br><br>
+
+Best regards,<br>
+Your IT Team
+</body>
+</html>
+"@
+
+            try {
+                Write-Host "Preparing email for $emailAddress" -ForegroundColor Magenta
+                Send-SecureMail-ToFile -To $emailAddress -From "sender@example.com" -Subject "Secret Deactivation Notification" -Body $emailBody
+                Write-Host "Email content prepared for $emailAddress" -ForegroundColor Green
+            } catch {
+                Write-Host "Failed to prepare email content for $emailAddress" -ForegroundColor Red
+            }
         }
+    } else {
+        # Export to CSV file
+        $outputPath = Join-Path -Path $Global:ExportPath -ChildPath "SecretOwnersNotifications.csv"
+        $notifications = @()
+
+        foreach ($emailAddress in $ownersEmailData.Keys) {
+            foreach ($secretKey in $ownersEmailData[$emailAddress]) {
+                $secretData = $secretKey -split ":"
+                $secretID = $secretData[0]
+                $secretName = $secretData[1]
+                $notification = [PSCustomObject]@{
+                    'Owner Email' = $emailAddress
+                    'Secret Name' = $secretName
+                }
+                $notifications += $notification
+            }
+        }
+
+        $notifications | Export-Csv -Path $outputPath -NoTypeInformation
+
+        # Append a summary with the actual count of unique secrets per owner to the end of the CSV
+        Add-Content -Path $outputPath -Value "`nEmail Notification Summary:"
+        Add-Content -Path $outputPath -Value "Owner Email, Total Secret"
+        foreach ($email in $ownersEmailData.Keys) {
+            # The count of unique secrets per owner is the length of the array in each hashtable entry
+            $uniqueSecretsCount = $ownersEmailData[$email].Count
+            Add-Content -Path $outputPath -Value "$email, $uniqueSecretsCount"
+        }
+
+        Write-Host "All notifications and summary exported to $outputPath" -ForegroundColor Green
     }
-
-    # Export the notification details to CSV
-    $notifications | Export-Csv -Path $outputPath -NoTypeInformation
-
-    # Append a summary with the actual count of unique secrets per owner to the end of the CSV
-    Add-Content -Path $outputPath -Value "`nEmail Notification Summary:"
-    foreach ($email in $emailCount.Keys) {
-        # The count of unique secrets per owner is the length of the array in each hashtable entry
-        $uniqueSecretsCount = $emailCount[$email].Count
-        Add-Content -Path $outputPath -Value "$email, $uniqueSecretsCount"
-    }
-
-    Write-Host "All notifications and summary exported to $outputPath" -ForegroundColor Green
 }
 
 <#
 .SYNOPSIS
-Notifies the owners of secrets about the pending deactivation.
+Send-EmailtoSecretOwners function notifies secret owners via email about scheduled secret deactivation.
 
 .DESCRIPTION
-This function sends notification emails to the owners of secrets listed in the specified report, indicating the deactivation of their secrets. If a users email is listed multiple times, then we only email once
+This PowerShell function ensures secret owners are informed promptly about upcoming secret deactivation events. It first validates the session and retrieves the latest report data. Then, it processes the data to generate personalized email notifications for each secret owner, detailing the secrets scheduled for deactivation.
+
+.PARAMETER None
+This function does not accept any parameters.
 
 .EXAMPLE
 Send-EmailtoSecretOwners
@@ -249,7 +312,11 @@ Send-EmailtoSecretOwners
 This example sends notifications to secret owners based on the report specified by $Global:ReportID, using the SMTP settings defined in the global variables.
 
 .NOTES
-Relies on $Global:session, $Global:ReportID, $Global:SmtpServer, and $Global:FromAddress being set prior to invocation.
+- The session's validity is checked before proceeding.
+- Invoke-Report function is used to fetch the latest report data.
+- Each secret owner receives a personalized email listing their relevant secrets.
+- Email content is formatted in HTML for readability.
+- The Send-SecureMail function is utilized for sending emails.
 #>
 function Send-EmailtoSecretOwners {
     Write-Host "Checking session validity..." -ForegroundColor Cyan
@@ -269,48 +336,50 @@ function Send-EmailtoSecretOwners {
     $ownersEmailData = @{}
 
     foreach ($secret in $Global:reportData) {
-        $emailAddresses = $secret.EmailAddresses -split ','  
-        $secretInfo = "$($secret.'Secret Name') | $($secret.ID) | $($secret.'Folder Path') | $($secret.'Secret Template') | $($secret.'Day Since last Accessed')"
-
+        $emailAddresses = $secret.EmailAddresses -split ',' | ForEach-Object { $_.Trim().ToLower() } | Select-Object -Unique
+        $uniqueSecretKey = "$($secret.secretid):$($secret.'Secret Name')"
 
         foreach ($emailAddress in $emailAddresses) {
-            $emailAddress = $emailAddress.Trim()
-            if ($emailAddress) {
-                if (-not $ownersEmailData.ContainsKey($emailAddress)) {
-                    $ownersEmailData[$emailAddress] = @()
-                }
-                $ownersEmailData[$emailAddress] += $secretInfo
-            } else {
-                Write-Host "Invalid email address found for Secret: $($secret.'Secret Name')" -ForegroundColor Yellow
+            if (-not $ownersEmailData.ContainsKey($emailAddress)) {
+                $ownersEmailData[$emailAddress] = @{}
+            }
+            if (-not $ownersEmailData[$emailAddress].ContainsKey($uniqueSecretKey)) {
+                $ownersEmailData[$emailAddress][$uniqueSecretKey] = "<tr><td>$($secret.'Secret Name')</td><td>$($secret.secretid)</td><td>$($secret.'Folder Path')</td><td>$($secret.'Secret Template')</td><td>$($secret.'Days Since Last View')</td></tr>"
             }
         }
     }
 
     foreach ($emailAddress in $ownersEmailData.Keys) {
         $emailBody = @"
-Dear Secret Owner,
+<html>
+<body>
+Dear Secret Owner,<br><br>
 
-Please review the following details for the secrets scheduled for deactivation:
+Please review the following details for the secrets scheduled for deactivation:<br><br>
 
-Secret Name | ID | Folder Path | Secret Template | Days Since Last Accessed
+<table border="1">
+<tr><th>Secret Name</th><th>ID</th><th>Folder Path</th><th>Secret Template</th><th>Days Since Last Accessed</th></tr>
 "@
 
-        foreach ($info in $ownersEmailData[$emailAddress]) {
-            $emailBody += "$info`r`n"
+        foreach ($secretKey in $ownersEmailData[$emailAddress].Keys) {
+            $emailBody += $ownersEmailData[$emailAddress][$secretKey]
         }
 
         $emailBody += @"
+</table><br><br>
 
-Best regards,
+Best regards,<br>
 Your IT Team
+</body>
+</html>
 "@
 
         try {
-            Write-Host "Notifying owner at $emailAddress" -ForegroundColor Magenta
+            Write-Host "Preparing email for $emailAddress" -ForegroundColor Magenta
             Send-SecureMail -To $emailAddress -From $Global:FromAddress -Subject "Secret Deactivation Notification" -Body $emailBody -SmtpServer $Global:SmtpServer
-            Write-Host "Email sent to $emailAddress" -ForegroundColor Green
+            Write-Host "Email content prepared for $emailAddress" -ForegroundColor Green
         } catch {
-            Write-Host "Failed to send email to $emailAddress" -ForegroundColor Red
+            Write-Host "Failed to prepare email content for $emailAddress" -ForegroundColor Red
         }
     }
 }
@@ -365,11 +434,73 @@ function Send-SecureMail {
 
     try {
         $smtpClient.Send($mailMessage)
-        Write-Host "Email sent to $To" -ForegroundColor Green
     } catch {
         Write-Host "Failed to send email: $_" -ForegroundColor Red
     } finally {
         $mailMessage.Dispose()
         $smtpClient.Dispose()
+    }
+}
+
+<#
+.SYNOPSIS
+Send-SecureMail-ToFile function saves an email message to a specified folder in EML format.
+
+.DESCRIPTION
+This PowerShell function enables users to securely store or archive email messages by saving them to a specified folder in EML format.
+
+.PARAMETER To
+Specifies the recipient's email address.
+
+.PARAMETER From
+Specifies the sender's email address.
+
+.PARAMETER Subject
+Specifies the subject of the email.
+
+.PARAMETER Body
+Specifies the body content of the email.
+
+.EXAMPLE
+Send-SecureMail-ToFile -To "recipient@example.com" -From "sender@example.com" -Subject "Test Email" -Body "This is a test email message."
+
+This example saves a test email message to a file in the specified folder.
+
+.NOTES
+- Ensure that the `$Global:ExportPath` variable is set to the desired folder path before invoking this function.
+- This function is designed for saving emails to files only. It does not handle sending emails via SMTP.
+#>
+function Send-SecureMail-ToFile {
+    param (
+        [string]$To,
+        [string]$From,
+        [string]$Subject,
+        [string]$Body
+    )
+
+    # Hardcoded folder path to save the email contents
+    $SaveFolder = $Global:ExportPath
+
+    # Include Content-Type header to indicate HTML content
+    $emailContent = @"
+From: $From
+To: $To
+Subject: $Subject
+Content-Type: text/html; charset=UTF-8
+
+$Body
+"@
+
+    try {
+        # Use the $To parameter to create a unique filename for each recipient
+        $fileName = $To -replace '[\\\/:\*\?"<>\|]', '_'  # Remove illegal characters for filenames
+        $filePath = Join-Path $SaveFolder "$fileName.eml"
+
+        # Save the email contents to a file
+        $emailContent | Out-File -FilePath $filePath -Encoding UTF8
+
+        Write-Host "Email saved to $filePath" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to save email: $_" -ForegroundColor Red
     }
 }
