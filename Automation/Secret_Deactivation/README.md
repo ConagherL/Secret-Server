@@ -21,6 +21,7 @@ $Global:FromAddress = "ITAdmins@XXXX.com"         # Email address for notificati
 - Requires "Administer Reports" permissions in SS
 - API account used must have access to all secrets within scope (Owner Rights)
 -   Optionally, if you want a "report" only mode, then the API account must have "View" rights
+-   If you would like to run this through a controlled test, utilize the TEST-Secrets not viewed in 90 days report and specify on line 49 the IDs of secrets you would like to target
 
 ## Usage
 Load the Thycotic Secret Server Module
@@ -33,7 +34,7 @@ The script will prompt for credentials to establish a new session with the Secre
 
 ## Invoke the Report
 
-Use the Invoke-Report function to invoke a specified report from the Secret Server. User must have permissions to utilize the report
+Use the Invoke-Report function to invoke a specified report from the Secret Server. User must have role permissions to reports.
 
 ```powershell
 Invoke-Report
