@@ -41,10 +41,10 @@ Invoke-Report
 
 ## Deactivate Secrets
 
-The InvokeAndDeactivateSecrets function deactivates the secrets listed in the report and exports the results. Execution must be by a user with "Owner" rights
+The Invoke-Deactivate-Secrets function deactivates the secrets listed in the report and exports the results. Execution must be by a user with "Owner" rights
 
 ```powershell
-InvokeAndDeactivateSecrets
+Invoke-Deactivate-Secrets
 ```
 
 ## TEST - Notify Secret Owners

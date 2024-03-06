@@ -95,14 +95,14 @@ Deactivates secrets based on a specified report and exports the results.
 This function deactivates secrets listed in a Delinea Secret Server report and exports the deactivation results to a CSV file.
 
 .EXAMPLE
-InvokeAndDeactivateSecrets
+Invoke-Deactivate-Secrets
 
 This example deactivates secrets based on the report specified by $Global:ReportID and exports the results to the path specified by $Global:ExportPath.
 
 .NOTES
 Relies on $Global:session, $Global:ReportID, and $Global:ExportPath being set prior to invocation.
 #>
-function InvokeAndDeactivateSecrets {
+function Invoke-Deactivate-Secrets {
     $results = @()
 
     Write-Host "Checking session validity..." -ForegroundColor Cyan
