@@ -21,6 +21,24 @@ The script contains several functions to interact with Delinea Secret Server. It
 .PARAMETER None
 This script does not accept any parameters.
 
+.EXAMPLE
+# Calling the Invoke-Report function
+powershell -Command "& 'C:\Path\To\YourScript.ps1' Invoke-Report"
+
+# Calling the InvokeAndDeactivateSecrets function
+powershell -Command "& 'C:\Path\To\YourScript.ps1' InvokeAndDeactivateSecrets"
+
+# Calling the Test-Notify-SecretOwners function to send notifications via email
+powershell -Command "& 'C:\Path\To\YourScript.ps1' Test-Notify-SecretOwners -EmailOutput"
+
+# Calling the Test-Notify-SecretOwners function to export notifications to CSV
+powershell -Command "& 'C:\Path\To\YourScript.ps1' Test-Notify-SecretOwners"
+
+# Calling the Send-EmailtoSecretOwners function
+powershell -Command "& 'C:\Path\To\YourScript.ps1' Send-EmailtoSecretOwners"
+
+# Note: Modify the paths and function parameters as per your environment and requirements.
+
 .NOTES
 - The script requires the Thycotic Secret Server module to be installed.
 - Global variables such as $Global:session, $Global:ReportID, and $Global:ExportPath need to be set before invoking certain functions.
