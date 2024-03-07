@@ -49,6 +49,7 @@ WHERE
     AND s.Active = 1
     AND (s.created IS NULL OR s.created < DATEADD(day, -90, GetDate()))  -- Adjusted filter condition
     AND (a.latestdaterecorded IS NULL OR a.latestdaterecorded < DATEADD(day, -90, GetDate()))  -- Adjusted filter condition
+    ----AND s.secretid NOT IN (1, 2, 3)  -- Add this line to exclude specific secret IDs
 GROUP BY 
     s.secretid,
     s.secretname,
