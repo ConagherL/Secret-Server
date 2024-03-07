@@ -47,6 +47,7 @@ WHERE
     perm.Permissions = 15 
     AND u.Enabled = 1
     AND s.Active = 1
+    AND s.created IS NOT NULL
     AND (a.latestdaterecorded IS NULL OR a.latestdaterecorded < DATEADD(day, -90, GetDate()))  -- Adjusted filter condition
 GROUP BY 
     s.secretid,
