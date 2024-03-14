@@ -446,6 +446,7 @@ function Send-SecureMail {
     $mailMessage.To.Add($To)
     $mailMessage.Subject = $Subject
     $mailMessage.Body = $Body
+    $mailMessage.IsBodyHtml = $true
 
     $smtpClient = New-Object Net.Mail.SmtpClient($SmtpServer, 25)  # Assuming port 25 for non-SSL
     $smtpClient.EnableSsl = $false  # Disable SSL for open SMTP relay
