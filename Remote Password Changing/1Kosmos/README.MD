@@ -31,9 +31,7 @@ powershell .\ChangePassword.ps1 userID newPassword OAuth yourOAuthToken SystemUs
 # Update password for a user managed within a specific tenant and community
 ```powershell
 powershell .\ChangePassword.ps1 userID newPassword APIKey yourApiKey UserManagement tenantID communityID
-
-
-
+```
 Parameters
 * userID: Identifier for the user whose password is being updated.
 * newPassword: The new password to set.
