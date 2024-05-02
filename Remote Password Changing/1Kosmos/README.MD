@@ -28,10 +28,11 @@ Run the script from the command line by navigating to the script's directory and
 # Update password for a system user
 powershell .\ChangePassword.ps1 userID newPassword OAuth yourOAuthToken SystemUser
 
+```powershell
 # Update password for a user managed within a specific tenant and community
 powershell .\ChangePassword.ps1 userID newPassword APIKey yourApiKey UserManagement tenantID communityID
 
-```powershell
+
 
 Parameters
 * userID: Identifier for the user whose password is being updated.
