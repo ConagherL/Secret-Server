@@ -32,13 +32,19 @@ powershell .\ChangePassword.ps1 userID newPassword OAuth yourOAuthToken SystemUs
 ```powershell
 powershell .\ChangePassword.ps1 userID newPassword APIKey yourApiKey UserManagement tenantID communityID
 ```
-Parameters
-* userID: Identifier for the user whose password is being updated.
-* newPassword: The new password to set.
-* authMethod: Type of authentication (OAuth or APIKey).
-* credentials: Specific credentials for the chosen auth method.
-* scenario: Defines context (SystemUser or UserManagement).
-* tenantID and communityID: Required for the UserManagement scenario.
+### Parameters
+The script accepts the following arguments in the order listed:
+
+1. **userID**: The identifier for the user whose password is being updated. This could be a system user ID or a user ID managed within a specific tenant, depending on the scenario.
+2. **newPassword**: The new password that will be set for the user.
+3. **authMethod**: The type of authentication to be used. It can either be `OAuth` or `APIKey`.
+4. **credentials**: The actual credentials (OAuth token or API Key) corresponding to the chosen authentication method.
+5. **scenario**: This defines the context of the password update and should be either `SystemUser` for system users or `UserManagement` for users managed within a specific tenant and community.
+6. **tenantID**: (Required only for `UserManagement` scenario) The tenant ID under which the user is managed.
+7. **communityID**: (Required only for `UserManagement` scenario) The community ID under which the user is managed.
+
+Each argument must be provided in the exact order as specified for the script to function correctly.
+
 
 Debugging
 If you encounter errors during execution, check the PowerShell error output for specific messages. Common issues include:
