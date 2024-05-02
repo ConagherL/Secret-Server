@@ -31,12 +31,13 @@ powershell .\ChangePassword.ps1 userID newPassword OAuth yourOAuthToken SystemUs
 powershell .\ChangePassword.ps1 userID newPassword APIKey yourApiKey UserManagement tenantID communityID
 
 Parameters
-userID: Identifier for the user whose password is being updated.
-newPassword: The new password to set.
-authMethod: Type of authentication (OAuth or APIKey).
-credentials: Specific credentials for the chosen auth method.
-scenario: Defines context (SystemUser or UserManagement).
-tenantID and communityID: Required for the UserManagement scenario.
+* userID: Identifier for the user whose password is being updated.
+* newPassword: The new password to set.
+* authMethod: Type of authentication (OAuth or APIKey).
+* credentials: Specific credentials for the chosen auth method.
+* scenario: Defines context (SystemUser or UserManagement).
+* tenantID and communityID: Required for the UserManagement scenario.
+
 Debugging
 If you encounter errors during execution, check the PowerShell error output for specific messages. Common issues include:
 
