@@ -1,4 +1,4 @@
-# Password Update Utility
+# 1Kosmos Password Changer
 
 This PowerShell script automates password changes for both system users and managed users within specified tenants and communities. It offers flexibility through support for multiple authentication methods and robust error handling.
 
