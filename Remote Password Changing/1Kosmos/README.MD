@@ -18,8 +18,7 @@ This PowerShell script automates password changes for both system users and mana
 
 Download the script to your local machine or clone the repository using:
 
-```bash
-git clone https://github.com/your-repository/password-update-utility.git
+
 
 Usage
 Executing the Script
