@@ -1,55 +1,75 @@
-Update Secret Field
+# Update Secret Field
+
 A PowerShell script to update secret fields in Secret Server based on specified criteria.
 
-Description
+## Description
+
 This script authenticates with Secret Server, retrieves all secrets, and updates the specified field with a new value for secrets that match the given criteria.
 
-Parameters
-SearchFieldValue (string): The value to search for in the specified field. Default is "abc.local".
-FieldName (string): The name of the field to search and update. Default is "Domain".
-NewValue (string): The new value to set in the specified field. Default is "happy.local".
-OtpCode (string): The OTP code for authentication if the UseOtp switch is used.
-UseOtp (switch): Switch to use OTP for authentication.
-Usage
+## Parameters
+
+- `SearchFieldValue` (string): The value to search for in the specified field. Default is `"abc.local"`.
+- `FieldName` (string): The name of the field to search and update. Default is `"Domain"`.
+- `NewValue` (string): The new value to set in the specified field. Default is `"happy.local"`.
+- `OtpCode` (string): The OTP code for authentication if the `UseOtp` switch is used.
+- `UseOtp` (switch): Switch to use OTP for authentication.
+
+## Usage
+
 Run the script with the necessary parameters:
 
-Example 1: Update Domain Field
-powershell
-Copy code
-.\UpdateSecretField.ps1 -SearchFieldValue "abc.local" -FieldName "Domain" -NewValue "happy.local"
-Example 2: Update Username Field
-powershell
-Copy code
-.\UpdateSecretField.ps1 -SearchFieldValue "olduser" -FieldName "Username" -NewValue "newuser"
-Example 3: Update Email Field
-powershell
-Copy code
-.\UpdateSecretField.ps1 -SearchFieldValue "oldemail@example.com" -FieldName "Email" -NewValue "newemail@example.com"
-Example 4: Using OTP for Authentication
-powershell
-Copy code
-.\UpdateSecretField.ps1 -SearchFieldValue "abc.local" -FieldName "Domain" -NewValue "happy.local" -OtpCode "123456" -UseOtp
-Script Details
-Parameters
-SearchFieldValue (string): The value to search for in the specified field. Default is "abc.local".
-FieldName (string): The name of the field to search and update. Default is "Domain".
-NewValue (string): The new value to set in the specified field. Default is "happy.local".
-OtpCode (string): The OTP code for authentication if the UseOtp switch is used.
-UseOtp (switch): Switch to use OTP for authentication.
-Log File
-The script generates a log file in C:\temp with the name Update_Secret_Field_<FieldName>_<timestamp>.txt.
+### Example 1: Update Domain Field
 
-Authentication
+```powershell
+.\UpdateSecretField.ps1 -SearchFieldValue "abc.local" -FieldName "Domain" -NewValue "happy.local"
+```
+
+### Example 2: Update Username Field
+
+```powershell
+.\UpdateSecretField.ps1 -SearchFieldValue "olduser" -FieldName "Username" -NewValue "newuser"
+```
+
+### Example 3: Update Email Field
+
+```powershell
+.\UpdateSecretField.ps1 -SearchFieldValue "oldemail@example.com" -FieldName "Email" -NewValue "newemail@example.com"
+```
+
+### Example 4: Using OTP for Authentication
+
+```powershell
+.\UpdateSecretField.ps1 -SearchFieldValue "abc.local" -FieldName "Domain" -NewValue "happy.local" -OtpCode "123456" -UseOtp
+```
+
+## Script Details
+
+### Parameters
+
+- `SearchFieldValue` (string): The value to search for in the specified field. Default is `"abc.local"`.
+- `FieldName` (string): The name of the field to search and update. Default is `"Domain"`.
+- `NewValue` (string): The new value to set in the specified field. Default is `"happy.local"`.
+- `OtpCode` (string): The OTP code for authentication if the `UseOtp` switch is used.
+- `UseOtp` (switch): Switch to use OTP for authentication.
+
+### Log File
+
+The script generates a log file in `C:\temp` with the name `Update_Secret_Field_<FieldName>_<timestamp>.txt`.
+
+### Authentication
+
 The script supports two methods of authentication:
 
-Username and Password: The script prompts for credentials.
-OTP: The script uses the provided OTP code for authentication if the UseOtp switch is used.
-Functions
-Write-Log
+1. **Username and Password**: The script prompts for credentials.
+2. **OTP**: The script uses the provided OTP code for authentication if the `UseOtp` switch is used.
+
+### Functions
+
+#### Write-Log
+
 Writes log messages to a file and the host.
 
-powershell
-Copy code
+```powershell
 function Write-Log {
     param (
         [string]$message
@@ -59,11 +79,13 @@ function Write-Log {
     Add-Content -Path $LogFilePath -Value $logMessage
     Write-Host $logMessage
 }
-Update-Secret
+```
+
+#### Update-Secret
+
 Updates a secret if it has the specified field with the specified value.
 
-powershell
-Copy code
+```powershell
 function Update-Secret {
     param (
         [int]$secretId
@@ -102,3 +124,4 @@ function Update-Secret {
         }
     }
 }
+```
