@@ -45,7 +45,7 @@ param (
     [switch]$UseOtp
 )
 
-# Generate dynamic log file path using the FieldName parameter
+# Generate a dynamic log file path using the FieldName parameter
 $LogFilePath = "C:\temp\Update_Secret_Field_${FieldName}_$((Get-Date).ToString('yyyyMMdd_HHmmss')).txt"
 
 # Function to write log messages to a file and the host
@@ -60,7 +60,7 @@ function Write-Log {
 }
 
 # Secret Server API base URL
-$baseUrl = "https://blt.secretservercloud.com"
+$baseUrl = "https://yourssurl"
 
 # Authenticate with Secret Server using the provided credentials or OTP
 if ($UseOtp) {
