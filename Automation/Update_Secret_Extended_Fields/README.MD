@@ -50,7 +50,7 @@ Run the script with the necessary parameters:
 - `FieldName` (string): The name of the field to search and update. Default is `"Domain"`.
 - `NewValue` (string): The new value to set in the specified field. Default is `"happy.local"`.
 - `OtpCode` (string): The OTP code for authentication if the `UseOtp` switch is used.
-- `UseOtp` (switch): Switch to use OTP for authentication.
+- `UseOtp` (switch): Switch to use OTP for authentication. ----NOT WORKING CURRENTLY
 
 ### Log File
 
@@ -61,7 +61,7 @@ The script generates a log file in `C:\temp` with the name `Update_Secret_Field_
 The script supports two methods of authentication:
 
 1. **Username and Password**: The script prompts for credentials.
-2. **OTP**: The script uses the provided OTP code for authentication if the `UseOtp` switch is used.
+2. **OTP**: The script uses the provided OTP code for authentication if the `UseOtp` switch is used. - NOT WORKING CURRENTLY
 
 ### Functions
 
