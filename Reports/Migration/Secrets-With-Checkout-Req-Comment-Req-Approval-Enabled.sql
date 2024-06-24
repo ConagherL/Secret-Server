@@ -64,9 +64,3 @@ WHERE
 	s.RequireViewComment = 1
 
 ORDER BY SecretID ASC
-
-/*
-.PURPOSE
-Pull the Item name/display name along with assigned Metadata details
-*/
-
