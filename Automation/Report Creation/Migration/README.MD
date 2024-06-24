@@ -74,8 +74,8 @@ Creates or updates reports in Secret Server using the downloaded SQL files.
 
 ```powershell
 # Variables
-$apiBaseUrl = "https://blt.secretservercloud.com"
-$repoOwner = "ConagherL"
+$apiBaseUrl = "https://happygolucky.secretservercloud.com"
+$repoOwner = "PS"
 $repoName = "Secret-Server"
 $branch = "main"
 $repoPath = "Reports/Migration"
