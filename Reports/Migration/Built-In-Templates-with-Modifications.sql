@@ -1,8 +1,3 @@
-/*
-.PURPOSE
-Pull the Item name/display name along with assigned Metadata details
-*/
-
 
 SELECT
 	a.DateRecorded as [Date],
