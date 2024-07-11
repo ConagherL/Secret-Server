@@ -16,13 +16,13 @@ The URL of your Secret Server instance.
 .\Update-DirectoryServices.ps1
 
 .NOTES
-- Ensure you have the required permissions to perform these operations.
+- Please make sure you have the required permissions to perform these operations. Role permissions "Administer Directory Services"
 - The script uses OAuth2 for authentication.
 - Success and error messages are color-coded for clarity.
 #>
 
 # Configuration Variables
-$Global:YourServerURL = "https://blt.secretservercloud.com" # Replace with your actual Secret Server URL
+$Global:YourServerURL = "https://XXXXX.secretservercloud.com" # Replace with your actual Secret Server URL
 
 # Function to prompt for credentials and establish a new session with the Secret Server
 function New-Session {
