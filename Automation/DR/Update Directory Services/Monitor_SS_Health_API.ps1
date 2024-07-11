@@ -1,5 +1,5 @@
 # Configuration Variables
-$Global:YourServerURL = "https://blt.secretservercloud.com" # Replace with your actual Secret Server URL
+$Global:YourServerURL = "https://XXXX.secretservercloud.com" # Replace with your actual Secret Server URL
 $Global:HealthCheckEndpoint = "$Global:YourServerURL/RestApiDocs.ashx?doc=HealthCheck"
 $Global:SecondaryScriptPath = "C:\Path\To\Your\SecondaryScript.ps1" # Replace with the path to your secondary script
 $Global:LogFilePath = "C:\Path\To\HealthCheckLog.txt" # Replace with the path to your log file
