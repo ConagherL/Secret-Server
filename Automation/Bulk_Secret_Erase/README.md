@@ -25,7 +25,7 @@ This PowerShell script automates the process of exporting a report of secrets an
 1. **Open PowerShell**: Navigate to the directory containing the script.
 2. **Execute the Script**: Run the script using the following command:
    ```powershell
-   .\YourScriptName.ps1
+   .\Bulk_Secret_Erase_By_DateRange.ps1
    ```
 3. **Provide Credentials**: Enter your Secret Server username and password when prompted.
 4. **Check Output**: Confirm that the script outputs messages indicating the success or failure of each operation 
@@ -36,7 +36,7 @@ To run specific functions individually, follow these steps:
 
 1. **Dot-Source the Script**: Load the functions into your current PowerShell session:
    ```powershell
-   . .\YourScriptName.ps1
+   . .\Bulk_Secret_Erase_By_DateRange.ps1
    ```
 
 2. **Run the `New-Session` Function**: Establish a session and retrieve an access token:
