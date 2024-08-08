@@ -16,5 +16,6 @@ WHERE
     aud.Action = 'DEACTIVATE'
     AND aud.DateRecorded >= #StartDate
     AND aud.DateRecorded <= #EndDate
+    AND s.Active = 0
 ORDER BY
     aud.DateRecorded DESC
