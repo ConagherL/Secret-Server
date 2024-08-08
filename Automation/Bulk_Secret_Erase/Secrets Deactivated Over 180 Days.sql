@@ -15,5 +15,6 @@ JOIN
 WHERE
     aud.Action = 'DEACTIVATE'
     AND aud.DateRecorded <= DATEADD(DAY, -180, GETDATE())
+    AND s.Active = 0
 ORDER BY
     aud.DateRecorded DESC
