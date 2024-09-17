@@ -444,6 +444,12 @@ FROM (
         WHERE [IsStandardReport] <> 1
     ) as [Result]
 UNION ALL
+SELECT CONCAT('SQL Report Schedules: ', COUNT(*)) AS [Result]
+FROM tbSchedule sch
+FULL JOIN tbScheduledReport sr ON sr.ScheduleId = sch.ScheduleId
+JOIN tbCustomReport rep ON rep.CustomReportId = sr.ReportId
+WHERE sch.Active = 1 AND rep.Active = 1
+UNION ALL
 SELECT CONCAT('Event Subscriptions: ', COUNT(*))
 FROM (
         SELECT *
