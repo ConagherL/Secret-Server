@@ -108,8 +108,8 @@ Date: 9/19/2024
 
 
 # Customizable Variables
-$sourceRootUrl = 'blt.secretservercloud.com'       # Source tenant root URL
-$destinationRootUrl = 'ps-ssc-standalone-15.secretservercloud.com'  # Destination tenant root URL
+$sourceRootUrl = 'xxx.secretservercloud.com'       # Source tenant root URL
+$destinationRootUrl = 'xxx.secretservercloud.com'  # Destination tenant root URL
 $outputDirectory = 'C:\temp\SQL_Reports'  # Directory for saving report details and logs
 
 # Ensure the output directory exists
