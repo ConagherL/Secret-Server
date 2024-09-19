@@ -105,9 +105,6 @@ Author: Delinea PS
 Date: 9/19/2024
 #>
 
-# [Rest of the script remains unchanged]
-
-
 # Customizable Variables
 $sourceRootUrl = 'XXX.secretservercloud.com'       # Source tenant root URL (Ensure this is a valid URL)
 $destinationRootUrl = 'XXX.secretservercloud.com'  # Destination tenant root URL (Ensure this is a valid URL)
