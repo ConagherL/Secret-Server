@@ -152,7 +152,7 @@ WHERE si.Active = 1
 
 UNION ALL
 
-SELECT DISTINCT CONCAT('   Engines in Site ', S.SiteName), 
+SELECT DISTINCT CONCAT('----> Engines in Site ', S.SiteName), 
     CAST(COUNT(EngineId) OVER (PARTITION BY S.SiteName) AS NVARCHAR(50)), ''
 FROM tbEngine E
 JOIN tbSite S ON S.SiteId = E.SiteId
@@ -424,17 +424,17 @@ WHERE Active = 1
 UNION ALL
 
 SELECT '--> QuantumLocks', CAST(COUNT(*) AS NVARCHAR(50)), ''
-FROM tbDoubleLock
+FROM tbDoubleLock WHERE active = 1
 
 UNION ALL
 
 SELECT '--> Event Subscriptions', CAST(COUNT(*) AS NVARCHAR(50)), ''
-FROM tbEventSubscription
+FROM tbEventSubscription WHERE active = 1
 
 UNION ALL
 
 SELECT '--> Categorized Lists', CAST(COUNT(*) AS NVARCHAR(50)), ''
-FROM tbCategorizedList
+FROM tbCategorizedList WHERE active = 1
 
 UNION ALL
 
@@ -579,7 +579,7 @@ SELECT '--> SDK Unique Client IPs', CAST(COUNT(DISTINCT IpAddress) AS NVARCHAR(5
 FROM tbSdkClientAccount
 UNION ALL
 
-SELECT 'Priviledge Manager' AS [Item], '' AS [Value], '' AS [Comment]
+SELECT 'Privilege Manager' AS [Item], '' AS [Value], '' AS [Comment]
 
 UNION ALL
 
