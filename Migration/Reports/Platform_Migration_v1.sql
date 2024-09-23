@@ -10,6 +10,7 @@ SELECT
         WHEN (SELECT COUNT(*) FROM tbEventSubscription) > 0 THEN 'Possible'
         WHEN (SELECT COUNT(*) FROM tbEventPipelinePolicy) > 0 THEN 'Possible'
         WHEN EXISTS (SELECT * FROM tbDomain WHERE DomainTypeId = 3 AND Active = 1) THEN 'No'
+        WHEN EXISTS (SELECT * FROM tbDomain WHERE DomainTypeId = 2 AND Active = 1) THEN 'No'
         WHEN (SELECT COUNT(*) FROM tbEventSubscription) = 0 AND (SELECT COUNT(*) FROM tbEventPipelinePolicy) = 0 THEN 'Yes'
         ELSE 'Possible'
     END AS [Value],
@@ -54,7 +55,7 @@ SELECT '--> Size' AS [Item],
 
 UNION ALL
 
-SELECT 'Domain Information' AS [Item], '' AS [Value], '' AS [Comment]
+SELECT 'Directory Services Information' AS [Item], '' AS [Value], '' AS [Comment]
 
 UNION ALL 
 
