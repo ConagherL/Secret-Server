@@ -20,14 +20,13 @@ SELECT
 
 UNION ALL
 
-SELECT 
-    '--> Use Platform Settings' AS [Item],
-    CASE 
-        WHEN EXISTS (SELECT * 
-                     FROM tbPlatformConfiguration 
+SELECT  '--> UsePlatformSettings' AS [Item],
+    CASE
+        WHEN EXISTS (SELECT *
+                     FROM tbPlatformConfiguration
                      WHERE UsePlatformSettings = 1) THEN 'Enabled'
         ELSE 'Disabled'
-    END AS [Value], 
+    END AS [Value],
     '' AS [Comment]
 
 UNION ALL
