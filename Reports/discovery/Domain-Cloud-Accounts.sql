@@ -36,7 +36,7 @@ FROM tbComputerAccount ca
 	LEFT JOIN tbSecretType st ON st.SecretTypeId = s.SecretTypeId
 	FULL JOIN tbFolder f ON s.FolderId = f.FolderID
 	 
-WHERE ca.computerID is null AND (s.Active = 1 OR s.SecretID IS NULL)
+WHERE ca.computerID is null AND (s.Active = 1 OR s.SecretID IS NULL) AND ca.ComputerId is NULL and ds.Active = 1 and ds.Name like '%' + #CUSTOMTEXT + '%'
 
 GROUP BY ds.Name, ou.Path, ca.AccountName, s.SecretName, f.FolderPath, s.SecretID,s.LastHeartBeatCheck,s.LastHeartBeatStatus,st.SecretTypeName, ca.IsLocalAdministrator, ca.HasLocalAdminRights
 	HAVING COUNT(ca.AccountName) > 0
