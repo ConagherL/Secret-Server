@@ -1,0 +1,235 @@
+{
+    "EventPipelinePolicy": {
+      "ReuseExistingPipelines": true,
+      "Pipelines": {
+        "Value": [
+          {
+            "EventPipelineName": {
+              "Value": "Parent to child Password Sync"
+            },
+            "EventPipelineDescription": {
+              "Value": ""
+            },
+            "Active": {
+              "Value": true
+            },
+            "Triggers": {
+              "Value": [
+                {
+                  "EventActionId": {
+                    "Value": 10055
+                  }
+                }
+              ]
+            },
+            "Filters": {
+              "Value": [
+                {
+                  "EventPipelineFilterName": {
+                    "Value": "SecretHasField"
+                  },
+                  "EventPipelineFilterId": {
+                    "Value": 12
+                  },
+                  "SortOrder": {
+                    "Value": 1
+                  },
+                  "Settings": {
+                    "Value": [
+                      {
+                        "SettingName": {
+                          "Value": "AllSecretFieldName"
+                        },
+                        "SettingValue": {
+                          "Value": "password"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "NotCondition"
+                        },
+                        "SettingValue": {
+                          "Value": "false"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "EventPipelineFilterName": {
+                    "Value": "SecretHasField"
+                  },
+                  "EventPipelineFilterId": {
+                    "Value": 12
+                  },
+                  "SortOrder": {
+                    "Value": 2
+                  },
+                  "Settings": {
+                    "Value": [
+                      {
+                        "SettingName": {
+                          "Value": "AllSecretFieldName"
+                        },
+                        "SettingValue": {
+                          "Value": "Notes"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "NotCondition"
+                        },
+                        "SettingValue": {
+                          "Value": "false"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "EventPipelineFilterName": {
+                    "Value": "SecretField"
+                  },
+                  "EventPipelineFilterId": {
+                    "Value": 3
+                  },
+                  "SortOrder": {
+                    "Value": 3
+                  },
+                  "Settings": {
+                    "Value": [
+                      {
+                        "SettingName": {
+                          "Value": "FieldName"
+                        },
+                        "SettingValue": {
+                          "Value": "$Notes"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "ValueMatchType"
+                        },
+                        "SettingValue": {
+                          "Value": "5"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "ValueMatch"
+                        },
+                        "SettingValue": {
+                          "Value": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "Tasks": {
+              "Value": [
+                {
+                  "EventPipelineTaskName": {
+                    "Value": "RunScript"
+                  },
+                  "EventPipelineTaskId": {
+                    "Value": 23
+                  },
+                  "SortOrder": {
+                    "Value": 1
+                  },
+                  "Settings": {
+                    "Value": [
+                      {
+                        "SettingName": {
+                          "Value": "RunSecretId"
+                        },
+                        "SettingValue": {
+                          "Value": "1084"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "ScriptArgs"
+                        },
+                        "SettingValue": {
+                          "Value": "$[ADD:1]$USERNAME $[ADD:1]$PASSWORD $[ADD:1]$DOMAIN $PASSWORD $NOTES "
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "ScriptId"
+                        },
+                        "SettingValue": {
+                          "Value": "11"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "RunSiteId"
+                        },
+                        "SettingValue": {
+                          "Value": "0"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "Additional1SecretId"
+                        },
+                        "SettingValue": {
+                          "Value": "1005"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "Additional2SecretId"
+                        },
+                        "SettingValue": {
+                          "Value": null
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "Additional3SecretId"
+                        },
+                        "SettingValue": {
+                          "Value": null
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "UseSiteRunAsSecret"
+                        },
+                        "SettingValue": {
+                          "Value": "false"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "ExternalInstanceId": "00000000-0000-0000-0000-000000000000",
+      "EventEntityTypeId": {
+        "Value": 10001
+      },
+      "IsSystem": false,
+      "EventPipelinePolicyName": {
+        "Value": "Sync Secret Event Policy"
+      },
+      "EventPipelinePolicyDescription": {
+        "Value": null
+      },
+      "Active": {
+        "Value": false
+      }
+    },
+    "ReuseExistingPipelines": true,
+    "ExternalInstanceId": "bfef0dac-a4a4-4b3b-9668-387154770cd2",
+    "IsSystem": false
+  }
+

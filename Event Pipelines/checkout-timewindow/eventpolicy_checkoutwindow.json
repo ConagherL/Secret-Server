@@ -1,0 +1,164 @@
+{
+    "EventPipelinePolicy": {
+      "ReuseExistingPipelines": true,
+      "Pipelines": {
+        "Value": [
+          {
+            "EventPipelineName": {
+              "Value": "Checkout during business hours"
+            },
+            "EventPipelineDescription": {
+              "Value": ""
+            },
+            "Active": {
+              "Value": true
+            },
+            "Triggers": {
+              "Value": [
+                {
+                  "EventActionId": {
+                    "Value": 10154
+                  }
+                }
+              ]
+            },
+            "Filters": {
+              "Value": [
+                {
+                  "EventPipelineFilterName": {
+                    "Value": "Site"
+                  },
+                  "EventPipelineFilterId": {
+                    "Value": 10
+                  },
+                  "SortOrder": {
+                    "Value": 1
+                  },
+                  "Settings": {
+                    "Value": [
+                      {
+                        "SettingName": {
+                          "Value": "SiteId"
+                        },
+                        "SettingValue": {
+                          "Value": "1"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "NotCondition"
+                        },
+                        "SettingValue": {
+                          "Value": "false"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "Tasks": {
+              "Value": [
+                {
+                  "EventPipelineTaskName": {
+                    "Value": "RunScript"
+                  },
+                  "EventPipelineTaskId": {
+                    "Value": 23
+                  },
+                  "SortOrder": {
+                    "Value": 1
+                  },
+                  "Settings": {
+                    "Value": [
+                      {
+                        "SettingName": {
+                          "Value": "RunSecretId"
+                        },
+                        "SettingValue": {
+                          "Value": ""
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "ScriptArgs"
+                        },
+                        "SettingValue": {
+                          "Value": "\"8:00 AM\" \"5:00 PM\" \"Central Standard Time\""
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "ScriptId"
+                        },
+                        "SettingValue": {
+                          "Value": "9"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "RunSiteId"
+                        },
+                        "SettingValue": {
+                          "Value": "1"
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "Additional1SecretId"
+                        },
+                        "SettingValue": {
+                          "Value": null
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "Additional2SecretId"
+                        },
+                        "SettingValue": {
+                          "Value": null
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "Additional3SecretId"
+                        },
+                        "SettingValue": {
+                          "Value": null
+                        }
+                      },
+                      {
+                        "SettingName": {
+                          "Value": "UseSiteRunAsSecret"
+                        },
+                        "SettingValue": {
+                          "Value": "false"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "ExternalInstanceId": "00000000-0000-0000-0000-000000000000",
+      "EventEntityTypeId": {
+        "Value": 10001
+      },
+      "IsSystem": false,
+      "EventPipelinePolicyName": {
+        "Value": "Secret Access by Time"
+      },
+      "EventPipelinePolicyDescription": {
+        "Value": null
+      },
+      "Active": {
+        "Value": false
+      }
+    },
+    "ReuseExistingPipelines": true,
+    "ExternalInstanceId": "cca1cd23-9b4f-45a7-9e74-14f1101198b0",
+    "IsSystem": false
+  }
