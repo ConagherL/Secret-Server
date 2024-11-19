@@ -1,5 +1,5 @@
 <#
-.SYNOPSIS
+.SYNOPSIS 
 This PowerShell script automates the management of secrets in Azure Key Vault (AKV). 
 It retrieves a specified secret, compares its current value to a provided new value, and updates the secret if necessary.
 

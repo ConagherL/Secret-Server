@@ -1,5 +1,5 @@
 <#
-.SYNOPSIS
+.SYNOPSIS 
 Validates whether the current value of a secret in Azure Key Vault matches the current password using the latest version of the secret.
 
 .DESCRIPTION
