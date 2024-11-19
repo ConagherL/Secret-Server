@@ -1,60 +1,43 @@
 <#
 .SYNOPSIS 
-Validates whether the current value of a secret in Azure Key Vault matches the current password using the latest version of the secret.
+This PowerShell script automates the management of secrets in Azure Key Vault (AKV). 
+It retrieves a specified secret, compares its current value to a provided new value, and updates the secret if necessary.
 
 .DESCRIPTION
-The script:
-1. Authenticates to Azure using client credentials to obtain an OAuth 2.0 token.
-2. Fetches all versions of a specified secret from Azure Key Vault.
-3. Identifies the latest version and retrieves its value.
-4. Validates the retrieved secret value against the provided current password.
-5. Introduces a sleep delay to allow Azure Key Vault to propagate changes before validation.
-6. Throws an error for failures or completes without error for successful validation.
+The script performs the following steps:
+1. Authenticates to Azure using Azure AD client credentials to obtain an OAuth 2.0 token.
+2. Retrieves the current value of a specified secret from Azure Key Vault.
+3. Compares the current secret value with a new value provided as an argument.
+4. Updates the secret in Azure Key Vault if the values are different.
+5. Includes enhanced error handling for better debugging.
 
 .PARAMETERS
-$args[0] - Client ID: The Azure AD application/client ID for authentication. (Example: $[1]$client-id)
-$args[1] - Client Secret: The client secret associated with the Azure AD application. (Example: $[1]$client-secret)
-$args[2] - Tenant ID: The Azure AD tenant ID for authentication. (Example: $[1]$tenant-id)
-$args[3] - Vault Name: The name of the Azure Key Vault containing the secret. (Example: $vault)
-$args[4] - Secret Name: The name of the secret to validate. (Example: $username)
-$args[5] - Current Password: The current password to validate against the Azure Key Vault secret. (Example: $password)
+$args[0] - Client ID: The Azure AD application/client ID for authentication.
+$args[1] - Client Secret: The client secret associated with the Azure AD application.
+$args[2] - Tenant ID: The Azure AD tenant ID for authentication.
+$args[3] - Vault Name: The name of the Azure Key Vault containing the secret.
+$args[4] - Secret Name: The name of the secret to be retrieved and potentially updated.
+$args[5] - New Password: The new value to set for the secret.
 
-.EXAMPLE
-.\Validate-AzureKeyVaultSecret.ps1 `
-    $[1]$client-id `
-    $[1]$client-secret `
-    $[1]$tenant-id `
-    $vault `
-    $username `
-    $password
+
+
+.NOTES
+- The Azure AD application must have sufficient permissions for the Key Vault (e.g., "Set", "Get").
+- Requires PowerShell 5.1 or later.
 #>
 
+# Args: $clientid $clientSecret $tenantID $vault $secret $newpassword
+$clientID = $args[0]
+$clientSecret = $args[1]
+$tenantID = $args[2]
+$AKVaultName = $args[3]
+$AKSecretName = $args[4]
+$NewPassword = $args[5]
 
-# Define log file (commented out logging)
-#$logFile = "C:\logs\heartbeat_debug.log"
-#if (-not (Test-Path $logFile)) {
-#    New-Item -Path $logFile -ItemType File -Force | Out-Null
-#}
-
-# Log function (commented out logging)
-#function Log-Message {
-#    param (
-#        [string]$Message
-#    )
-#    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-#    "$timestamp - $Message" | Out-File -FilePath $logFile -Append
-#}
-
-# Log start of script (commented out logging)
-#Log-Message "Validation script started."
-
-# Read arguments
-$clientID = $args[0]        # Azure AD application/client ID
-$clientSecret = $args[1]    # Azure AD application client secret
-$tenantID = $args[2]        # Azure AD tenant ID
-$AKVaultName = $args[3]     # Azure Key Vault name
-$secretName = $args[4]      # Secret name to validate
-$currentPassword = $args[5] # Current password to validate
+# Validate input parameters
+if (-not $clientID -or -not $clientSecret -or -not $tenantID -or -not $AKVaultName -or -not $AKSecretName -or -not $NewPassword) {
+    throw "Missing one or more required arguments: clientID, clientSecret, tenantID, vaultName, secretName, or newPassword."
+}
 
 # Construct request body for token retrieval
 $ReqTokenBody = @{
@@ -64,72 +47,44 @@ $ReqTokenBody = @{
     Client_Secret = $clientSecret
 }
 
-#Log-Message "Requesting token from Azure..."
-
 # Fetch OAuth token
 try {
     $TokenResponse = Invoke-RestMethod -Uri "https://login.microsoftonline.com/$tenantID/oauth2/v2.0/token" -Method POST -Body $ReqTokenBody
-    #Log-Message "Token retrieved successfully."
+    if (-not $TokenResponse.access_token) {
+        throw "Token retrieval succeeded but no access token was found."
+    }
 } catch {
-    #Log-Message "Error retrieving token: $_"
-    throw "Token retrieval failed: $_"
+    throw "Failed to retrieve OAuth token. Error: $_"
 }
 
-# Prepare headers for API requests
+# Prepare headers
 $headers = @{
     Authorization = "Bearer $($TokenResponse.access_token)"
     "Content-Type" = "application/json"
 }
 
-# Add a sleep delay to allow Azure Key Vault to propagate changes
-$sleepDelay = 5
-#Log-Message "Sleeping for ${sleepDelay} seconds to allow Azure Key Vault to propagate changes."
-Start-Sleep -Seconds $sleepDelay
+# Construct AKV secret URL
+$akvSecretURL = "https://$AKVaultName.vault.azure.net/secrets/$AKSecretName/?api-version=7.2"
 
-# Fetch all versions of the secret
-$versionsURL = "https://$AKVaultName.vault.azure.net/secrets/$secretName/versions?api-version=7.2"
-#Log-Message "Fetching all versions of the secret: $versionsURL"
-
+# Fetch existing secret value
 try {
-    $VersionsResponse = Invoke-RestMethod -Headers $headers -Uri $versionsURL -Method GET
-    $LatestVersion = $VersionsResponse.value | Sort-Object { $_.attributes.updated } -Descending | Select-Object -First 1
-    $LatestVersionID = ($LatestVersion.id -split '/')[-1]  # Extract only the version ID
-    #Log-Message "Latest version ID: $LatestVersionID"
+    $Data = Invoke-RestMethod -Headers $headers -Uri $akvSecretURL -Method Get
+    if (-not $Data.value) {
+        throw "No value found for the secret '$AKSecretName'."
+    }
+    $SecretValue = $Data.value
 } catch {
-    #Log-Message "Error retrieving secret versions: $_"
-    throw "Failed to fetch secret versions: $_"
+    throw "Failed to retrieve existing secret value. Error: $_"
 }
 
-# Construct the URL for the latest version of the secret
-$latestSecretURL = "https://$AKVaultName.vault.azure.net/secrets/$secretName/$LatestVersionID/?api-version=7.2"
-#Log-Message "Constructed URL for latest secret: $latestSecretURL"
-
-# Fetch the value of the latest version
+# Check and update secret if needed
 try {
-    #Log-Message "Fetching the latest version of the secret: $latestSecretURL"
-    $LatestSecretResponse = Invoke-RestMethod -Headers $headers -Uri $latestSecretURL -Method GET
-    $SecretValue = $LatestSecretResponse.value.Trim()
-    #Log-Message "Retrieved secret value: '$SecretValue'"
+    if ($SecretValue -ne $NewPassword) {
+        $json = @{
+            value = $NewPassword
+        } | ConvertTo-Json -Depth 1
+        Invoke-RestMethod -Headers $headers -Uri $akvSecretURL -Method PUT -Body $json
+    }
 } catch {
-    #Log-Message "Error retrieving the latest version of the secret: $_"
-    throw "Failed to fetch the latest version of the secret: $_"
+    throw "Failed to update the secret '$AKSecretName'. Error: $_"
 }
-
-# Log the comparison for debugging (commented out logging)
-#$SecretValueTrimmed = [string]$SecretValue.Trim()
-#$currentPasswordTrimmed = [string]$currentPassword.Trim()
-
-#Log-Message "Sanitized values for comparison -> Secret: '$SecretValueTrimmed', Password: '$currentPasswordTrimmed'"
-
-# Explicitly validate the retrieved value
-$SecretValueTrimmed = [string]$SecretValue.Trim()
-$currentPasswordTrimmed = [string]$currentPassword.Trim()
-
-if ($SecretValueTrimmed -ceq $currentPasswordTrimmed) {
-    #Log-Message "Validation successful: Secret matches the provided password."
-} else {
-    #Log-Message "Validation failed: Secret does not match the provided password."
-    throw "Validation failed: Secret does not match the provided password."
-}
-
-#Log-Message "Validation script completed successfully."
