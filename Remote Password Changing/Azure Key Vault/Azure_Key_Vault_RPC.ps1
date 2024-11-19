@@ -1,38 +1,3 @@
-<#
-.SYNOPSIS 
-This PowerShell script automates the management of secrets in Azure Key Vault (AKV). 
-It retrieves a specified secret, compares its current value to a provided new value, and updates the secret if necessary.
-
-.DESCRIPTION
-The script performs the following steps:
-1. Authenticates to Azure using Azure AD client credentials to obtain an OAuth 2.0 token.
-2. Retrieves the current value of a specified secret from Azure Key Vault.
-3. Compares the current secret value with a new value provided as an argument.
-4. Updates the secret in Azure Key Vault if the values are different.
-5. Includes enhanced error handling for better debugging.
-
-.PARAMETERS
-$args[0] - Client ID: The Azure AD application/client ID for authentication.
-$args[1] - Client Secret: The client secret associated with the Azure AD application.
-$args[2] - Tenant ID: The Azure AD tenant ID for authentication.
-$args[3] - Vault Name: The name of the Azure Key Vault containing the secret.
-$args[4] - Secret Name: The name of the secret to be retrieved and potentially updated.
-$args[5] - New Password: The new value to set for the secret.
-
-.EXAMPLE
-.\Update-AzureKeyVaultSecret.ps1 `
-    8c30b2b7-2d84-4da4-8fc4-48b44816fab5 `
-    vTQ8Q~EAPSiAvGowCJfXRWivBgEyv1S4b2n_DbpM `
-    df78384d-84a2-46aa-84fe-31e0914fb5bb `
-    MyVaultName `
-    MySecretName `
-    MyNewSecretValue
-
-.NOTES
-- The Azure AD application must have sufficient permissions for the Key Vault (e.g., "Set", "Get").
-- Requires PowerShell 5.1 or later.
-#>
-
 # Args: $clientid $clientSecret $tenantID $vault $secret $newpassword
 $clientID = $args[0]
 $clientSecret = $args[1]
