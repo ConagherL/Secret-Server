@@ -1,26 +1,69 @@
-# Azure Key Vault Password Rotation Script
+# Azure Key Vault Password Rotation and Heartbeat
 
-This PowerShell script is designed to update a secret in an Azure Key Vault if its value differs from the provided new password. The script uses the Azure AD client credentials flow to authenticate and interact with the Azure Key Vault API.
+## Pre-requisites
+- PowerShell 5.1 or higher
+- 443 access to Azure
+- The Azure AD application must have sufficient permissions for the Key Vault (e.g., "Set", "Get").
 
-## Prerequisites
+## Steps to Set Up
 
-Before using this script, ensure you have the following:
+### Upload the RPC and HB Scripts to Secret Server
+1. **Heartbeat Script**
+   - **Path:** `Secret-Server/Remote Password Changing/Azure Key Vault/Azure_Key_Vault_HB.ps1`
+   - **Script Name:** `Azure_Key_Vault_HB.ps1`
+   - **Category:** Heartbeat
 
-1. **Azure AD Application**: You need an Azure AD application registered with the appropriate permissions for accessing Azure Key Vault (e.g., **Key Vault Secret Management** permission).
-2. **Azure Key Vault**: Ensure the secret you want to rotate exists in your Azure Key Vault.
-3. **PowerShell**: Make sure you have PowerShell installed on your system.
+2. **Password Change Script**
+   - **Path:** `Secret-Server/Remote Password Changing/Azure Key Vault/Azure_Key_Vault_RPC.ps1`
+   - **Script Name:** `Azure_Key_Vault_RPC.ps1`
+   - **Category:** PowerShell Changing
 
-## Arguments
+### Create a Password Changer
+1. **Base Password Changer:** PowerShell Script
+2. **Name:** Azure Key Vault
+3. **Verify Password Change Commands**
+   - **Script:** `Azure_Key_Vault_HB.ps1`
+   - **Arguments:** 
+     ```
+     $[1]$client-id $[1]$client-secret $[1]$tenant-id $vault $username $password
+     ```
 
-This script accepts the following arguments:
+4. **Password Change Commands**
+   - **Script:** `Azure_Key_Vault_RPC.ps1`
+   - **Arguments:** 
+     ```
+     $[1]$client-id $[1]$client-secret $[1]$tenant-id $vault $username $newpassword
+     ```
 
-1. `clientid` - The Client ID of your Azure AD application.
-2. `clientSecret` - The Client Secret of your Azure AD application.
-3. `tenantID` - The Tenant ID of your Azure AD tenant.
-4. `vault` - The name of the Azure Key Vault.
-5. `secret` - The name of the secret in Azure Key Vault to be rotated.
-6. `newpassword` - The new password value to update the secret with.
+### Create a New Template
+1. Import template XML: 
 
-## Usage
+2. **Mapping**
+- Enable RPC and HB
+- **Password Type to Use:** Azure Key Vault
 
-Run the script using PowerShell, passing in the required arguments:
+3. **Password Mapping Fields**
+- **Domain** → Vault
+- **Password** → Password
+- **User Name** → Vault-Secret-Name
+
+### Modify an Existing Template
+1. **Template Name:** Azure Application Registration
+2. Update all field names:
+- Remove spaces and replace them with a `-`.
+- Example: `Client ID` → `Client-ID`
+3. This is required as no spaces are allowed in field names when performing RPC.
+
+### Additional Steps
+1. **Create and Vault an Azure Application Registration Account**
+- The account must have proper permissions to the Key Vault.
+
+2. **Create a New Secret Using the Azure Key Vault Template**
+- **Secret Name:** Any value
+- **Vault-Secret-Name:** The name of the Key Vault secret.
+- **Password:** Existing secret value from the Key Vault.
+- **Vault:** The Azure Key Vault name.
+
+3. Assign the Azure Application Registration account as the **Associated Secret** on the Azure Key Vault secret.
+
+4. Specify a privileged account responsible for executing the PowerShell script on the Distributed Engine.
