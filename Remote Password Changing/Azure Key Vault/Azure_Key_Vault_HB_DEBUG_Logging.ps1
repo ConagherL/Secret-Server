@@ -29,6 +29,24 @@ $args[5] - Current Password: The current password to validate against the Azure 
     $password
 #>
 
+# Define log file
+$logFile = "C:\Logs\heartbeat_debug.log"
+if (-not (Test-Path $logFile)) {
+    New-Item -Path $logFile -ItemType File -Force | Out-Null
+}
+
+# Log function
+function Log-Message {
+    param (
+        [string]$Message
+    )
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    "$timestamp - $Message" | Out-File -FilePath $logFile -Append
+}
+
+# Log start of script
+Log-Message "Validation script started."
+
 # Read arguments
 $clientID = $args[0]        # Azure AD application/client ID
 $clientSecret = $args[1]    # Azure AD application client secret
@@ -36,6 +54,8 @@ $tenantID = $args[2]        # Azure AD tenant ID
 $AKVaultName = $args[3]     # Azure Key Vault name
 $secretName = $args[4]      # Secret name to validate
 $currentPassword = $args[5] # Current password to validate
+
+Log-Message "Parameters passed: ClientID=$clientID, TenantID=$tenantID, VaultName=$AKVaultName, SecretName=$secretName, CurrentPassword=$currentPassword"
 
 # Construct request body for token retrieval
 $ReqTokenBody = @{
@@ -45,10 +65,14 @@ $ReqTokenBody = @{
     Client_Secret = $clientSecret
 }
 
+Log-Message "Requesting token from Azure..."
+
 # Fetch OAuth token
 try {
     $TokenResponse = Invoke-RestMethod -Uri "https://login.microsoftonline.com/$tenantID/oauth2/v2.0/token" -Method POST -Body $ReqTokenBody
+    Log-Message "Token retrieved successfully."
 } catch {
+    Log-Message "Error retrieving token: $_"
     throw "Token retrieval failed: $_"
 }
 
@@ -59,27 +83,36 @@ $headers = @{
 }
 
 # Add a sleep delay to allow Azure Key Vault to propagate changes
-Start-Sleep -Seconds 5
+$sleepDelay = 5
+Log-Message "Sleeping for ${sleepDelay} seconds to allow Azure Key Vault to propagate changes."
+Start-Sleep -Seconds $sleepDelay
 
 # Fetch all versions of the secret
 $versionsURL = "https://$AKVaultName.vault.azure.net/secrets/$secretName/versions?api-version=7.2"
+Log-Message "Fetching all versions of the secret: $versionsURL"
 
 try {
     $VersionsResponse = Invoke-RestMethod -Headers $headers -Uri $versionsURL -Method GET
     $LatestVersion = $VersionsResponse.value | Sort-Object { $_.attributes.updated } -Descending | Select-Object -First 1
     $LatestVersionID = ($LatestVersion.id -split '/')[-1]  # Extract only the version ID
+    Log-Message "Latest version ID: $LatestVersionID"
 } catch {
+    Log-Message "Error retrieving secret versions: $_"
     throw "Failed to fetch secret versions: $_"
 }
 
 # Construct the URL for the latest version of the secret
 $latestSecretURL = "https://$AKVaultName.vault.azure.net/secrets/$secretName/$LatestVersionID/?api-version=7.2"
+Log-Message "Constructed URL for latest secret: $latestSecretURL"
 
 # Fetch the value of the latest version
 try {
+    Log-Message "Fetching the latest version of the secret: $latestSecretURL"
     $LatestSecretResponse = Invoke-RestMethod -Headers $headers -Uri $latestSecretURL -Method GET
     $SecretValue = $LatestSecretResponse.value.Trim()
+    Log-Message "Retrieved secret value: '$SecretValue'"
 } catch {
+    Log-Message "Error retrieving the latest version of the secret: $_"
     throw "Failed to fetch the latest version of the secret: $_"
 }
 
@@ -87,12 +120,13 @@ try {
 $SecretValueTrimmed = [string]$SecretValue.Trim()
 $currentPasswordTrimmed = [string]$currentPassword.Trim()
 
+Log-Message "Sanitized values for comparison -> Secret: '$SecretValueTrimmed', Password: '$currentPasswordTrimmed'"
+
 if ($SecretValueTrimmed -ceq $currentPasswordTrimmed) {
-    # Validation successful
-    Write-Output "Validation successful: Secret matches the provided password."
+    Log-Message "Validation successful: Secret matches the provided password."
 } else {
+    Log-Message "Validation failed: Secret does not match the provided password."
     throw "Validation failed: Secret does not match the provided password."
 }
 
-# Completion
-Write-Output "Validation script completed successfully."
+Log-Message "Validation script completed successfully."
