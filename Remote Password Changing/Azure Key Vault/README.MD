@@ -36,7 +36,7 @@
      ```
 
 ### Create a New Template
-1. Import template XML: [a link](https://github.com/ConagherL/Secret-Server/blob/main/Remote%20Password%20Changing/Azure%20Key%20Vault/Azure_Key_Vault_Template.xml)
+1. Import template XML: [Azure Key Vault Template](https://github.com/ConagherL/Secret-Server/blob/main/Remote%20Password%20Changing/Azure%20Key%20Vault/Azure_Key_Vault_Template.xml)
 
 2. **Mapping**
 - Enable RPC and HB
