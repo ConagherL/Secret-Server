@@ -10,29 +10,9 @@ Please note that with this launcher we simply leverage default templates. We use
 
 1. Install AutoIT onto your RDS Server or on your user's machines who will be using these launchers
     `(https://www.autoitscript.com/site/autoit/downloads/)`
-1. Create attached script and compile it into an executable. Open this script block with SciTE (built in Auto IT script editor, convert to .au3)
+1. Create a script and compile it into an executable. Open this script block with SciTE (built-in Auto IT script editor, convert to .au3)
 ```
-;Thycotic ssms.exe with sql credential launcher script
-;Author: Simon Hughes
-
-;set filepath of ssms.exe
-$Path = "C:\Program Files (x86)\Microsoft SQL Server Management Studio 18\Common7\IDE\Ssms.exe"
-;execute ssms.exe
-ShellExecute($Path)
-;Wait for the 'connect to server' window to appear
- WinWaitActive("Connect to Server", "", 0)
-  ;set auth mode to SQL authenticaiton
-ControlSend("Connect to Server" , "" , "[NAME:comboBoxAuthentication]", "[NAME:SQL]")
- ;set server instance to servername passed from Secret Server launcher in cmd line parameter  1
-ControlSetText("Connect to Server", "", "[NAME:serverInstance]", $CmdLine[1],1)
-  ;set username to username passed from Secret Server launcher in cmd line parameter 2
- ControlSetText("Connect to Server", "", "[NAME:userName]", $CmdLine[2],1)
- ;set password to password passed from  Secret Server launcher in cmd line parameter 3
- ControlSetText("Connect to Server", "", "[NAME:password]", $CmdLine[3],1)
- ;reactivate the connect to server window, required for the click of buttons within the window
-WinActivate ("Connect to Server")
-;click the connect button
-ControlClick("Connect to Server", "", "[NAME:connect]")
+[SSMS AU3 script](https://github.com/ConagherL/Secret-Server/blob/main/Launchers/auto-it/SSMS_AutoIT.au3)
 ```
 1. Compile by going to **Tools** and selecting **Compile**
 1. Save .exe to a location accessible to all users (C:\AutoIT in our case)
