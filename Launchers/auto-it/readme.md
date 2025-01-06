@@ -11,9 +11,8 @@ Please note that with this launcher we simply leverage default templates. We use
 1. Install AutoIT onto your RDS Server or on your user's machines who will be using these launchers
     `(https://www.autoitscript.com/site/autoit/downloads/)`
 1. Create a script and compile it into an executable. Open this script block with SciTE (built-in Auto IT script editor, convert to .au3)
-```
-[SSMS AU3 script](https://github.com/ConagherL/Secret-Server/blob/main/Launchers/auto-it/SSMS_AutoIT.au3)
-```
+2. [SSMS AU3 script](https://github.com/ConagherL/Secret-Server/blob/main/Launchers/auto-it/SSMS_AutoIT.au3)
+
 1. Compile by going to **Tools** and selecting **Compile**
 1. Save .exe to a location accessible to all users (C:\AutoIT in our case)
 1. Create a Launcher with the following settings (note double quotes around variables)
