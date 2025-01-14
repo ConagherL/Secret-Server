@@ -1,8 +1,8 @@
 ###############################################################################
 # Variables for API Endpoints
 ###############################################################################
-$oauthUrl = "https://blt.secretservercloud.com/oauth2/token"
-$apiBase  = "https://blt.secretservercloud.com/api/v1/folders"
+$oauthUrl = "https://XXX.secretservercloud.com/oauth2/token"
+$apiBase  = "https://XXX.secretservercloud.com/api/v1/folders"
 
 ###############################################################################
 # 1. PROMPT FOR USERNAME/PASSWORD CREDENTIALS
