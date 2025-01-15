@@ -4,9 +4,9 @@
 Local $ssmsPath = "C:\Program Files (x86)\Microsoft SQL Server Management Studio 20\Common7\IDE\ssms.exe"
 
 ; Set your login credentials
-Local $serverName = "SQL"
-Local $userName = "TestLocal"
-Local $password = $response
+Local $serverName = $CmdLine[1]
+Local $userName   = $CmdLine[2]
+Local $password   = $CmdLine[3]
 
 $windowTitle = "Connect to Server"
 

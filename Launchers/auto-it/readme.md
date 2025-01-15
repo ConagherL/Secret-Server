@@ -26,8 +26,7 @@ Please note that with this launcher we simply leverage default templates. We use
 1. Enter a **Launcher Name** ex: `SSMS SQL Auth`
 1. For **Additional Prompt Field Name** enter: `server`
 1. Enter the **Process Name**: `C:\AutoIT\SSMSSQLAuth.exe`
-1. Enter the **Process Arguments**: `""$SERVER"" ""$USERNAME"" ""$PASSWORD""`
-1. Uncheck **Wrap custom parameters with quotation marks** option
+1. Enter the **Process Arguments**: $SERVER $USERNAME $PASSWORD
 1. Click **Save**
 
 
