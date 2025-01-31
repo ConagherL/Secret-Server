@@ -6,8 +6,8 @@
 .DESCRIPTION
     1. Prompts for CyberArk username/password credentials.
     2. Authenticates via CyberArk’s REST API to obtain a session token.
-    3. Retrieves up to the specified limit of accounts (default 500). Next version to include 
-    4. Filters accounts by the configured Safe name.
+    3. Retrieves up to the specified limit of accounts (default 500). All accounts are pulled then filtered locally
+    4. Filters accounts by the configured Safe name (locally).
     5. For each filtered account, optionally retrieves password (or a fake password) and captures extended details (notes).
     6. Logs all operations (INFO, WARN, ERROR) to console and to a specified log file.
     7. Exports final results to CSV when desired.
