@@ -39,8 +39,8 @@ ControlSetText("Connect to Server", "", "[CLASS:Edit; INSTANCE:2]", $userName)
 Send("!P")
 
 ; Enter the password
-;ControlSetText("Connect to Server", "", "[CLASS:Edit; NAME:password]", $password)
-Send($password,1)
+ControlSetText("Connect to Server", "", "[CLASS:Edit; NAME:password]", $password)
+;Send($password,1)
 
 Send("!Y")
 Sleep(500)
