@@ -4,7 +4,7 @@
 # Choose a function below in order to use one of the functions in this script, or pull the functions out and use them elsehwere.
 # Global Variables
 $LogPath = "C:\tasks\script.log"
-$ssurl = "https://sspm.thylab.local/SecretServer"
+$ssurl = "https://YYYY.COM"
 $api = "$site/api/v1"
 $jsonfilepath = "C:\tasks\oauth2_grant.json"
 $token = ""
