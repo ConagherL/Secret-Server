@@ -53,3 +53,36 @@ Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir
 ```powershell
 Invoke-FullExport
 ```
+
+
+##🚀 Usage Examples
+
+1️⃣ Authenticate to Secret Server
+```powershell
+Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token"
+```
+2️⃣ Initialize required output folders
+```powershell
+Initialize-SecretTemplateFolders -CsvDir "C:\temp\CSV_Files" -XmlDir "C:\temp\XML_Files"
+```
+3️⃣ Retrieve all secret templates and fields
+```powershell
+Get-AllSecretTemplates -SecretServerUrl "https://yourserver.com" -OutputPath "C:\temp\SecretTemplates.json"
+```
+4️⃣ Export Secret Templates to CSV
+```powershell
+Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir "C:\temp\CSV_Files"
+```
+5️⃣ Convert Secret CSVs to XML for Import
+```powershell
+Convert-CSVToXML
+```
+6️⃣ Generate Folder Structure XML for Import
+```powershell
+Convert-FoldersToXML
+```
+7️⃣ Run all steps automatically (Recommended)
+```powershell
+Invoke-FullExport
+```
+
