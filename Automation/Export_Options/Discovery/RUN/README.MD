@@ -16,7 +16,7 @@
   - Use interactive credential prompts or supply a pre-obtained token (ideal for scheduled tasks or SDK integration).
   
 - **Discovery Status Verification:**  
-  - Retrieves key fields such as the discovery fetch start time, and whether a fetch or computer scan is running.
+  - Retrieves key fields such as the discovery fetch start time, and whether a fetch or computer scan is running. STILL IN PROGRESS. Info Only ATM
   
 - **Conditional Execution:**  
   - Prevents multiple scans by comparing the last scan start time with a configurable wait period.
@@ -24,8 +24,6 @@
 - **Configurable Logging:**  
   - Toggle logging on/off and specify a custom log file location.
   
-- **Dual Mode Execution:**  
-  - Works perfectly both interactively (for debugging) and non-interactively (via scheduled tasks).
 
 ---
 
@@ -51,18 +49,17 @@ Before using the script, modify the following global variables within the script
 
 ### Interactive Mode
 
-Simply run the script in your PowerShell console. If no token is provided, you’ll be prompted to enter your Secret Server credentials.
+Run the script in your PowerShell console. You’ll be prompted to enter your Secret Server credentials if no token is provided.
 
 ```powershell
 .\Run-Discovery.ps1
 ```
 
-Non-Interactive Mode
+Non-Interactive Mode - WORK IN PROGRESS
 For scheduled tasks or automated environments, supply a pre-obtained token by setting the $preObtainedToken variable in the script.
 Note: You should integrate your secure token retrieval process (e.g., via an SDK) to avoid clear-text credentials.
 
 ```powershell
-# In the main script, set:
 $preObtainedToken = "<Your Pre-Obtained Token>"
 ```
 The script then uses the token for authentication and proceeds to check the discovery status and start a scan if appropriate.
