@@ -34,19 +34,20 @@ This PowerShell script automates the process of retrieving **Secret Server** tem
 ### **1️⃣ Authenticate to Secret Server**
 ```powershell
 Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token"
-
+```
 2️⃣ Initialize required output folders
-``powershell
+```powershell
 Initialize-SecretTemplateFolders -CsvDir "C:\temp\CSV_Files" -XmlDir "C:\temp\XML_Files"
-                       
+```                       
 3️⃣ Retrieve all secret templates and fields                       
-``powershell
+```powershell
 Get-AllSecretTemplates -SecretServerUrl "https://yourserver.com" -OutputPath "C:\temp\SecretTemplates.json"
-
+```
 4️⃣ Export Secret Templates to CSV
-``powershell
+```powershell
 Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir "C:\temp\CSV_Files"
-
+```
 5️⃣ Run all steps automatically (Recommended)
-``powershell
+```powershell
 Invoke-FullExport
+```
