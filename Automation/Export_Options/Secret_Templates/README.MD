@@ -23,12 +23,13 @@ This PowerShell script automates retrieving **Secret Server** templates and expo
 ## 📥 **Installation & Requirements**
 ### ✅ **PowerShell Version**
 - **PowerShell 7+** (Recommended)
-- **PowerShell 5.1** (Limited support)
+- **PowerShell 5.1** (Limited support) - Some updated output will not render correctly
 
 ### ✅ **Prerequisites**
 - **Internet access** (for API requests)
 - **Valid Secret Server credentials** (Username & Password)
 - **API access to retrieve secret templates**
+
 
 ---
 
