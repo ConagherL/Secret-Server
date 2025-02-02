@@ -1,11 +1,13 @@
 # Secret Server Template Exporter 🚀
 
-This PowerShell script automates the process of retrieving **Secret Server** templates and exporting them into structured CSV files. It supports:
+This PowerShell script automates retrieving **Secret Server** templates and exporting them into structured CSV files. It also includes formatting into a XML (separating folders from Secrets) It supports:
 - ✅ Authenticating to **Secret Server** via OAuth2
 - ✅ Retrieving **all secret templates**, including their field details (names, types, required status)
 - ✅ Ensuring proper field order (Secret Name first, Folder Path last)
 - ✅ Skipping CSV updates for **unchanged templates**
 - ✅ Generating new CSV files for **new templates**
+- ✅ Convert CSV data to XML for Secret Import
+- ✅ Convert CSV data to XML for Folder Creation
 - ✅ Logging **all operations** for visibility and debugging
 
 ## 📌 Features
@@ -43,7 +45,7 @@ Initialize-SecretTemplateFolders -CsvDir "C:\temp\CSV_Files" -XmlDir "C:\temp\XM
 ```powershell
 Get-AllSecretTemplates -SecretServerUrl "https://yourserver.com" -OutputPath "C:\temp\SecretTemplates.json"
 ```
-4️⃣ Export Secret Templates to CSV
+4️ Export Secret Templates to CSV
 ```powershell
 Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir "C:\temp\CSV_Files"
 ```
