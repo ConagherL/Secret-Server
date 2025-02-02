@@ -5,13 +5,6 @@ This PowerShell script provides a **modular authentication system** for **Deline
 - **OAuth Authentication** (Token & Refresh Flow)
 - **Delinea Platform Authentication** (Placeholder for future integration)
 
-## 📌 Features
-✔ Supports **three authentication methods**  
-✔ **Non-interactive execution** for scheduled tasks  
-✔ **Token caching & refresh support**  
-✔ **Standard & verbose logging** for debugging  
-✔ **Modular structure** for easy integration  
-
 ---
 
 ## 🚀 **Setup & Configuration**
