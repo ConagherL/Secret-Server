@@ -25,7 +25,7 @@ This PowerShell script provides a **modular authentication system** for **Deline
 Edit the following variables in **`SDK_OAUTH.ps1`** before running the script:
 
 ```powershell
-$SecretServerUrl = "https://blt.secretservercloud.com"  # Secret Server URL
+$SecretServerUrl = "https://yoururl.secretservercloud.com"  # Secret Server URL
 $SdkPath = "C:\Path\To\SDK"                             # Path to SDK (`tss.exe`)
 $ConfigDirectory = "C:\tss"                             # SDK Configuration Directory
 $LogPath = "C:\Logs\SecretServerSDK.log"                # Log File Path
@@ -47,7 +47,7 @@ This will authenticate via SDK or refresh tokens and output the token status.
 You can include this script in other scripts using dot-sourcing:
 
 ```powershell
-. "$PSScriptRoot\SDK_OAUTH.ps1"
+. "$PSScriptRoot\Delinea_Authentication.ps1"
 
 # Ensure a valid token before making API calls
 Ensure-Token
