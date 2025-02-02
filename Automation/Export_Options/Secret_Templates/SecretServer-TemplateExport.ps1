@@ -278,6 +278,257 @@ Function Export-SecretTemplatesToCSV {
 }
 
 ###############################################################################
+# FUNCTION: Convert All CSVs to a Single XML File for Secret Import
+###############################################################################
+Function Convert-CSVToXML {
+    Write-Host "📂 Converting all CSVs to XML..." -ForegroundColor Yellow
+
+    # Use predefined paths
+    $CsvDir = $CsvOutputDir
+    $JsonFilePath = $TemplateOutput
+    $XmlOutputFile = "$XmlOutputDir\Secrets.xml"
+
+    # Validate Paths Before Execution
+    if (-not (Test-Path $CsvDir)) {
+        Write-Log "❌ ERROR: CSV Directory not found: $CsvDir" -Level "ERROR"
+        exit 1
+    }
+
+    if (-not (Test-Path $JsonFilePath)) {
+        Write-Log "❌ ERROR: SecretTemplates.json not found: $JsonFilePath" -Level "ERROR"
+        exit 1
+    }
+    $Templates = Get-Content -Path $JsonFilePath | ConvertFrom-Json
+
+    # Initialize XML Document
+    $XmlDocument = New-Object System.Xml.XmlDocument
+    $XmlDeclaration = $XmlDocument.CreateXmlDeclaration("1.0", "utf-16", $null)
+    $XmlDocument.AppendChild($XmlDeclaration) | Out-Null
+
+    # Root XML Node: <ImportFile>
+    $ImportFileNode = $XmlDocument.CreateElement("ImportFile")
+    $XmlDocument.AppendChild($ImportFileNode) | Out-Null
+
+    # Create <Secrets> Node
+    $SecretsNode = $XmlDocument.CreateElement("Secrets")
+    $ImportFileNode.AppendChild($SecretsNode) | Out-Null
+
+    # Process each CSV file in the directory
+    $CsvFiles = Get-ChildItem -Path $CsvDir -Filter "*.csv"
+    
+    if ($CsvFiles.Count -eq 0) {
+        Write-Log "⚠️ WARNING: No CSV files found in $CsvDir. XML will not be created." -Level "WARN"
+        exit 0
+    }
+
+    $SecretCount = 0  # Track number of secrets added
+
+    foreach ($CsvFile in $CsvFiles) {
+        $SanitizedCsvName = ($CsvFile.BaseName -replace "[^\w]", "").ToLower()
+
+        # Find corresponding template by cleaning its name
+        $Template = $Templates | Where-Object {
+            ($_.TemplateName -replace "[^\w]", "").ToLower() -eq $SanitizedCsvName
+        }
+
+        if (-not $Template) {
+            Write-Log "⚠️ No matching template found for CSV: $CsvFile (Sanitized: $SanitizedCsvName). Skipping." -Level "WARN"
+            continue
+        }
+
+        Write-Log "✅ Matched CSV: $CsvFile -> Template: $($Template.TemplateName)" -Level "INFO"
+
+        # Read CSV and check for empty data
+        $CsvData = Import-Csv -Path $CsvFile.FullName
+        if (-not $CsvData -or $CsvData.Count -eq 0) {
+            Write-Log "⚠️ Skipping CSV: $CsvFile (Only headers, no data)" -Level "WARN"
+            continue
+        }
+
+        # Extract and clean CSV field headers (strip ' - REQUIRED - TYPE')
+        $CleanHeaders = @{}
+        foreach ($Column in $CsvData[0].PSObject.Properties.Name) {
+            $OriginalHeader = $Column
+            $CleanHeader = $Column -replace " - REQUIRED - .*", ""  # Remove "- REQUIRED - TYPE"
+            $CleanHeaders[$OriginalHeader] = $CleanHeader
+        }
+
+        # Process each row in CSV
+        foreach ($Row in $CsvData) {
+            if (-not $Row.'Secret Name - REQUIRED - TEXT' -or -not $Row.'Folder Path - REQUIRED - TEXT') {
+                Write-Log "⚠️ Skipping row due to missing 'Secret Name' or 'Folder Path' in $CsvFile" -Level "WARN"
+                Write-Log "❓ Row Content: $($Row | Out-String)" -Level "DEBUG"
+                continue
+            }
+
+            # Create <Secret> Node
+            $SecretNode = $XmlDocument.CreateElement("Secret")
+            $SecretsNode.AppendChild($SecretNode) | Out-Null
+
+            # Add <SecretName>
+            $SecretNameNode = $XmlDocument.CreateElement("SecretName")
+            $SecretNameNode.InnerText = $Row.'Secret Name - REQUIRED - TEXT'
+            $SecretNode.AppendChild($SecretNameNode) | Out-Null
+
+            # Add <SecretTemplateName>
+            $TemplateNode = $XmlDocument.CreateElement("SecretTemplateName")
+            $TemplateNode.InnerText = $Template.TemplateName
+            $SecretNode.AppendChild($TemplateNode) | Out-Null
+
+            # Add <FolderPath>
+            $FolderPathNode = $XmlDocument.CreateElement("FolderPath")
+            $FolderPathNode.InnerText = $Row.'Folder Path - REQUIRED - TEXT'
+            $SecretNode.AppendChild($FolderPathNode) | Out-Null
+
+            # Create <SecretItems> Node
+            $SecretItemsNode = $XmlDocument.CreateElement("SecretItems")
+            $SecretNode.AppendChild($SecretItemsNode) | Out-Null
+
+            # Loop through all fields dynamically
+            foreach ($Field in $Template.Fields) {
+                $FieldName = $Field.Name
+                $MatchingColumn = $CleanHeaders.Keys | Where-Object { $CleanHeaders[$_] -eq $FieldName }
+
+                if ($MatchingColumn) {
+                    $FieldValue = $Row.$MatchingColumn
+
+                    if (-not [string]::IsNullOrWhiteSpace($FieldValue)) {
+                        # Create <SecretItem> Node
+                        $SecretItemNode = $XmlDocument.CreateElement("SecretItem")
+                        $SecretItemsNode.AppendChild($SecretItemNode) | Out-Null
+
+                        # Add <FieldName>
+                        $FieldNameNode = $XmlDocument.CreateElement("FieldName")
+                        $FieldNameNode.InnerText = $FieldName
+                        $SecretItemNode.AppendChild($FieldNameNode) | Out-Null
+
+                        # Add <Value>
+                        $ValueNode = $XmlDocument.CreateElement("Value")
+                        $ValueNode.InnerText = $FieldValue
+                        $SecretItemNode.AppendChild($ValueNode) | Out-Null
+                    }
+                }
+            }
+
+            Write-Log "✅ Processed Secret: $($Row.'Secret Name - REQUIRED - TEXT')" -Level "INFO"
+            $SecretCount++
+        }
+    }
+
+    if ($SecretCount -eq 0) {
+        Write-Log "⚠️ No secrets were processed. XML file will not be created." -Level "WARN"
+        exit 0
+    }
+
+    # Save XML to file
+    $XmlDocument.Save($XmlOutputFile)
+    Write-Log "✅ XML Export Completed: $XmlOutputFile" -Level "INFO"
+    Write-Host "✅ XML Export Completed: $XmlOutputFile" -ForegroundColor Green
+}
+
+###############################################################################
+# FUNCTION: Convert Folder Paths from CSVs to XML for Folder creation
+###############################################################################
+Function Convert-FoldersToXML {
+    Write-Host "📂 Converting all CSV Folder Paths to XML..." -ForegroundColor Yellow
+
+    # Use predefined paths
+    $CsvDir = $CsvOutputDir
+    $XmlOutputFile = "$XmlOutputDir\Folders.xml"
+
+    # Validate Paths Before Execution
+    if (-not (Test-Path $CsvDir)) {
+        Write-Log "❌ ERROR: CSV Directory not found: $CsvDir" -Level "ERROR"
+        exit 1
+    }
+
+    # Initialize XML Document
+    $XmlDocument = New-Object System.Xml.XmlDocument
+    $XmlDeclaration = $XmlDocument.CreateXmlDeclaration("1.0", "utf-16", $null)
+    $XmlDocument.AppendChild($XmlDeclaration) | Out-Null
+
+    # Root XML Node: <ImportFile>
+    $ImportFileNode = $XmlDocument.CreateElement("ImportFile")
+    $XmlDocument.AppendChild($ImportFileNode) | Out-Null
+
+    # Create <Folders> Node
+    $FoldersNode = $XmlDocument.CreateElement("Folders")
+    $ImportFileNode.AppendChild($FoldersNode) | Out-Null
+
+    # Collect all folder paths from CSVs
+    $FolderPaths = @()
+    $CsvFiles = Get-ChildItem -Path $CsvDir -Filter "*.csv"
+
+    foreach ($CsvFile in $CsvFiles) {
+        $CsvData = Import-Csv -Path $CsvFile.FullName
+
+        # Skip CSVs that have only headers
+        if (-not $CsvData -or $CsvData.Count -eq 0) {
+            Write-Log "⚠️ Skipping empty CSV file: $CsvFile" -Level "WARN"
+            continue
+        }
+
+        # Extract Folder Paths
+        foreach ($Row in $CsvData) {
+            $FolderPath = $Row.'Folder Path - REQUIRED - TEXT'
+            if ($FolderPath -and $FolderPath -notin $FolderPaths) {
+                $FolderPaths += $FolderPath
+            }
+        }
+    }
+
+    # Create a set of ALL required folders, including parents
+    $AllFolders = @{}
+    foreach ($Path in $FolderPaths) {
+        $Parts = $Path -split '\\'
+        for ($i = 0; $i -lt $Parts.Count; $i++) {
+            $SubPath = ($Parts[0..$i] -join '\')
+            if (-not $AllFolders.ContainsKey($SubPath)) {
+                $AllFolders[$SubPath] = $Parts[$i]  # Store Folder Name
+            }
+        }
+    }
+
+    # Ensure folders are sorted by hierarchy depth
+    $SortedFolders = $AllFolders.Keys | Sort-Object { $_ -split '\\' }
+
+    # Process each folder and add it to XML
+    foreach ($FolderPath in $SortedFolders) {
+        $FolderName = $AllFolders[$FolderPath]  # Get Folder Name
+
+        # Create <Folder> Node
+        $FolderNode = $XmlDocument.CreateElement("Folder")
+        $FoldersNode.AppendChild($FolderNode) | Out-Null
+
+        # Add <FolderName>
+        $FolderNameNode = $XmlDocument.CreateElement("FolderName")
+        $FolderNameNode.InnerText = $FolderName
+        $FolderNode.AppendChild($FolderNameNode) | Out-Null
+
+        # Add <FolderPath>
+        $FolderPathNode = $XmlDocument.CreateElement("FolderPath")
+        $FolderPathNode.InnerText = $FolderPath
+        $FolderNode.AppendChild($FolderPathNode) | Out-Null
+
+        # Add empty <Permissions> (for inheritance)
+        $PermissionsNode = $XmlDocument.CreateElement("Permissions")
+        $FolderNode.AppendChild($PermissionsNode) | Out-Null
+
+        Write-Log "✅ Processed Folder: $FolderPath" -Level "INFO"
+    }
+
+    if ($SortedFolders.Count -eq 0) {
+        Write-Log "⚠️ No folders were processed. XML file will not be created." -Level "WARN"
+        exit 0
+    }
+
+    # Save XML to file
+    $XmlDocument.Save($XmlOutputFile)
+    Write-Log "✅ Folder XML Export Completed: $XmlOutputFile" -Level "INFO"
+    Write-Host "✅ Folder XML Export Completed: $XmlOutputFile" -ForegroundColor Green
+}
+
+###############################################################################
 # FUNCTION: Run All Steps
 ###############################################################################
 Function Invoke-FullExport {
