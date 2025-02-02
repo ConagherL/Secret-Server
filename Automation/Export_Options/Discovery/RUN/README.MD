@@ -55,10 +55,8 @@ Run the script in your PowerShell console. You’ll be prompted to enter your Se
 .\Run-Discovery.ps1
 ```
 
-Non-Interactive Mode - WORK IN PROGRESS
+## Non-Interactive Mode - WORK IN PROGRESS
 For scheduled tasks or automated environments, supply a pre-obtained token by setting the $preObtainedToken variable in the script.
-Note: You should integrate your secure token retrieval process (e.g., via an SDK) to avoid clear-text credentials.
-
 ```powershell
 $preObtainedToken = "<Your Pre-Obtained Token>"
 ```
