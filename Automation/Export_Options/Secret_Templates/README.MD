@@ -1,4 +1,4 @@
-# Secret Server Template Exporter 🚀
+# Secret Server Template Exporter/Importer 🚀
 
 This PowerShell script automates retrieving **Secret Server** templates and exporting them into structured CSV files. It also includes formatting into a XML (separating folders from Secrets) It supports:
 - ✅ Authenticating to **Secret Server** via OAuth2
