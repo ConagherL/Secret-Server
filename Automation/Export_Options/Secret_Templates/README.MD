@@ -32,30 +32,7 @@ This PowerShell script automates retrieving **Secret Server** templates and expo
 
 ---
 
-## 🚀 **Usage Examples**
-### **1️⃣ Authenticate to Secret Server**
-```powershell
-Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token"
-```
-2️⃣ Initialize required output folders
-```powershell
-Initialize-SecretTemplateFolders -CsvDir "C:\temp\CSV_Files" -XmlDir "C:\temp\XML_Files"
-```                       
-3️⃣ Retrieve all secret templates and fields                       
-```powershell
-Get-AllSecretTemplates -SecretServerUrl "https://yourserver.com" -OutputPath "C:\temp\SecretTemplates.json"
-```
-4️ Export Secret Templates to CSV
-```powershell
-Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir "C:\temp\CSV_Files"
-```
-5️⃣ Run all steps automatically (Recommended)
-```powershell
-Invoke-FullExport
-```
-
-
-##🚀 Usage Examples
+## 🚀 Usage Examples
 
 1️⃣ Authenticate to Secret Server
 ```powershell
