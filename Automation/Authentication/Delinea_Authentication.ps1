@@ -112,24 +112,6 @@ function Auth-DelineaPlatform {
         # Placeholder for Delinea Platform authentication logic
         # TODO: Implement the actual authentication steps here
 
-        # Example:
-        # $authEndpoint = "$SecretServerUrl/platform-auth-endpoint"
-        # $body = @{
-        #     client_id     = $ClientId
-        #     client_secret = $ClientSecret
-        #     # Additional parameters as required
-        # }
-        # $response = Invoke-RestMethod -Uri $authEndpoint -Method Post -Body $body -ContentType "application/json"
-
-        # if ($response.access_token) {
-        #     $global:AuthToken = $response.access_token
-        #     Write-Host "Delinea Platform Authentication successful. Token stored globally." -ForegroundColor Green
-        #     Write-Log "Delinea Platform Authentication successful. Token retrieved."
-        # } else {
-        #     Write-Error "Delinea Platform Authentication failed - No token received."
-        #     Write-Log "ERROR: Delinea Platform Authentication failed."
-        # }
-
     } catch {
         Write-Error "An error occurred during Delinea Platform authentication: $_"
         Write-Log "ERROR: Exception occurred during Delinea Platform authentication - $_"
