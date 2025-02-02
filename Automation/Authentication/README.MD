@@ -59,7 +59,8 @@ powershell.exe -ExecutionPolicy Bypass -File "C:\Path\To\SDK_OAUTH.ps1"
 Set this command in Task Scheduler under:
 
 ```Run whether user is logged on or not
-Run with highest privileges```
+Run with highest privileges
+```
 
 ## 🔐 Authentication Methods
 
