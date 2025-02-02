@@ -1,45 +1,60 @@
-###############################################################################
-# SYNOPSIS
-# This script automates the process of retrieving and exporting Secret Server
-# secret templates into properly formatted CSV files. It:
-#   - Authenticates with Secret Server using OAuth2
-#   - Retrieves all secret templates, including their field details
-#   - Ensures proper field ordering (Secret Name first, Folder Path last)
-#   - Handles required fields, field data types, and field names dynamically
-#   - Exports each template into its own CSV file for structured import
-#   - Logs all operations with real-time status updates
-#
-# REQUIREMENTS:
-# - **PowerShell 7+ (Recommended)** (PowerShell 5.1 may work but has limitations)
-# - **Internet access** (Required for API requests)
-# - **Valid API credentials** (Needed to authenticate with Secret Server)
-#
-# USAGE EXAMPLES:
-#
-# 1️⃣ **Authenticate to Secret Server:**
-#    Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token"
-#
-# 2️⃣ **Initialize required output folders:**
-#    Initialize-SecretTemplateFolders -CsvDir "C:\temp\CSV_Files" -XmlDir "C:\temp\XML_Files"
-#
-# 3️⃣ **Retrieve all secret templates and their field data:**
-#    Get-AllSecretTemplates -SecretServerUrl "https://yourserver.com" -OutputPath "C:\temp\SecretTemplates.json"
-#
-# 4️⃣ **Export secret templates to CSV (structured for import into Secret Server):**
-#    Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir "C:\temp\CSV_Files"
-#
-# 5️⃣ **Run all steps in a single command (Recommended for automation):**
-#    Invoke-FullExport
-#
-# 🔹 The `Invoke-FullExport` function handles everything automatically:
-#    - Checks if authentication is needed
-#    - Retrieves and processes all templates
-#    - Exports structured CSV files
-#    - Logs success, warnings, and errors for visibility
-#
-# NOTE: This script is designed for environments where **regular updates** to 
-# Secret Server templates are required and **manual data entry is not feasible**.
-###############################################################################
+<#
+.SYNOPSIS
+    This script automates the process of exporting Secret Server secret templates 
+    into properly formatted CSV and XML files.
+
+.DESCRIPTION
+    The script:
+    - Authenticates with Secret Server
+    - Retrieves all secret templates and their field details
+    - Ensures proper field ordering (Secret Name first, Folder Path last)
+    - Exports each template into its own CSV file
+    - Converts CSVs into properly structured XML files for import into Secret Server
+    - Extracts folder paths from CSVs and generates an XML file for folder creation
+
+.REQUIREMENTS
+    - PowerShell 7+ (Recommended) (PowerShell 5.1 may work but has limitations)
+    - Internet access (Required for API requests)
+    - Valid API credentials (Needed to query Secret Server)
+
+.FUNCTIONS INCLUDED
+    - Connect-SecretServer       : Authenticate to Secret Server using OAuth2
+    - Initialize-SecretTemplateFolders : Ensure all necessary output folders exist
+    - Get-AllSecretTemplates     : Retrieve all secret templates and field details
+    - Export-SecretTemplatesToCSV: Convert template data to CSV format
+    - Convert-CSVToXML           : Convert CSV secret data into an XML file for import
+    - Convert-FoldersToXML       : Extract folder structure from CSVs and generate folder XML
+    - Invoke-FullExport          : Runs all steps automatically in the correct order
+
+.EXAMPLES
+    # Authenticate to Secret Server
+    Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token"
+
+    # Initialize required output folders
+    Initialize-SecretTemplateFolders -CsvDir "C:\temp\CSV_Files" -XmlDir "C:\temp\XML_Files"
+
+    # Retrieve all secret templates and fields
+    Get-AllSecretTemplates -SecretServerUrl "https://yourserver.com" -OutputPath "C:\temp\SecretTemplates.json"
+
+    # Export Secret Templates to CSV
+    Export-SecretTemplatesToCSV -JsonFilePath "C:\temp\SecretTemplates.json" -CsvDir "C:\temp\CSV_Files"
+
+    # Convert Secret CSVs to XML
+    Convert-CSVToXML
+
+    # Convert Folder Structure to XML
+    Convert-FoldersToXML
+
+    # Run all steps automatically (Recommended)
+    Invoke-FullExport
+
+.NOTES
+    - Running Invoke-FullExport will execute all steps in sequence.
+    - Convert-FoldersToXML ensures parent folders are created before subfolders.
+    - CSVs should not contain modified headers (e.g., Required, Data Type) when converting to XML.
+
+#>
+
 
 
 ###############################################################################
