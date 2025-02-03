@@ -33,11 +33,14 @@ $Reason	Justification for password retrieval
 🔹 Run the Script
 ```powershell
 .\Export-CyberArkAccounts.ps1
-🔹 Example Output in CSV
-ID	Name	Address	UserName	PlatformID	SafeName	CreatedTime	Notes	Password
-1234	Admin01	192.168.1.10	admin	WindowsLocal	SecureSafe	2024-01-30T14:00:00Z	Admin account	FakePw-x3jT4Wv9
-5678	DBUser	db-server	dbadmin	MSSQL	SecureSafe	2024-02-01T10:15:00Z	Database user	FakePw-G9hQW7Xy
 ```
+### 🔹 Example Output in CSV
+
+| ID   | Name     | Address       | UserName  | PlatformID   | SafeName    | CreatedTime            | Notes          | Password       |
+|------|---------|--------------|-----------|-------------|------------|----------------------|---------------|--------------|
+| 1234 | Admin01 | 192.168.1.10 | admin     | WindowsLocal | SecureSafe | 2024-01-30T14:00:00Z | Admin account | FakePw-x3jT4Wv9 |
+| 5678 | DBUser  | db-server    | dbadmin   | MSSQL        | SecureSafe | 2024-02-01T10:15:00Z | Database user | FakePw-G9hQW7Xy |
+
 📜 Example Log Output
 ```plaintext
 2024/02/03 12:00:00 [INFO] - Starting data retrieval from CyberArk
