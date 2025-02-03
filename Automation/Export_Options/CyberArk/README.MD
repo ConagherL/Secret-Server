@@ -1,6 +1,8 @@
-🎩 Export CyberArk Accounts to CSV 🔐
-🚀 This PowerShell script automates the retrieval of CyberArk accounts, filters them by a Safe, and exports the results to a CSV.
-💡 Optional: Retrieve real passwords, replace them with fake ones, or exclude them entirely.
+# 🎩 Export CyberArk Accounts to CSV 🔐  
+
+🚀 This PowerShell script automates the retrieval of CyberArk accounts, filters them by a Safe, and exports the results to a CSV.  
+💡 **Optional:** Retrieve real passwords, replace them with fake ones, or exclude them entirely.  
+
 
 ## 📌 Features  
 
@@ -58,10 +60,12 @@
 2024/02/03 12:00:35 [INFO] - Exported data to C:\temp\export.csv
 2024/02/03 12:00:40 [INFO] - Data retrieval from CyberArk completed
 ```
-⚠️ Requirements
-🔹 PowerShell 7+ (for UnixTimeseconds option in Get-Date)
-🔹 CyberArk REST API Access (with permission to retrieve accounts)
-🔹 Network connectivity to CyberArkURL
+## ⚠️ Requirements  
+
+- 🔹 **PowerShell 7+** (for UnixTimeseconds option in `Get-Date`)  
+- 🔹 **CyberArk REST API Access** (with permission to retrieve accounts)  
+- 🔹 **Network connectivity** to `CyberArkURL`  
+
 
 🏗 Customization
 You can modify the following:
@@ -70,7 +74,9 @@ Increase account retrieval limit by adjusting $AllAccountsURI limit.
 Change logging behavior (Write-Log function).
 Modify password retrieval rules ($ExportPwdField and $ExportFakePw).
 ```
-💡 Future Enhancements
-📌 Multi-threading for faster execution
-📌 Enhanced error handling
-📌 Support for additional API endpoints
+## 💡 Future Enhancements  
+
+- 📌 **Multi-threading** for faster execution  
+- 📌 **Enhanced error handling**  
+- 📌 **Support for additional API endpoints**  
+
