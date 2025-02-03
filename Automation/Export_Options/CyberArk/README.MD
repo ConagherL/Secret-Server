@@ -1,5 +1,4 @@
 🎩 Export CyberArk Accounts to CSV 🔐
-
 🚀 This PowerShell script automates the retrieval of CyberArk accounts, filters them by a Safe, and exports the results to a CSV.
 💡 Optional: Retrieve real passwords, replace them with fake ones, or exclude them entirely.
 
@@ -21,7 +20,6 @@ $SafeName	The Safe name to filter accounts (case-sensitive)
 $OutputFilePath	CSV file path for export (C:\temp\export.csv)
 $OutputLogPath	Log file path (C:\temp\T_export.log)
 $Reason	Justification for password retrieval
-
 🔧 How It Works
 1️⃣ Prompts for CyberArk credentials (username/password).
 2️⃣ Authenticates to CyberArk via REST API.
@@ -35,13 +33,13 @@ $Reason	Justification for password retrieval
 🔹 Run the Script
 ```powershell
 .\Export-CyberArkAccounts.ps1
- ```                          
 🔹 Example Output in CSV
 ID	Name	Address	UserName	PlatformID	SafeName	CreatedTime	Notes	Password
 1234	Admin01	192.168.1.10	admin	WindowsLocal	SecureSafe	2024-01-30T14:00:00Z	Admin account	FakePw-x3jT4Wv9
 5678	DBUser	db-server	dbadmin	MSSQL	SecureSafe	2024-02-01T10:15:00Z	Database user	FakePw-G9hQW7Xy
+```
 📜 Example Log Output
-```pgsql
+```plaintext
 2024/02/03 12:00:00 [INFO] - Starting data retrieval from CyberArk
 2024/02/03 12:00:05 [INFO] - Authentication successful
 2024/02/03 12:00:10 [INFO] - Retrieved 200 accounts without filtering
@@ -52,7 +50,6 @@ ID	Name	Address	UserName	PlatformID	SafeName	CreatedTime	Notes	Password
 2024/02/03 12:00:35 [INFO] - Exported data to C:\temp\export.csv
 2024/02/03 12:00:40 [INFO] - Data retrieval from CyberArk completed
 ```
-                                    
 ⚠️ Requirements
 🔹 PowerShell 7+ (for UnixTimeseconds option in Get-Date)
 🔹 CyberArk REST API Access (with permission to retrieve accounts)
@@ -60,22 +57,12 @@ ID	Name	Address	UserName	PlatformID	SafeName	CreatedTime	Notes	Password
 
 🏗 Customization
 You can modify the following:
-
-                  Increase account retrieval limit by adjusting $AllAccountsURI limit.
+```plaintext
+Increase account retrieval limit by adjusting $AllAccountsURI limit.
 Change logging behavior (Write-Log function).
 Modify password retrieval rules ($ExportPwdField and $ExportFakePw).
-                         
+```
 💡 Future Enhancements
 📌 Multi-threading for faster execution
 📌 Enhanced error handling
 📌 Support for additional API endpoints
-🛡 Security Considerations
-⚠️ Never store credentials in the script. Always prompt users.
-⚠️ Limit access to logs as they may contain sensitive data.
-⚠️ Ensure CyberArk API permissions align with security policies.
-
-📬 Feedback & Contributions
-💬 Found a bug? Have an improvement?
-Submit a PR or open an issue on GitHub.
-
-🔥 Like this project? Give it a star! ⭐
