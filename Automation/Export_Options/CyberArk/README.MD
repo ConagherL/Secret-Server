@@ -27,14 +27,16 @@
 | **`$Reason`** | Justification for password retrieval |
 
 
-🔧 How It Works
-1️⃣ Prompts for CyberArk credentials (username/password).
-2️⃣ Authenticates to CyberArk via REST API.
-3️⃣ Retrieves up to 500 accounts (adjustable limit).
-4️⃣ Filters accounts by Safe name locally.
-5️⃣ Retrieves additional account details (including notes and password if enabled).
-6️⃣ Logs all operations to a log file and console.
-7️⃣ Exports the data to a CSV file (if enabled).
+## 🔧 How It Works  
+
+1️⃣ **Prompts** for CyberArk credentials (username/password).  
+2️⃣ **Authenticates** to CyberArk via REST API.  
+3️⃣ **Retrieves** up to **500** accounts (adjustable limit).  
+4️⃣ **Filters** accounts by Safe name locally.  
+5️⃣ **Retrieves** additional account details (including notes and password if enabled).  
+6️⃣ **Logs** all operations to a log file and console.  
+7️⃣ **Exports** the data to a CSV file (if enabled).  
+
 
 🚀 Usage
 🔹 Run the Script
