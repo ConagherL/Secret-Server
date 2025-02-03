@@ -10,16 +10,19 @@
 ✅ Logging: Logs operations (INFO, WARN, ERROR) to both the console and a log file.
 ✅ CSV Export: Saves filtered account data to a CSV file.
 
-⚙️ Configuration Parameters
-Parameter	Description
-$ExportToFile	Export results to a CSV file ($true/$false)
-$ExportPwdField	Include the password in the export ($true/$false)
-$ExportFakePw	Replace real passwords with fake ones ($true/$false)
-$CyberArkURL	CyberArk API base URL (https://TENANT.privilegecloud.cyberark.com)
-$SafeName	The Safe name to filter accounts (case-sensitive)
-$OutputFilePath	CSV file path for export (C:\temp\export.csv)
-$OutputLogPath	Log file path (C:\temp\T_export.log)
-$Reason	Justification for password retrieval
+## ⚙️ Configuration Parameters  
+| Parameter          | Description |
+|-------------------|-------------|
+| **`$ExportToFile`** | Export results to a CSV file (`$true`/`$false`) |
+| **`$ExportPwdField`** | Include the password in the export (`$true`/`$false`) |
+| **`$ExportFakePw`** | Replace real passwords with fake ones (`$true`/`$false`) |
+| **`$CyberArkURL`** | CyberArk API base URL (`https://TENANT.privilegecloud.cyberark.com`) |
+| **`$SafeName`** | The Safe name to filter accounts (`case-sensitive`) |
+| **`$OutputFilePath`** | CSV file path for export (`C:\temp\export.csv`) |
+| **`$OutputLogPath`** | Log file path (`C:\temp\T_export.log`) |
+| **`$Reason`** | Justification for password retrieval |
+
+
 🔧 How It Works
 1️⃣ Prompts for CyberArk credentials (username/password).
 2️⃣ Authenticates to CyberArk via REST API.
