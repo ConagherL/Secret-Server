@@ -25,8 +25,8 @@ rabbitmqctl start_app
 #edit - c:\rabbitmq\rabbitmq.config - Always add to a 3 node cluster
 # add to bottom
 cluster_partition_handling = pause_minority
-
-
+ 
+####### NO LONGER IN USE ########
 #Open rabbit cmd on any server
 
 rabbitmqctl set_policy "cluster-thycotic-ss" "^thycotic-ss:" "{""ha-sync-mode"":""automatic"", ""ha-mode"":""all"", ""ha-sync-batch-size"":400}" --priority 10 --apply-to queues
@@ -37,3 +37,4 @@ rabbitmqctl set_policy "cluster-thycotic-Local" "^Local:" "{""ha-sync-mode"":""a
 # If the customer has more than one site. then a additional command is needed per site
 
 rabbitmqctl set_policy "cluster-thycotic-sj3-SOS-Shared" "^sj3-SOS-Shared:" "{""ha-sync-mode"":""automatic"", ""ha-mode"":""all"", ""ha-sync-batch-size"":400}" --priority 10 --apply-to queues
+####### NO LONGER IN USE ########
