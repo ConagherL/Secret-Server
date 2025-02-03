@@ -1,0 +1,12 @@
+Postman tutorials
+	1: https://www.iorad.com/player/1942406/Postman-Part-1---Importing-the-Delinea-REST-API-into-Postman?#watchsteps-7
+	2: https://www.iorad.com/player/1943801/Postman-Part-2---Setting-up-your-Postman-environment?#trysteps-1
+	3: https://www.iorad.com/player/1944624/Postman-Part-3---Using-the-Delinea-REST-API--?#trysteps-1
+	
+Extensible Scripting
+	Discovery: https://docs.delinea.com/online-help/secret-server/discovery/extensible-discovery/index.htm?Highlight=Extensible
+	Scripting Authentication using tokens: https://docs.delinea.com/online-help/secret-server/api-scripting/authenticating/index.htm?Highlight=Scripting
+	REST API Examples: https://docs.delinea.com/online-help/secret-server/api-scripting/rest-api-powershell-examples/index.htm?Highlight=Scripting
+	GitHub REPO: https://github.com/DelineaXPM/delinea-platform
+	GitHub REPO #1: https://github.com/thycotic-ps/secretserver
+	SDK: https://docs.delinea.com/online-help/secret-server/api-scripting/sdk-downloads/index.htm?Highlight=SDK
