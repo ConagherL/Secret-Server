@@ -2,13 +2,15 @@
 🚀 This PowerShell script automates the retrieval of CyberArk accounts, filters them by a Safe, and exports the results to a CSV.
 💡 Optional: Retrieve real passwords, replace them with fake ones, or exclude them entirely.
 
-📌 Features
-✅ Authentication: Prompts for CyberArk credentials and retrieves a session token.
-✅ Account Retrieval: Fetches up to 500 accounts from CyberArk (adjustable).
-✅ Filtering: Filters accounts by Safe name (local filtering).
-✅ Password Handling: Optionally retrieves real passwords, generates fake passwords, or omits them.
-✅ Logging: Logs operations (INFO, WARN, ERROR) to both the console and a log file.
-✅ CSV Export: Saves filtered account data to a CSV file.
+## 📌 Features  
+
+- ✅ **Authentication**: Prompts for CyberArk credentials and retrieves a session token.  
+- ✅ **Account Retrieval**: Fetches up to 500 accounts from CyberArk (adjustable).  
+- ✅ **Filtering**: Filters accounts by Safe name (local filtering).  
+- ✅ **Password Handling**: Optionally retrieves real passwords, generates fake passwords, or omits them.  
+- ✅ **Logging**: Logs operations (`INFO`, `WARN`, `ERROR`) to both the console and a log file.  
+- ✅ **CSV Export**: Saves filtered account data to a CSV file.  
+
 
 ## ⚙️ Configuration Parameters  
 | Parameter          | Description |
