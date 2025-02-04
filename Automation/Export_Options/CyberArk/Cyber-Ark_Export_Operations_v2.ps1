@@ -166,7 +166,8 @@ foreach ($Account in $FilteredAccounts) {
         userName    = $Account.userName
         platformId  = $Account.platformId
         safeName    = $Account.safeName
-        createdTime = (Get-Date -UnixTimeseconds $Account.createdTime -AsUTC)
+        #createdTime = (Get-Date -UnixTimeseconds $Account.createdTime -AsUTC)
+        $createdTime = [System.DateTimeOffset]::FromUnixTimeSeconds($Account.createdTime).LocalDateTime
     }
 
     if (-not $AccountValue) {
