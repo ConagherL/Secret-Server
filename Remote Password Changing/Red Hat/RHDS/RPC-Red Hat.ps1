@@ -1,74 +1,79 @@
-<#
+<#  
+.SYNOPSIS  
+    Script to change the password of an LDAP user account in Red Hat Directory Server without prompting for a password change on next login.  
 
-.SYNOPSIS
-    Script to change the password of an LDAP user account in Red Hat Directory Server without prompting for a password change on next login.
+.DESCRIPTION  
+    Connects to the RHDS LDAP server over a secure connection, updates a user's password. Red Hat by default wants to enforce the  
 
-.DESCRIPTION
-    Connects to the RHDS LDAP server over a secure connection, updates a user's password, and ensures the user is not prompted to change their password upon next login.
+.USAGE  
+    Run the script with the required arguments:  
+    ```  
+    ./ChangeRHDSUserPassword.ps1 "ldap.example.com" "cn=Directory Manager" "admin123" "uid=user1,ou=people,dc=example,dc=com" "NewPassword123!"
+    ```  
 
-.PARAMETERS
-    $ldaphost      - LDAP server address (e.g., ldap.example.com).
-    $ldapport      - LDAP server port (e.g., 636 for LDAPS).
-    $adminUser     - Administrator DN (e.g., cn=Directory Manager).
-    $adminPassword - Administrator password.
-    $userDN        - DN of the user whose password is to be changed.
-    $newPassword   - The new password to set.
+.PARAMETERS  
+    $args[0] - LDAP server address (e.g., ldap.example.com)  
+    $args[1] - Administrator DN (e.g., cn=Directory Manager)  
+    $args[2] - Administrator password  
+    $args[3] - DN of the user whose password is to be changed  
+    $args[4] - The new password to set  
 
-.NOTES
-    Usage: .\ChangeRHDSUserPassword.ps1 -ldaphost "ldap.example.com" -ldapport 636 -adminUser "cn=Directory Manager" -adminPassword "admin123" -userDN "uid=user1,ou=people,dc=example,dc=com" -newPassword "NewPassword123!"
+.NOTES  
+    Modify the `$ldapport` and `$useSSL` variables at the top if needed.
 #>
 
-# Input Parameters
-param (
-    [string]$ldaphost,
-    [int]$ldapport,
-    [string]$adminUser,
-    [string]$adminPassword,
-    [string]$userDN,
-    [string]$newPassword
-)
+# ========================
+# Configuration Variables
+# ========================
 
-# Load the required assembly
-Add-Type -AssemblyName "System.DirectoryServices.Protocols"
+$ldapport = 636                  # Change port if necessary (636 for LDAPS, 389 for LDAP)
+$useSSL = $true                  # Change to $false if not using SSL
 
-# Establish LDAP connection
-$ldapConnection = New-Object System.DirectoryServices.Protocols.LdapConnection("$ldaphost`:$ldapport")
-$ldapConnection.SessionOptions.SecureSocketLayer = $true  # Use SSL/TLS for secure connection
-$ldapConnection.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic
+# Assigning arguments
+$ldaphost = $args[0]
+$adminUser = $args[1]
+$adminPassword = $args[2]
+$userDN = $args[3]
+$newPassword = $args[4]
 
-# Bind with admin credentials
-$credential = New-Object System.Net.NetworkCredential($adminUser, $adminPassword)
-$ldapConnection.Bind($credential)
+# ========================
+# Script Execution
+# ========================
 
-try {
-    # Set up the password change request
-    $modifyPasswordRequest = New-Object System.DirectoryServices.Protocols.ModifyRequest(
-        $userDN,
-        [System.DirectoryServices.Protocols.DirectoryAttributeOperation]::Replace,
-        "userPassword",
-        $newPassword
-    )
+# Load the required assembly  
+try {  
+    Add-Type -AssemblyName "System.DirectoryServices.Protocols"  
+} catch {  
+    Write-Host "Error: Unable to load the required assembly. Ensure that .NET is installed." -ForegroundColor Red  
+    exit 1  
+}  
 
-    # Send the password change request
-    $ldapConnection.SendRequest($modifyPasswordRequest)
-    Write-Host "Password updated successfully for $userDN."
+# Establish an LDAP connection  
+$ldapConnection = New-Object System.DirectoryServices.Protocols.LdapConnection("$ldaphost`:$ldapport")  
+$ldapConnection.SessionOptions.SecureSocketLayer = $useSSL
+$ldapConnection.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic  
 
-    # Ensure the user is not prompted to change password on next login
-    $preventPwdChangePromptRequest = New-Object System.DirectoryServices.Protocols.ModifyRequest(
-        $userDN,
-        [System.DirectoryServices.Protocols.DirectoryAttributeOperation]::Replace,
-        "pwdReset",
-        "FALSE"
-    )
+# Bind with admin credentials  
+$credential = New-Object System.Net.NetworkCredential($adminUser, $adminPassword)  
+$ldapConnection.Bind($credential)  
 
-    # Send the request to set pwdReset
-    $ldapConnection.SendRequest($preventPwdChangePromptRequest)
-    Write-Host "User will NOT be prompted to change password at next login."
-}
-catch {
-    Write-Host "An error occurred: $_"
-}
-finally {
-    # Close the connection
-    $ldapConnection.Dispose()
+try {  
+    # Set up the password change request  
+    $modifyPasswordRequest = New-Object System.DirectoryServices.Protocols.ModifyRequest(  
+        $userDN,  
+        [System.DirectoryServices.Protocols.DirectoryAttributeOperation]::Replace,  
+        "userPassword",  
+        $newPassword  
+    )  
+
+    # Send the password change request  
+    $ldapConnection.SendRequest($modifyPasswordRequest)  
+    Write-Host "Password updated successfully for $userDN." -ForegroundColor Green  
+}  
+catch {  
+    Write-Host "An error occurred: $_" -ForegroundColor Red  
+}  
+finally {  
+    # Close the connection  
+    $ldapConnection.Dispose()  
 }
