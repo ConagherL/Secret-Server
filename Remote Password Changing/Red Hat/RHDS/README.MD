@@ -57,3 +57,4 @@ This repository contains two PowerShell scripts to assist with managing Red Hat 
 - Both scripts load the `System.DirectoryServices.Protocols` assembly. Ensure that the .NET Framework is installed on your system.
 - Modify the configuration variables at the top of each script as needed to match your environment.
 - Ensure that the user credentials and distinguished names (DNs) provided are accurate to avoid authentication errors.
+- Secret template must contain a field called "AccountDN" which has a full DN value of the user account
