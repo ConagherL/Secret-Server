@@ -230,8 +230,7 @@ if (Connect-SecretServer -SecretServerUrl $Global:SecretServerURL -Token $preObt
         if ($fetchStartRaw) {
             try {
                 $fetchStartDt = [DateTime]::ParseExact($fetchStartRaw, "yyyy-MM-ddTHH:mm:ss.ff", $null)
-                $now = Get-Date
-                $timeDiff = New-TimeSpan -Start $fetchStartDt -End $now
+                $timeDiff = (Get-Date) - $fetchStartDt
                 if ($Global:DiscoveryWaitPeriodMinutes -eq 0 -or $timeDiff.TotalMinutes -ge $Global:DiscoveryWaitPeriodMinutes) {
                     $shouldSkipScan = $false
                 } else {
