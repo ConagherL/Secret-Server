@@ -9,7 +9,13 @@ Welcome to the PowerShell SDK for Secret Server. This SDK allows you to interact
 
 ## Getting Started
 
-// ...existing code...
+### SDK Initialization
+
+It's important that each initialization has its own directory for config and key.
+
+```sh
+tss.exe init --url "https://YOURURL.secretservercloud.com" --rule-name "RSG_SDK" --onboarding-key "KEYVALUEFROMSS" --config-directory "E:\SDK\SDK_Profiles\ACCOUNTNAME\Config" --key-directory "E:\SDK\SDK_Profiles\ACCOUNTNAME\Keys"
+```
 
 ## Usage
 
