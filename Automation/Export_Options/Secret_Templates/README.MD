@@ -37,7 +37,7 @@ This PowerShell script automates retrieving **Secret Server** templates and expo
 
 1️⃣ Authenticate to Secret Server
 ```powershell
-Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token"
+Connect-SecretServer -SecretServerUrl "https://yourserver.com" -OauthUrl "https://yourserver.com/oauth2/token" -Token "your-pre-obtained-token"
 ```
 2️⃣ Initialize required output folders
 ```powershell
