@@ -29,10 +29,11 @@
 # VARIABLES - Configure These First
 ###############################################################################
 $Global:SecretServerURL = "https://YOURURL.secretservercloud.com"   # Replace with your actual Secret Server URL
-$Global:LogPath = "C:\temp\script.log"                          # Update the log file location as needed
+$Global:LogPath = "C:\temp\Discovery_Scan.log"                          # Update the log file location as needed
 $Global:DiscoveryWaitPeriodMinutes = 10                         # Set wait period in minutes (set to blank or 0 to not wait)
 $Global:LoggingEnabled = $true                                  # Set to $false to disable logging
-$preObtainedToken = ""                                          # Set this to your token if available; otherwise, leave blank to prompt.
+# Example usage for the token variable
+$preObtainedToken =  tss token -cd E:\SDK\SDK_Profiles\ACCOUNTNAME\Config                                         # Set this to your token if available; otherwise, leave blank to prompt.
 
 # Default wait period to 0 if blank or not defined.
 if (-not $Global:DiscoveryWaitPeriodMinutes) {
@@ -217,7 +218,7 @@ function Start-TssDiscovery {
 if (Connect-SecretServer -SecretServerUrl $Global:SecretServerURL -Token $preObtainedToken) {
     $status = Get-TssDiscoveryStatus
 
-    if ($status -ne $null) {
+    if ($null -ne $status) {
         # Check if a Discovery scan is already running.
         $isFetchRunning = $status.isDiscoveryFetchRunning
         $isComputerScanRunning = $status.isDiscoveryComputerScanRunning
@@ -228,10 +229,12 @@ if (Connect-SecretServer -SecretServerUrl $Global:SecretServerURL -Token $preObt
         
         if ($fetchStartRaw) {
             try {
-                $fetchStartDt = [DateTime]::Parse($fetchStartRaw)
+                $fetchStartDt = [DateTime]::ParseExact($fetchStartRaw, "yyyy-MM-ddTHH:mm:ss.ff", $null)
                 $now = Get-Date
                 $timeDiff = New-TimeSpan -Start $fetchStartDt -End $now
-                if ($timeDiff.TotalMinutes -lt $Global:DiscoveryWaitPeriodMinutes) {
+                if ($Global:DiscoveryWaitPeriodMinutes -eq 0 -or $timeDiff.TotalMinutes -ge $Global:DiscoveryWaitPeriodMinutes) {
+                    $shouldSkipScan = $false
+                } else {
                     $shouldSkipScan = $true
                     Write-Log "Discovery scan started recently ($($fetchStartDt.ToString('yyyy-MM-dd HH:mm:ss'))). Waiting for $Global:DiscoveryWaitPeriodMinutes minutes." -Level "WARN"
                     Write-Host "Discovery scan started recently. Exiting..." -ForegroundColor Yellow
