@@ -21,17 +21,11 @@ E:\SDK\
 └── SDK_Profiles\
     ├── ACCOUNTNAME\
     │   ├── Config\
-    │   │   └── tss-sdk.json
     │   ├── Keys\
-    │   └── Logs\
-    │       └── sdk.log
     │
     └── AnotherAccount\
         ├── Config\
-        │   └── tss-sdk.json
         ├── Keys\
-        └── Logs\
-            └── sdk.log
 ```
 
 ---
@@ -42,7 +36,7 @@ Each SDK initialization should have its own distinct directory for configuration
 
 ```bash
 tss.exe init --url "https://YOURURL.secretservercloud.com" \
-             --rule-name "RSG_SDK" \
+             --rule-name "YOURRULENAME" \
              --onboarding-key "KEYVALUEFROMSS" \
              --config-directory "E:\SDK\SDK_Profiles\ACCOUNTNAME\Config" \
              --key-directory "E:\SDK\SDK_Profiles\ACCOUNTNAME\Keys"
@@ -89,7 +83,7 @@ if ([string]::IsNullOrEmpty($token)) {
 }
 
 # Execute SDK command
-& tss secret --id 12345 --config "$configPath\tss-sdk.json"
+& tss secret --id 12345 --config "$configPath"
 ```
 
 ---
