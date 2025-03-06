@@ -1,63 +1,111 @@
-# Run-Discovery.ps1
+# 🌟 PowerShell SDK for Secret Server
 
-[![PowerShell](https://img.shields.io/badge/PowerShell-v3%2B-blue.svg)](https://docs.microsoft.com/en-us/powershell/)
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Welcome to the **PowerShell SDK for Secret Server** repository. This SDK enables you to securely interact with Secret Server using PowerShell scripts.
 
-> **Run-Discovery.ps1** is a PowerShell automation script designed for **Secret Server**.  
-> It connects to your Secret Server using OAuth2 (with either a token or interactive credentials),  
-> retrieves the current discovery scan status, and conditionally initiates a new scan if no scan is running  
-> and the previous scan's fetch start time exceeds a configurable wait period.
+## 📌 Important Notes
 
----
-
-## ✨ Features
-
-- **Flexible Authentication:**  
-  - Use interactive credential prompts or supply a pre-obtained token (ideal for scheduled tasks or SDK integration).
-  
-- **Discovery Status Verification:**  
-  - Retrieves key fields such as the discovery fetch start time, and whether a fetch or computer scan is running. STILL IN PROGRESS. Info Only ATM
-  
-- **Conditional Execution:**  
-  - Prevents multiple scans by comparing the last scan start time with a configurable wait period.
-  
-- **Configurable Logging:**  
-  - Toggle logging on/off and specify a custom log file location.
-  
+1. **Account Initialization**: Always use the same account used to initialize the SDK when running commands or scripts.
+2. **Account Consistency**: Do not initialize multiple SDK accounts in the same directory, as it invalidates existing configurations.
 
 ---
 
-## ⚙️ Configuration
+## 🚀 Getting Started
 
-Before using the script, modify the following global variables within the script:
+### ✅ Recommended Folder Structure
 
-- **`$Global:SecretServerURL`**  
-  Set this to your Secret Server base URL (e.g., `https://blt.secretservercloud.com`).
-
-- **`$Global:LogPath`**  
-  Define the path where log entries will be stored (e.g., `C:\temp\script.log`).
-
-- **`$Global:DiscoveryWaitPeriodMinutes`**  
-  Specify the wait period in minutes. If you prefer no waiting period, set this to `0` or leave it blank.
-
-- **`$Global:LoggingEnabled`**  
-  Set to `$true` to enable logging, or `$false` to disable it.
-
----
-
-## 🚀 Usage
-
-### Interactive Mode
-
-Run the script in your PowerShell console. You’ll be prompted to enter your Secret Server credentials if no token is provided.
-
-```powershell
-.\Run-Discovery.ps1
+```plaintext
+E:\SDK\
+│
+├── SDK (SDK executable, e.g., tss.exe)
+│
+└── SDK_Profiles\
+    ├── ACCOUNTNAME\
+    │   ├── Config\
+    │   │   └── tss-sdk.json
+    │   ├── Keys\
+    │   └── Logs\
+    │       └── sdk.log
+    │
+    └── AnotherAccount\
+        ├── Config\
+        │   └── tss-sdk.json
+        ├── Keys\
+        └── Logs\
+            └── sdk.log
 ```
 
-## Non-Interactive Mode - WORK IN PROGRESS
-For scheduled tasks or automated environments, supply a pre-obtained token by setting the $preObtainedToken variable in the script.
-```powershell
-$preObtainedToken = "<Your Pre-Obtained Token>"
+---
+
+### ⚙️ SDK Initialization
+
+Each SDK initialization should have its own distinct directory for configuration and keys:
+
+```bash
+tss.exe init --url "https://YOURURL.secretservercloud.com" \
+             --rule-name "RSG_SDK" \
+             --onboarding-key "KEYVALUEFROMSS" \
+             --config-directory "E:\SDK\SDK_Profiles\ACCOUNTNAME\Config" \
+             --key-directory "E:\SDK\SDK_Profiles\ACCOUNTNAME\Keys"
 ```
-The script then uses the token for authentication and proceeds to check the discovery status and start a scan if appropriate.
+
+- `--url`: URL of your Secret Server instance.
+- `--rule-name`: Permissions rule associated with the SDK.
+- `--onboarding-key`: Provided by Secret Server for initial setup.
+- `--config-directory`: Path to store SDK configurations.
+- `--key-directory`: Path to securely store the encryption key.
+
+---
+
+## 📁 Configuration File vs. 🔑 Encryption Key
+
+### 📄 Configuration File
+- **Purpose**: Stores connection details and SDK configurations.
+- **Contains**: URL, SDK Rule Name, SDK settings.
+- **Frequency**: Regularly accessed.
+- **File**: Default `tss-sdk.json`.
+
+### 🔒 Encryption Key
+- **Purpose**: Encrypts sensitive data (tokens, cached credentials).
+- **Usage**: During initialization or migration.
+- **Security**: Store securely, separate from config.
+
+---
+
+## 💻 Example SDK Usage (PowerShell)
+
+```powershell
+$configPath = 'E:\SDK\SDK_Profiles\ACCOUNTNAME\Config'
+$logPath = 'E:\SDK\SDK_Profiles\ACCOUNTNAME\Logs\sdk.log'
+
+# Retrieve SDK token
+$token = (tss token -cd $configPath).Trim()
+
+# Validate token retrieval
+if ([string]::IsNullOrEmpty($token)) {
+    Add-Content -Path $logPath -Value "$(Get-Date): Failed to retrieve SDK token."
+    throw "SDK token retrieval failed."
+} else {
+    Add-Content -Path $logPath -Value "$(Get-Date): SDK token retrieved successfully."
+}
+
+# Execute SDK command
+& tss secret --id 12345 --config "$configPath\tss-sdk.json"
+```
+
+---
+
+## 📌 When to Reuse the Key
+- Initial SDK setup
+- SDK configuration reinitialization or migration
+
+---
+
+## 🚨 Best Practices
+- Organize configurations clearly by account.
+- Securely store encryption keys separately from config files.
+- Validate and log critical SDK interactions.
+- Avoid unnecessary exposure of encryption keys.
+
+Following these best practices ensures secure, efficient, and manageable use of the PowerShell SDK for Secret Server.
+
+
