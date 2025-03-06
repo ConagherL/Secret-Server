@@ -20,17 +20,10 @@ E:\SDK\
 └── SDK_Profiles\
     ├── ACCOUNTNAME\
     │   ├── Config\
-    │   │   └── tss-sdk.json
     │   ├── Keys\
-    │   └── Logs\
-    │       └── sdk.log
-    │
     └── AnotherAccount\
         ├── Config\
-        │   └── tss-sdk.json
         ├── Keys\
-        └── Logs\
-            └── sdk.log
 ```
 
 ---
@@ -87,7 +80,7 @@ if ([string]::IsNullOrEmpty($token)) {
 }
 
 # Execute SDK command
-& tss secret --id 12345 --config "$configPath\tss-sdk.json"
+& tss secret --id 12345 --config "$configPath\"
 ```
 
 ---
