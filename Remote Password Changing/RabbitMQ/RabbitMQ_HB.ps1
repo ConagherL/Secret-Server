@@ -38,7 +38,7 @@ function Write-Log {
 ###############################################################################
 # Main Script: Credential Heartbeat Validation
 ###############################################################################
-Write-Log "Starting credential heartbeat validation for user '$UserName'." "INFO"
+Write-Log "Starting heartbeat validation for user '$UserName'." "INFO"
 
 # Create credentials object securely
 $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
