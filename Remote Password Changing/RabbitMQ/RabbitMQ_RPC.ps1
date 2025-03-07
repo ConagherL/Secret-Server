@@ -9,9 +9,9 @@ $Global:LogPath = "C:\Logs\password_rotation.log"  # Update log file path as nee
 
 # API and User Configuration
 $apiUrl          = "http://localhost:15672/api/users"
-$UserName        = "secondaryUser"            # The account updating its own password
-$CurrentPassword = "currentPassword"             # Retrieve securely in production!
-$NewPassword     = "NewSecretPassword"          # Update securely
+$UserName        = $args[0]
+$CurrentPassword = $args[1]
+$NewPassword     = $args[2]
 
 ###############################################################################
 # FUNCTION: Write-Log
@@ -37,9 +37,9 @@ function Write-Log {
 }
 
 ###############################################################################
-# Main Script: Self-Service Password Rotation
+# Main Script: Password Rotation
 ###############################################################################
-Write-Log "Starting self-service password rotation for user '$UserName'." "INFO"
+Write-Log "Starting password rotation for user '$UserName'." "INFO"
 
 # Build the full API endpoint URL for updating the user
 $endpointUrl = "$apiUrl/$UserName"
@@ -48,7 +48,6 @@ Write-Log "Constructed endpoint URL: $endpointUrl." "DEBUG"
 # Create the JSON payload
 $body = @{
     password = $NewPassword
-    tags     = "management"    # Required tag(s); adjust accordingly
 } | ConvertTo-Json
 Write-Log "Created JSON payload for password update." "DEBUG"
 
@@ -66,7 +65,7 @@ try {
 
     switch ($response.StatusCode) {
         204 { Write-Log "Password successfully updated for user '$UserName'. (HTTP 204 No Content)" "INFO" }
-        201 { Write-Log "User '$UserName' created with new password. (HTTP 201 Created)" "INFO" }
+        201 { Write-Log "User '$UserName' Updated with new password. (HTTP 201 Created)" "INFO" }
         default {
             Write-Log "Unexpected HTTP status code: $($response.StatusCode). Response: $($response.Content)" "WARN"
             exit 1
