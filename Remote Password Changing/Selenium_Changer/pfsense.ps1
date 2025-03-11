@@ -86,7 +86,7 @@ catch{
 try{
     # Get the Module Path from PowerShell and see if there is a version of Chromedriver.exe available
     $Selenium_path=(Get-Module Selenium).path.substring(0,((get-module Selenium).Path).LastIndexOf("\")+1)
-    dir "$Selenium_path\assemblies\chromedriver.exe" -ErrorAction Stop | Out-Null
+    Get-ChildItem "$Selenium_path\assemblies\chromedriver.exe" -ErrorAction Stop | Out-Null
     
     # Get the write date of the file to see how old the file is
     $ChromeDriver_Date=(((get-item 'C:\Program Files\WindowsPowerShell\Modules\Selenium\3.0.1\assemblies\chromedriver.exe').LastWriteTime.Date) -replace('\s',';') -split(';'))[0] -replace('/','-')
