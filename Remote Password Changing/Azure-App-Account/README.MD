@@ -68,7 +68,7 @@ C:\temp\Logs\AppPasswordLog.txt
 
 ### Step 3: Import Secret Template
 - Import the secret template via the provided XML file.
-- Set Expiration field to "Not Editable" to prevent users from modifying it.
+- Set the Expiration field to "Not Editable" to prevent users from modifying it.
 - Adjust password complexity to avoid "Password Complexity" warnings.
 - Map the previously built password changer to the template.
 
@@ -79,6 +79,7 @@ C:\temp\Logs\AppPasswordLog.txt
 
 ### Step 5: Add Privileged Account
 - Assign the privileged account to the associated secrets section.
+- Secret must use the Out-of-Box azure App Registration template
 
 ### Step 6: Verify Password Changing
 - Test and verify that password rotation functions correctly.
