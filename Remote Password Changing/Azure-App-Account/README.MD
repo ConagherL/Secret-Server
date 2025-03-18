@@ -4,7 +4,7 @@ Effortlessly manage Azure App Registration client secrets by automating password
 
 ## 🚀 Features
 - **Authentication**: Logs into Azure using a Service Principal.
-- **Secret Cleanup**: Removes only truly expired client secrets.
+- **Secret Cleanup**: Removes expired client secrets.
 - **Password Generation**: Creates a new client secret for the specified App Registration.
 - **Expiration Management**: Uses a predefined expiration period for secret rotation.
 - **Logging**: Records all actions to a log file for auditing.
@@ -33,7 +33,7 @@ Expiration  : 2025-09-14 10:45:00
 
 ## 📒 Notes
 - ❗ The script removes only expired secrets to prevent unintended deletions.
-- Expiration period is hardcoded and can be adjusted in the script (`$ExpirationDays`).
+- The expiration period is hardcoded and can be adjusted in the script (`$ExpirationDays`).
 - Optimized for use with Delinea Secret Server.
 
 ## 📂 Logging
@@ -46,7 +46,7 @@ C:\temp\Logs\AppPasswordLog.txt
 
 ### Step 1: Add Scripts to Secret Server
 - Upload the Heartbeat (HB) and Remote Password Changing (RPC) scripts to Secret Server.
-- Ensure RPC script includes a static tenant ID and maintains a fixed expiration period.
+- Modify RPC script to set Expiration and tenantID values
 
 ### Step 2: Create Password Changer
 - **Base Password Changer**: PowerShell Script
@@ -79,7 +79,7 @@ C:\temp\Logs\AppPasswordLog.txt
 
 ### Step 5: Add Privileged Account
 - Assign the privileged account to the associated secrets section.
-- Secret must use the Out-of-Box azure App Registration template
+- Secret must use the Out-of-Box Azure App Registration template
 
 ### Step 6: Verify Password Changing
 - Test and verify that password rotation functions correctly.
