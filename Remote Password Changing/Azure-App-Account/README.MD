@@ -51,6 +51,8 @@ Logs are stored at `C:\temp\Logs\AppPasswordLog.txt`.
    - Ensure the RPC script includes a static tenant ID and maintains the expiration period.
 
 3. **Create Password Changer:**
+![My Image](https://github.com/user-attachments/assets/b951cfb3-ec64-4179-8ca7-d56feba08d7e)
+
    - Base Password Changer: PowerShell Script
    - Name: Azure App Registration
    - Verify Password Change Commands:
