@@ -13,10 +13,10 @@ This project automates the management of Azure App Registration client secrets b
 
 ## Parameters
 
-- **$args[0]:** The Secret Name associated with the new client secret.
-- **$args[1]:** The Object ID of the Azure App Registration.
-- **$args[2]:** The Service Principal Application ID.
-- **$args[3]:** The Service Principal Secret.
+- **$username:** The Secret Name associated with the new client secret.
+- **$Object-ID:** The Object ID of the Azure App Registration.
+- **$client-id:** The Service Principal Application ID.
+- **$client-secret:** The Service Principal Secret.
 
 ## Usage
 
@@ -41,47 +41,24 @@ Expiration  : 2025-09-14 10:45:00
 
 Logs are stored at `C:\temp\Logs\AppPasswordLog.txt`.
 
-## Secret Template
-
-```xml
-<!-- filepath: c:\Github\Secret-Server\Remote Password Changing\Azure-App-Account\SecretTemplate.xml -->
-<SecretTemplate>
-    <SecretType>Azure App Registration Secret Rotation</SecretType>
-    <Fields>
-        <Field>
-            <Name>Domain</Name>
-            <Type>Text</Type>
-            <Required>true</Required>
-        </Field>
-        <Field>
-            <Name>Password</Name>
-            <Type>Password</Type>
-            <Required>true</Required>
-        </Field>
-        <Field>
-            <Name>User name</Name>
-            <Type>Text</Type>
-            <Required>true</Required>
-        </Field>
-    </Fields>
-</SecretTemplate>
-```
-
-## Mapping
-
-![Mapping](attachment:image.png)
-
 ## Steps to Build
 
 1. **Import Secret Template:**
    - Import the secret template via the provided XML file.
 
 2. **Add Scripts to Secret Server:**
-   - Add the Heartbeat (HB) and Remote Password Changing (RPC) scripts to Secret Server.
+   - Upload the Heartbeat (HB) and Remote Password Changing (RPC) scripts to Secret Server.
    - Ensure the RPC script includes a static tenant ID and maintains the expiration period.
 
 3. **Create Password Changer:**
-   - Configure the password changer using the provided mapping and settings.
+   - Base Password Changer: PowerShell Script
+   - Name: Azure App Registration
+   - Verify Password Change Commands:
+     - Script: Azure_App_Registration_HB.ps1
+     - Arguments: NO ARGUMENTS
+   - Password Change Commands:
+     - Script: Azure_App_Registration_RPC.ps1
+     - Arguments: `$[1]$client-id $[1]$client-secret $[1]$tenant-id $username $newpassword`
 
 4. **Create Secret:**
    - Create a new secret using the imported template.
@@ -91,7 +68,3 @@ Logs are stored at `C:\temp\Logs\AppPasswordLog.txt`.
 
 6. **Verify Password Changing:**
    - Verify that password changing works correctly on the created secret.
-
-## License
-
-This project is licensed under the MIT License.
