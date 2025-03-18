@@ -45,13 +45,17 @@ Logs are stored at `C:\temp\Logs\AppPasswordLog.txt`.
 
 1. **Import Secret Template:**
    - Import the secret template via the provided XML file.
+   - Set the Expiration field to "Not Editable" to prevent users from adjusting the expiration
+   - Adjust password complexity on the template to eliminate the "Password Complexity" warning from Secret Server
+   - Map the password changer previously built to the template
+![My Image](https://github.com/user-attachments/assets/b951cfb3-ec64-4179-8ca7-d56feba08d7e)
 
 2. **Add Scripts to Secret Server:**
    - Upload the Heartbeat (HB) and Remote Password Changing (RPC) scripts to Secret Server.
    - Ensure the RPC script includes a static tenant ID and maintains the expiration period.
 
 3. **Create Password Changer:**
-![My Image](https://github.com/user-attachments/assets/b951cfb3-ec64-4179-8ca7-d56feba08d7e)
+![My Image](https://github.com/user-attachments/assets/081a02e2-91d4-426a-b551-74c317135769)
 
    - Base Password Changer: PowerShell Script
    - Name: Azure App Registration
