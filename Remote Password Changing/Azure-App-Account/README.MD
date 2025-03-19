@@ -51,6 +51,15 @@ The Service Principal used by the script requires the following permissions:
 
 These permissions can be granted by assigning the appropriate roles to the Service Principal in the Azure portal.
 
+### PowerShell Module Requirements
+The script requires the following PowerShell module:
+- `Az.Accounts`
+
+You can install it using the following command:
+```powershell
+Install-Module -Name Az.Accounts -Force
+```
+
 ### Step 1: Add Scripts to Secret Server
 - Upload the Heartbeat (HB) and Remote Password Changing (RPC) scripts to Secret Server.
 - Modify RPC script to set Expiration and tenantID values
