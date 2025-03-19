@@ -44,6 +44,13 @@ C:\temp\Logs\AppPasswordLog.txt
 
 ## 🔧 Setup & Configuration
 
+### Azure Permissions
+The Service Principal used by the script requires the following permissions:
+- `Application.ReadWrite.All`
+- `Directory.Read.All`
+
+These permissions can be granted by assigning the appropriate roles to the Service Principal in the Azure portal.
+
 ### Step 1: Add Scripts to Secret Server
 - Upload the Heartbeat (HB) and Remote Password Changing (RPC) scripts to Secret Server.
 - Modify RPC script to set Expiration and tenantID values
