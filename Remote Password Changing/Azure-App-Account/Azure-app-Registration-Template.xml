@@ -117,6 +117,25 @@
       <fieldslugname>expiration</fieldslugname>
       <hideonview>false</hideonview>
     </field>
+    <field isexpirationfield="false">
+      <displayname>Azure-Key-Vaults</displayname>
+      <description>Populate all AKV's in a comma seperated list where this app registration is used.</description>
+      <name>Azure-Key-Vaults</name>
+      <mustencrypt>true</mustencrypt>
+      <isurl>false</isurl>
+      <ispassword>false</ispassword>
+      <isnotes>false</isnotes>
+      <listtype />
+      <isfile>false</isfile>
+      <passwordcharacterset />
+      <passwordlength>-1</passwordlength>
+      <historylength>2147483647</historylength>
+      <isindexable>false</isindexable>
+      <editablepermission>2</editablepermission>
+      <required>false</required>
+      <fieldslugname>azure-key-vaults</fieldslugname>
+      <hideonview>false</hideonview>
+    </field>
   </fields>
   <expirationdays>30</expirationdays>
   <secretnamehistorylength>0</secretnamehistorylength>
