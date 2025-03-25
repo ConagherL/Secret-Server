@@ -2,16 +2,16 @@
 
 Welcome to the **PowerShell SDK for Secret Server** repository. This SDK enables you to securely interact with Secret Server using PowerShell scripts.
 
-## 📌 Important Notes
+##  Important Notes
 
 1. **Account Initialization**: Always use the same account used to initialize the SDK when running commands or scripts.
 2. **Account Consistency**: Do not initialize multiple SDK accounts in the same directory, as it invalidates existing configurations.
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
-### ✅ Recommended Folder Structure
+###  Recommended Folder Structure
 
 ```plaintext
 E:\SDK\
@@ -30,7 +30,7 @@ E:\SDK\
 
 ---
 
-### ⚙️ SDK Initialization
+### ⚙ SDK Initialization
 
 Each SDK initialization should have its own distinct directory for configuration and keys:
 
@@ -50,7 +50,7 @@ tss.exe init --url "https://YOURURL.secretservercloud.com" \
 
 ---
 
-## 📁 Configuration File vs. 🔑 Encryption Key
+##  Configuration File vs.  Encryption Key
 
 ### 📄 Configuration File
 - **Purpose**: Stores connection details and SDK configurations.
@@ -58,14 +58,14 @@ tss.exe init --url "https://YOURURL.secretservercloud.com" \
 - **Frequency**: Regularly accessed.
 - **File**: Default `tss-sdk.json`.
 
-### 🔒 Encryption Key
+###  Encryption Key
 - **Purpose**: Encrypts sensitive data (tokens, cached credentials).
 - **Usage**: During initialization or migration.
 - **Security**: Store securely, separate from config.
 
 ---
 
-## 💻 Example SDK Usage (PowerShell)
+##  Example SDK Usage (PowerShell)
 
 ```powershell
 $configPath = 'E:\SDK\SDK_Profiles\ACCOUNTNAME\Config'
@@ -88,13 +88,13 @@ if ([string]::IsNullOrEmpty($token)) {
 
 ---
 
-## 📌 When to Reuse the Key
+##  When to Reuse the Key
 - Initial SDK setup
 - SDK configuration reinitialization or migration
 
 ---
 
-## 🚨 Best Practices
+##  Best Practices
 - Organize configurations clearly by account.
 - Securely store encryption keys separately from config files.
 - Validate and log critical SDK interactions.
