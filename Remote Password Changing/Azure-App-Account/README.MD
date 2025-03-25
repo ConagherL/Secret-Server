@@ -1,12 +1,13 @@
 # Azure App Registration Password Management
 
-Effortlessly manage Azure App Registration client secrets by automating password generation, removing expired credentials, and integrating seamlessly with Delinea Secret Server.
+Effortlessly manage Azure App Registration client secrets by automating password generation, removing expired credentials, updating Azure Key Vault secrets, and integrating seamlessly with Delinea Secret Server.
 
 ## 🚀 Features
 - **Authentication**: Logs into Azure using a Service Principal.
 - **Secret Cleanup**: Removes expired client secrets.
 - **Password Generation**: Creates a new client secret for the specified App Registration.
 - **Expiration Management**: Uses a predefined expiration period for secret rotation.
+- **Azure Key Vault Integration**: Updates specified Azure Key Vault(s) with the new client secret.
 - **Logging**: Records all actions to a log file for auditing.
 - **Secret Server Integration**: Returns password and expiration date as DataItems.
 
@@ -17,12 +18,14 @@ Effortlessly manage Azure App Registration client secrets by automating password
 | `$Object-ID`| Object ID of the Azure App Registration          |
 | `$client-id`| Service Principal Application ID                 |
 | `$client-secret` | Service Principal Secret                    |
+| `$tenant-id` | Azure Active Directory Tenant ID                |
+| `$keyvaults` | Comma-separated list of Azure Key Vault names   |
 
 ## ⚡ Usage
 Run the script with the required parameters:
 
 ```powershell
-.\Azure-App_Registration-RPC.ps1 "MyAppSecret" "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy" "SuperSecretKey"
+.\Azure-App_Registration-RPC.ps1 "MyAppSecret" "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy" "SuperSecretKey" "tenant123" "vault1,vault2"
 ```
 
 ## 📌 Example Output
@@ -48,16 +51,19 @@ C:\temp\Logs\AppPasswordLog.txt
 The Service Principal used by the script requires the following permissions:
 - `Application.ReadWrite.All`
 - `Directory.Read.All`
+- `KeyVault.Secret.ReadWrite.All`
 
 These permissions can be granted by assigning the appropriate roles to the Service Principal in the Azure portal.
 
 ### PowerShell Module Requirements
 The script requires the following PowerShell module:
 - `Az.Accounts`
+- `Az.KeyVault`
 
-You can install it using the following command:
+You can install them using the following command:
 ```powershell
 Install-Module -Name Az.Accounts -Force
+Install-Module -Name Az.KeyVault -Force
 ```
 
 ### Step 1: Add Scripts to Secret Server
@@ -78,7 +84,7 @@ Install-Module -Name Az.Accounts -Force
 | Field   | Value                           |
 |---------|---------------------------------|
 | Script  | Azure_App_Registration_RPC.ps1  |
-| Arguments | `$[1]$client-id $[1]$client-secret $[1]$tenant-id $username $newpassword` |
+| Arguments | `$[1]$client-id $[1]$client-secret $[1]$tenant-id $username $newpassword $keyvaults` |
 
 ![My Image](https://github.com/user-attachments/assets/081a02e2-91d4-426a-b551-74c317135769)
 
