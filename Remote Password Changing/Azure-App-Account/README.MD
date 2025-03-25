@@ -49,9 +49,16 @@ C:\temp\Logs\AppPasswordLog.txt
 
 ### Azure Permissions
 The Service Principal used by the script requires the following permissions:
-- `Application.ReadWrite.All`
-- `Directory.Read.All`
-- `KeyVault.Secret.ReadWrite.All`
+
+#### Azure Key Vault
+The script requires the following permissions for Azure Key Vault:
+- `If using Access Policies: "Set" (plus optionally "Get"/"List") secret permissions`
+- `If using RBAC: Key Vault Secrets Officer (or Key Vault Contributor)`
+
+#### Azure AD / Graph
+The script requires the following permissions for Azure AD / Graph:
+- `Preferably Application.ReadWrite.OwnedBy if SP is the owner, otherwise Application.ReadWrite.All (plus necessary read permissions)`
+- `Application.ReadWrite.OwnedBy or Application.ReadWrite.All (controls deletion/writing)`
 
 These permissions can be granted by assigning the appropriate roles to the Service Principal in the Azure portal.
 
@@ -84,7 +91,8 @@ Install-Module -Name Az.KeyVault -Force
 | Field   | Value                           |
 |---------|---------------------------------|
 | Script  | Azure_App_Registration_RPC.ps1  |
-| Arguments | `$[1]$client-id $[1]$client-secret $[1]$tenant-id $username $newpassword $keyvaults` |
+| Arguments | `$username $Object-ID $[1]$client-id $[1]$client-secret $azure-key-vaults $tenant-id` |
+
 
 
 ### Step 3: Import Secret Template
@@ -92,7 +100,6 @@ Install-Module -Name Az.KeyVault -Force
 - Set the Expiration field to "Not Editable" to prevent users from modifying it.
 - Adjust password complexity to avoid "Password Complexity" warnings.
 - Map the previously built password changer to the template.
-
 
 
 ### Step 4: Create Secret
@@ -104,4 +111,3 @@ Install-Module -Name Az.KeyVault -Force
 
 ### Step 6: Verify Password Changing
 - Test and verify that password rotation functions correctly.
-
