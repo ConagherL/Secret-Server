@@ -86,7 +86,6 @@ Install-Module -Name Az.KeyVault -Force
 | Script  | Azure_App_Registration_RPC.ps1  |
 | Arguments | `$[1]$client-id $[1]$client-secret $[1]$tenant-id $username $newpassword $keyvaults` |
 
-![My Image](https://github.com/user-attachments/assets/081a02e2-91d4-426a-b551-74c317135769)
 
 ### Step 3: Import Secret Template
 - Import the secret template via the provided XML file.
@@ -94,7 +93,7 @@ Install-Module -Name Az.KeyVault -Force
 - Adjust password complexity to avoid "Password Complexity" warnings.
 - Map the previously built password changer to the template.
 
-![My Image](https://github.com/user-attachments/assets/b951cfb3-ec64-4179-8ca7-d56feba08d7e)
+
 
 ### Step 4: Create Secret
 - Create a new Secret using the imported template.
