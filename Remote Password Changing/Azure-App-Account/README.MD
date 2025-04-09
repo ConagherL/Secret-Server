@@ -3,8 +3,8 @@
 Effortlessly manage Azure App Registration client secrets by automating password generation, removing expired credentials, updating Azure Key Vault secrets, and integrating seamlessly with Delinea Secret Server. 
 
 - Two versions of this code exist.
-- The first version handles the RPC for App registration and AKV secrets.
-- The second one utilizes the released AKV external secrets feature in Secret Server and only performs the RPC on the app registration. External secrets must be set up and listed on the master secret.
+-- The first version handles the RPC for App registration and AKV secrets.
+-- The second one utilizes the released AKV external secrets feature in Secret Server and only performs the RPC on the app registration. External secrets must be set up and listed on the master secret.
 
 ## 🚀 Features
 - **Authentication**: Logs into Azure using a Service Principal (App ID + Secret).
