@@ -1,19 +1,18 @@
 <#
 .SYNOPSIS
-    Rotates an Azure App Registration client secret and updates specified Azure Key Vaults with the new secret.
+    Rotates an Azure App Registration client secret.
 
 .DESCRIPTION
     This script performs the following actions:
     - Authenticates to Azure using a Service Principal.
     - Optionally removes credentials from the App Registration that match the secret name:
         * Only expired credentials (default)
-        * All credentials matching the name
+        * All credentials matching the name (if override enabled)
     - Generates a new client secret for the given App Registration.
-    - Updates one or more Azure Key Vaults with the new secret.
     - Logs all operations and supports optional debugging mode.
 
 .PARAMETER (args[0]) SecretName
-    The name of the client secret to generate and update in Azure Key Vault.
+    The name of the client secret to generate.
 
 .PARAMETER (args[1]) ObjectId
     The Object ID of the Azure App Registration.
@@ -27,11 +26,8 @@
 .PARAMETER (args[4]) TenantId
     The Azure AD Tenant ID.
 
-.PARAMETER (args[5]) KeyVaultsCsv
-    A comma-separated list of Azure Key Vault names to update.
-
 .NOTES
-    Requires Az.Accounts, Az.Resources, Az.KeyVault modules.
+    Requires Az.Accounts and Az.Resources modules.
     Final output must be DataItems only.
 #>
 
@@ -41,7 +37,7 @@ $RemoveExpiredSecretsOnly = $false   # Removes only expired secrets that match t
 $RemoveMatchingSecretsOnly = $false # Removes all matching secrets regardless of expiration
 
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$LogFilePath = "C:\temp\Logs\AppPassword-AKVPassword-Log-$timestamp.txt"
+$LogFilePath = "C:\temp\Logs\AppPassword-Rotation-Log-$timestamp.txt"
 
 function Write-LogMessage {
     param ([string]$Message, [string]$Level = "INFO")
@@ -61,12 +57,11 @@ if ($EnableDebugLogging) {
     Write-LogMessage "=============================="
 }
 
-$SecretName   = $args[0].Trim()
-$ObjectId     = $args[1].Trim()
-$AuthAppId    = $args[2].Trim()
-$AuthSecret   = $args[3].Trim()
-$TenantId     = $args[4].Trim()
-$KeyVaultsCsv = $args[5].Trim()
+$SecretName       = $args[0].Trim()
+$ObjectId         = $args[1].Trim()
+$AuthAppId        = $args[2].Trim()
+$AuthSecret       = $args[3].Trim()
+$TenantId         = $args[4].Trim()
 
 $ExpirationDays = 180
 $StartDate = Get-Date
@@ -92,8 +87,7 @@ function Remove-ExpiredSecrets {
 
             $customKeyIdEncoded = [System.Convert]::ToBase64String($secret.CustomKeyIdentifier)
             $match = ($customKeyIdEncoded -eq $targetKeyId)
-            $expired = ($null -ne $secret.EndDate -and $secret.EndDate -lt (Get-Date))
-            ### $expired = ($secret.EndDate -ne $null -and $secret.EndDate -lt (Get-Date))
+            $expired = ($secret.EndDate -ne $null -and $secret.EndDate -lt (Get-Date))
 
             if ($EnableDebugLogging) {
                 Write-LogMessage "DEBUG: Secret $($secret.KeyId) — Match=$match, Expired=$expired"
@@ -115,31 +109,6 @@ function Remove-ExpiredSecrets {
     }
 
     Write-LogMessage "Secret removal complete for '$TargetSecretName'."
-}
-
-function Update-AkvSecret {
-    param (
-        [string]$VaultName,
-        [string]$SecretName,
-        [string]$SecretValue,
-        [datetime]$ExpirationDate
-    )
-
-    try {
-        Write-LogMessage "Updating secret '$SecretName' in Azure Key Vault '$VaultName'..."
-        $kvParams = @{
-            VaultName   = $VaultName
-            Name        = $SecretName
-            SecretValue = (ConvertTo-SecureString $SecretValue -AsPlainText -Force)
-            Expires     = $ExpirationDate
-        }
-        Set-AzKeyVaultSecret @kvParams | Out-Null
-        Write-LogMessage "Secret '$SecretName' updated in Azure Key Vault '$VaultName'."
-        return $true
-    } catch {
-        Write-LogMessage "Error updating Key Vault '$VaultName': $_" -Level "ERROR"
-        return $false
-    }
 }
 
 try {
@@ -170,23 +139,6 @@ try {
 } catch {
     Write-LogMessage "Failed to generate secret: $_" -Level "ERROR"
     exit 1
-}
-
-if ($KeyVaultsCsv) {
-    $KeyVaultNames = $KeyVaultsCsv -split ',' | ForEach-Object { $_.Trim() }
-    Write-LogMessage "Azure Key Vaults: $($KeyVaultNames -join ', ')"
-    $akvFailed = $false
-    foreach ($vault in $KeyVaultNames) {
-        if (-not (Update-AkvSecret -VaultName $vault -SecretName $SecretName -SecretValue $SecretValue -ExpirationDate $EndDate)) {
-            $akvFailed = $true
-        }
-    }
-    if ($akvFailed) {
-        Write-LogMessage "Azure Key Vault update failed." -Level "ERROR"
-        exit 1
-    }
-} else {
-    Write-LogMessage "No Key Vaults provided. Skipping update."
 }
 
 $dataItem = New-Object -TypeName PSObject
