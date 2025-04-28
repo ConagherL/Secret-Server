@@ -1,59 +1,109 @@
-# SentinelOne Remote Password Changing Script
+# SentinelOne Scripts for Remote Password Management and Validation
 
-This script automates the process of changing a user's password in SentinelOne using the SentinelOne API. It is designed to be used with Secret Server for secure password management.
-This script automates the process of changing a user's password in SentinelOne. It uses the SentinelOne API to authenticate and perform the password change operation. The process is logged for auditing and debugging purposes.
+This repository contains two PowerShell scripts for managing and validating user credentials in SentinelOne using the SentinelOne API. Both scripts are designed to be used with Secret Server for secure password management. All operations are logged for auditing and debugging purposes.
+
 ---
-## Features
-## Prerequisitesto SentinelOne using admin credentials.
-- Changes the password for a specified user.
-1. **SentinelOne API Access**: Ensure you have API access to your SentinelOne instance.
-2. **Admin Account**: An admin account with permissions to change user passwords.
-3. **PowerShell**: The script is written in PowerShell and requires a compatible environment to execute.
-4. **Network Connectivity**: Ensure the machine running the script can reach the SentinelOne API endpoint.The script requires the following parameters to be passed as arguments:
-**ApiUrl**: The URL of the SentinelOne server.
----2. **AdminUsername**: The username of an admin account with permissions to change passwords.
-rd**: The password for the admin account.
-## Configuration4. **UserId**: The ID of the user whose password needs to be changed.
 
+## Scripts Overview
+
+### 1. **SentinelOne_RPC.ps1**
+This script automates the process of changing a user's password in SentinelOne.
+
+#### Features
+- Changes the password for a specified user in SentinelOne.
+- Logs all operations and errors for auditing and debugging.
+- Supports debug mode for detailed logging.
+
+#### Configuration
 The script requires the following parameters to be passed as arguments:
-gurations:
 1. **ApiUrl**: The URL of the SentinelOne server.
-2. **AdminUsername**: The username of an admin account with permissions to change passwords.mp\Logs\ChangePasswordLog.txt`).
-3. **AdminPassword**: The password for the admin account.` to disable it.
+2. **AdminUsername**: The username of an admin account with permissions to change passwords.
+3. **AdminPassword**: The password for the admin account.
 4. **UserId**: The ID of the user whose password needs to be changed.
-5. **NewPassword**: The new password to set for the user.## Usage
-the required arguments in the following order:
-### Default Settings```powershell
-inUsername> <AdminPassword> <UserId> <NewPassword>
+5. **NewPassword**: The new password to set for the user.
+
+#### Default Settings
 - **Log Directory**: `C:\Temp\Logs`
 - **Log File**: `C:\Temp\Logs\ChangePasswordLog.txt`
-- **Debug Mode**: Enabled by default. Set `$DebugEnabled` to `$false` in the script to disable debug logging.### Example
-powershell
----.\SentinelOne_RPC.ps1 "https://sentinelone.example.com" "admin" "password123" "user123" "newpassword456"
+- **Debug Mode**: Enabled by default. Set `$DebugEnabled` to `$false` in the script to disable debug logging.
 
-## Usage
-
-Run the script with the required arguments in the following order:- Logs are stored in the directory specified by `LogDir`.
-try includes a timestamp and a message describing the operation or error.
-```powershell
-.\SentinelOne_RPC.ps1 <ApiUrl> <AdminUsername> <AdminPassword> <UserId> <NewPassword>Error Handling
-```- The script will throw an error if authentication fails or if the password change operation encounters an issue.
-e logged to the log file for troubleshooting.
-### Example
+#### Usage
+Run the script with the required arguments in the following order:
 
 ```powershell
-.\SentinelOne_RPC.ps1 "https://sentinelone.example.com" "admin" "password123" "user123" "newpassword456"he `DebugEnabled` flag can be toggled to control the verbosity of the logs.
-```---## Logging- Logs are stored in the directory specified by the `LogDir` variable.- Each log entry includes a timestamp and a message describing the operation or error.- Debug logs can be enabled or disabled by modifying the `$DebugEnabled` variable in the script.---## Troubleshooting1. **Authentication Errors**:   - Ensure the `ApiUrl`, `AdminUsername`, and `AdminPassword` are correct.   - Verify the admin account has API access and sufficient permissions.2. **Password Change Failures**:   - Confirm the `UserId` is valid and corresponds to an existing user in SentinelOne.   - Ensure the `NewPassword` meets SentinelOne's password policy requirements.3. **Network Issues**:   - Verify the machine running the script can reach the SentinelOne API endpoint.
+.\SentinelOne_RPC.ps1 <ApiUrl> <AdminUsername> <AdminPassword> <UserId> <NewPassword>
+```
+
+##### Example
+```powershell
+.\SentinelOne_RPC.ps1 "https://sentinelone.example.com" "admin" "password123" "user123" "newpassword456"
+```
+
+---
+
+### 2. **SentinelOne_HB.ps1**
+This script validates a user's credentials against a SentinelOne instance.
+
+#### Features
+- Authenticates a user against SentinelOne using their credentials.
+- Logs the authentication result for auditing and debugging.
+- Supports debug mode for detailed logging.
+
+#### Configuration
+The script requires the following parameters to be passed as arguments:
+1. **ApiUrl**: The URL of the SentinelOne server.
+2. **Username**: The username to validate.
+3. **Password**: The password to validate.
+
+#### Default Settings
+- **Log Directory**: `C:\Temp\Logs`
+- **Log File**: `C:\Temp\Logs\ValidationLog.txt`
+- **Debug Mode**: Enabled by default. Set `$DebugEnabled` to `$false` in the script to disable debug logging.
+
+#### Usage
+Run the script with the required arguments in the following order:
+
+```powershell
+.\SentinelOne_HB.ps1 <ApiUrl> <Username> <Password>
+```
+
+##### Example
+```powershell
+.\SentinelOne_HB.ps1 "https://sentinelone.example.com" "user123" "password123"
+```
+
+---
+
+## Logging
+- Logs are stored in the directory specified by the `LogDir` variable in each script.
+- Each log entry includes a timestamp and a message describing the operation or error.
+- Debug logs can be enabled or disabled by modifying the `$DebugEnabled` variable in the scripts.
+
+---
+
+## Troubleshooting
+### For **SentinelOne_RPC.ps1**:
+1. **Authentication Errors**:
+   - Ensure the `ApiUrl`, `AdminUsername`, and `AdminPassword` are correct.
+   - Verify the admin account has API access and sufficient permissions.
+2. **Password Change Failures**:
+   - Confirm the `UserId` is valid and corresponds to an existing user in SentinelOne.
+   - Ensure the `NewPassword` meets SentinelOne's password policy requirements.
+3. **Network Issues**:
+   - Verify the machine running the script can reach the SentinelOne API endpoint.
    - Check for firewall or proxy restrictions that may block API requests.
 
-4. **Debugging**:
-   - Enable debug logging by setting `$DebugEnabled` to `$true` in the script.
-   - Review the log file for detailed error messages and timestamps.
+### For **SentinelOne_HB.ps1**:
+1. **Authentication Errors**:
+   - Ensure the `ApiUrl`, `Username`, and `Password` are correct.
+   - Verify the user account has API access and valid credentials.
+2. **Network Issues**:
+   - Verify the machine running the script can reach the SentinelOne API endpoint.
+   - Check for firewall or proxy restrictions that may block API requests.
 
 ---
 
 ## Notes
-
-- This script is intended to be used in conjunction with Secret Server for secure password management.
-- Ensure the admin account has sufficient permissions to change user passwords.
+- These scripts are intended to be used in conjunction with Secret Server for secure password management.
+- Ensure the accounts used have sufficient permissions for their respective operations.
 - The `DebugEnabled` flag can be toggled to control the verbosity of the logs.
