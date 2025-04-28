@@ -46,19 +46,15 @@ function Validate-UserCredentials {
         Write-DebugLog "Attempting authentication for user: $Username"
         $response = Invoke-RestMethod -Method Post -Uri $uri -Body ($body | ConvertTo-Json -Depth 3) -ContentType 'application/json'
         if ($response.data.token) {
-            Write-Host "Validation successful." -ForegroundColor Green
             Write-DebugLog "Authentication successful for user: $Username"
             return $true
         }
         else {
-            Write-Host "Validation failed." -ForegroundColor Red
             Write-DebugLog "Authentication failed for user: $Username"
             return $false
         }
     }
     catch {
-        Write-Host "Validation failed with error:" -ForegroundColor Red
-        Write-Host $_.Exception.Message
         Write-DebugLog "Authentication error for user: $Username - $($_.Exception.Message)"
         return $false
     }
@@ -69,14 +65,12 @@ try {
     $validationResult = Validate-UserCredentials -ApiUrl $ApiUrl -Username $Username -Password $Password
     
     if ($validationResult) {
-        Write-Host "User credentials are valid."
+        Write-DebugLog "User credentials are valid."
     }
     else {
-        Write-Host "User credentials are invalid." -ForegroundColor Yellow
+        Write-DebugLog "User credentials are invalid."
     }
 }
 catch {
-    Write-Host "Error during credential validation process:" -ForegroundColor Red
-    Write-Host $_.Exception.Message
     Write-DebugLog "Fatal error during validation process: $($_.Exception.Message)"
 }
