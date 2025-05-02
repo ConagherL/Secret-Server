@@ -42,95 +42,88 @@ powershell.exe -ExecutionPolicy Bypass -File Encrypt-WebConfig.ps1 `
 #>
 
 
-# -------------------------
-# CONFIGURATION
-# -------------------------
+# Expected arguments: $USERNAME $DOMAIN $PASSWORD $MACHINE "NAME OF SECTION IN WEB CONFIG" "LOCATION OF CONFIG FILE"
 
-# Arguments
-$privUserName  = $args[0]  # Username
-$prefix        = $args[1]  # Domain
-$privUserName  = "$prefix\$privUserName"
-$privPassword  = ConvertTo-SecureString -AsPlainText $args[2] -Force
-$creds         = New-Object System.Management.Automation.PSCredential -ArgumentList $privUserName, $privPassword
-$comp          = $args[3]  # Remote machine
-$sec           = $args[4]  # Section of the web.config to encrypt/decrypt (e.g., "connectionStrings")
-$loc           = $args[5]  # Path to application directory
+$privUserName = $args[0]
+$prefix       = $args[1]
+$privUserName = "$prefix\$privUserName"
+$privPassword = ConvertTo-SecureString -AsPlainText $args[2] -Force
+$creds        = New-Object System.Management.Automation.PSCredential -ArgumentList $privUserName, $privPassword
+$comp         = $args[3]
+$sec          = $args[4]
+$loc          = $args[5]
 
-# Tool & Parameters
-$filePath      = Join-Path $env:windir "Microsoft.NET\Framework64\v4.0.30319\aspnet_regiis.exe"
-$params        = @("-pef", $sec, $loc) # Parameters for aspnet_regiis.exe -pef = Encrypt
+# --- FILE PATH FOR ASP.NET TOOL ---
+$filePath = Join-Path $env:windir "Microsoft.NET\Framework64\v4.0.30319\aspnet_regiis.exe"
+$params   = @("-pef", $sec, $loc)
 
-# Logging toggle
-$EnableLogging = $true  # Set to $false to disable logging entirely
-
-# -------------------------
-# REMOTE EXECUTION BLOCK
-# -------------------------
+# --- REMOTE EXECUTION BLOCK ---
 Invoke-Command -ComputerName $comp -Credential $creds -ScriptBlock {
     param (
-        $filePath, $params, $loc, $sec, $remoteComp, $origArgs, $EnableLogging
+        $filePath,
+        $params,
+        $loc,
+        $sec,
+        $remoteComp,
+        $origArgs
     )
 
-    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $timestamp = (Get-Date).ToString("yyyyMMdd_HHmmss")
     $logDir    = "C:\Temp\WebConfigEncryptLogs"
     $logFile   = Join-Path $logDir "Encrypt_${remoteComp}_$timestamp.log"
 
-    function Write-RemoteLog {
-        param ([string]$msg)
-        if ($EnableLogging) {
-            $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            $line = "$ts`t$msg"
-            Write-Host $line
-            try {
-                Add-Content -Path $logFile -Value $line
-            } catch {
-                Write-Host "ERROR writing to log: $_"
-            }
-        }
-    }
-
-    # Create log folder if needed
-    if ($EnableLogging -and -not (Test-Path $logDir)) {
+    # Ensure log directory exists
+    if (-not (Test-Path $logDir)) {
         try {
             New-Item -Path $logDir -ItemType Directory -Force | Out-Null
         } catch {
-            Write-Host "ERROR creating log directory: $_"
+            Write-Host "Failed to create log directory: $_"
             return
         }
     }
 
-    Write-RemoteLog "===== START: Web.config Encryption ====="
-    Write-RemoteLog "User: $([Environment]::UserName)"
-    Write-RemoteLog "Machine: $remoteComp"
-    Write-RemoteLog "Section: $sec"
-    Write-RemoteLog "Config Path: $loc"
-    Write-RemoteLog "Log File: $logFile"
-    Write-RemoteLog "ARG COUNT: $($origArgs.Length)"
-    for ($i = 0; $i -lt $origArgs.Length; $i++) {
-        Write-RemoteLog "args[$i] = '$($origArgs[$i])'"
+    function Write-RemoteLog {
+        param ([string]$msg)
+        $ts   = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+        $line = "$ts`t$msg"
+        Write-Host $line
+        try {
+            Add-Content -Path $logFile -Value $line
+        } catch {
+            Write-Host "Failed to write to log file: $_"
+        }
     }
 
-    # Validate path and config file
+    # --- Logging block ---
+    Write-RemoteLog "===== REMOTE ENCRYPTION START ====="
+    Write-RemoteLog "Running as user: $([Environment]::UserName)"
+    Write-RemoteLog "Remote host: $remoteComp"
+    Write-RemoteLog "Target section: $sec"
+    Write-RemoteLog "Target path: $loc"
+    Write-RemoteLog "Log file path: $logFile"
+    Write-RemoteLog "Raw arguments: $($origArgs -join ', ')"
+
+    # --- Path validation ---
     if (-not (Test-Path $loc)) {
-        Write-RemoteLog "ERROR: Path does not exist - $loc"
+        Write-RemoteLog "ERROR: Directory does NOT exist: $loc"
         return
     }
 
     $configPath = Join-Path $loc "web.config"
     if (-not (Test-Path $configPath)) {
-        Write-RemoteLog "ERROR: web.config NOT found at $configPath"
+        Write-RemoteLog "ERROR: web.config not found at: $configPath"
         return
     }
 
-    # Perform encryption
+    # --- Run encryption command ---
     try {
-        Write-RemoteLog "Invoking encryption command: aspnet_regiis.exe -pef $sec $loc"
+        Write-RemoteLog "Executing: $filePath -pef $sec $loc"
         & $filePath @params 2>&1 | ForEach-Object { Write-RemoteLog $_ }
-        Write-RemoteLog "SUCCESS: Encryption completed."
+        Write-RemoteLog "Encryption complete"
     } catch {
-        Write-RemoteLog "ERROR: Exception during encryption: $_"
+        Write-RemoteLog "ERROR during encryption: $_"
     }
 
-    Write-RemoteLog "===== END: Web.config Encryption ====="
+    Write-RemoteLog "===== REMOTE ENCRYPTION END ====="
 
-} -ArgumentList $filePath, $params, $loc, $sec, $comp, $args, $EnableLogging
+} -ArgumentList $filePath, $params, $loc, $sec, $comp, @($args)
