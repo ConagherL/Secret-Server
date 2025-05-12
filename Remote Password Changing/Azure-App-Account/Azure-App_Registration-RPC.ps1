@@ -192,7 +192,7 @@ try {
         }
     } | ConvertTo-Json -Depth 3
 
-    Write-LogMessage "Sending /addPassword request..."
+    Write-LogMessage "Sending password request..."
     $response = Invoke-RestMethod -Method Post -Uri $AddUri -Headers $Headers -Body $AddBody
 
     if ($EnableDebugLogging) {
