@@ -11,7 +11,7 @@
 # --- CONFIGURATION ---
 $EnableLogging                = $true
 $EnableDebugLogging           = $false
-$EnableExpiredSecretCleanup   = $true   # Deletes secrets that match the name, are expired, and have the correct tag
+$EnableExpiredSecretCleanup   = $false   # Deletes secrets that match the name, are expired, and have the correct tag
 $EnableFullNameMatchCleanup   = $false   # Deletes ALL secrets that match the name, regardless of expiration/tag
 $ExpirationDays               = 180
 $CustomKeyIdentifierTag       = "CreatedBy:SecretServer"
