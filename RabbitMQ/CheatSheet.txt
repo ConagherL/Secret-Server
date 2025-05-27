@@ -1,6 +1,8 @@
+MUST BE RAN BY THE LOCAL ADMINISTRATOR ACCOUNT
+
 Rabbit MQ - Pause Minority 3 node cluster
 
-Install Rabbit MQ Helper (run on all rabbit)
+Install Rabbit MQ Helper/Pre-reqs on all rabbitMQ nodes
 
 #Rabbit helper
 Install-Connector with switches
