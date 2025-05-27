@@ -3,7 +3,7 @@ Rabbit MQ - Pause Minority 3 node cluster
 Install Rabbit MQ Helper (run on all rabbit)
 
 #Rabbit helper
-Install-Connector
+Install-Connector with switches
 
 #copy cookies
 Stop services on b,c
@@ -25,6 +25,10 @@ rabbitmqctl start_app
 #edit - c:\rabbitmq\rabbitmq.config - Always add to a 3 node cluster
 # add to bottom
 cluster_partition_handling = pause_minority
+
+
+# Load Balancer
+Send all traffic to one node weights and then to another node on failure. 3 node setup can only handle one failure in the cluster
  
 ####### NO LONGER IN USE ########
 #Open rabbit cmd on any server
