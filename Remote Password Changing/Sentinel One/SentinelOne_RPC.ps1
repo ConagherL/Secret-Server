@@ -5,12 +5,12 @@ Logs results with configurable verbosity and logging state.
 #>
 
 # --- CONFIGURATION ---
-$ApiUrl         = $args[0]    # Base URL of SentinelOne (e.g., https://your-s1-server.com)
+$ApiUrl         = $args[0]    # Base URL of SentinelOne
 $LoginToken     = $args[1]    # Login token from /users/login
 $TargetUsername = $args[2]    # The username/email to find and update
-$NewPassword    = $args[3]    # New password passed in clear text
+$NewPassword    = $args[3]    
 $LogDir         = 'C:\Temp\Logs'  # Log directory
-$LogFile        = Join-Path $LogDir 'PasswordChangeLog.txt'
+$LogFile        = Join-Path $LogDir 'SentinelOne_RPC.txt'
 $LoggingEnabled = $true       # Toggle logging
 $DebugEnabled   = $false      # Toggle verbose/debug logging
 
