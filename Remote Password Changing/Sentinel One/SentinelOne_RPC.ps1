@@ -1,103 +1,100 @@
 <#
 .SYNOPSIS
-Changes a user's password in SentinelOne.
-Logs the process to a log file.
+Changes a SentinelOne user password using the /users/change-password endpoint.
+Logs results with configurable verbosity and logging state.
 #>
 
 # --- CONFIGURATION ---
-$ApiUrl          = $args[0]    # SentinelOne server URL
-$AdminUsername   = $args[1]    # Admin username with permission to change passwords
-$AdminPassword   = $args[2]    # Admin password
-$UserId          = $args[3]    # ID of the user whose password you want to change
-$NewPassword     = $args[4]    # New password to set
-$LogDir          = 'C:\Temp\Logs'  # Directory where logs will be stored
-$LogFile         = Join-Path $LogDir 'ChangePasswordLog.txt'  # Full path to the log file
-$DebugEnabled    = $true       # Set to $false to disable debug logging
+$ApiUrl         = $args[0]    # Base URL of SentinelOne (e.g., https://your-s1-server.com)
+$LoginToken     = $args[1]    # Login token from /users/login
+$TargetUsername = $args[2]    # The username/email to find and update
+$NewPassword    = $args[3]    # New password passed in clear text
+$LogDir         = 'C:\Temp\Logs'  # Log directory
+$LogFile        = Join-Path $LogDir 'PasswordChangeLog.txt'
+$LoggingEnabled = $true       # Toggle logging
+$DebugEnabled   = $false      # Toggle verbose/debug logging
 
 # --- PREP WORK ---
-# Ensure the log directory exists, create it if it does not
-if (!(Test-Path -Path $LogDir)) {
+if ($LoggingEnabled -and !(Test-Path -Path $LogDir)) {
     New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 }
 
 # --- FUNCTIONS ---
-# Logs a debug message with a timestamp if debugging is enabled
 function Write-Log {
     param(
-        [string]$Message
+        [string]$Message,
+        [switch]$Force
     )
-    if ($DebugEnabled) {
-        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    if (-not $LoggingEnabled) { return }
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    if ($DebugEnabled -or $Force) {
         Add-Content -Path $LogFile -Value "$timestamp - $Message"
     }
 }
 
-# Authenticates to SentinelOne and retrieves an API token
-function Get-ApiToken {
+function Get-UserIdByUsername {
     param(
         [string]$ApiUrl,
-        [string]$Username,
-        [string]$Password
+        [string]$LoginToken,
+        [string]$Username
     )
-
-    $uri = "$ApiUrl/web/api/v2.1/login"
-    $body = @{ username = $Username; password = $Password }
-
+    $encodedUser = [System.Web.HttpUtility]::UrlEncode($Username)
+    $uri = "$ApiUrl/web/api/v2.1/users?username=$encodedUser"
+    $headers = @{ 'Authorization' = "token $LoginToken" }
+    Write-Log "Querying user ID for: $Username"
     try {
-        Write-Log "Requesting API token for admin user: $Username"
-        $response = Invoke-RestMethod -Method Post -Uri $uri -Body ($body | ConvertTo-Json -Depth 3) -ContentType 'application/json'
-        return $response.data.token
-    }
-    catch {
-        Write-Log "ERROR: Failed to obtain API token for user: $Username - $($_.Exception.Message)"
-        throw
+        $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers -ErrorAction Stop
+        if ($DebugEnabled) {
+            Write-Log "User query response: $($response | ConvertTo-Json -Depth 3)"
+        }
+        return $response.data[0].id
+    } catch {
+        Write-Log "Failed to query user: $($_.Exception.Message)" -Force
+        return $null
     }
 }
 
-# Sets a user's password in SentinelOne
 function Set-UserPassword {
     param(
         [string]$ApiUrl,
-        [string]$ApiToken,
+        [string]$LoginToken,
         [string]$UserId,
         [string]$NewPassword
     )
-
     $uri = "$ApiUrl/web/api/v2.1/users/change-password"
-    $body = @{ data = @{ id = $UserId; newPassword = $NewPassword; confirmNewPassword = $NewPassword } }
-    $headers = @{ Authorization = "ApiToken $ApiToken"; 'Content-Type' = 'application/json' }
-
+    $headers = @{ 'Authorization' = "token $LoginToken"; 'Content-Type' = 'application/json' }
+    $body = @{ data = @{ id = $UserId; newPassword = $NewPassword; confirmNewPassword = $NewPassword } } | ConvertTo-Json -Depth 3
+    Write-Log "Sending password change request for user ID: $UserId"
     try {
-        Write-Log "Attempting to change password for user ID: $UserId"
-        $response = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -Body ($body | ConvertTo-Json -Depth 5) -ErrorAction Stop
-        return $response
-    }
-    catch {
-        Write-Log "ERROR: Failed to change password for user ID: $UserId - $($_.Exception.Message)"
-        throw
+        $response = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -Body $body -ErrorAction Stop
+        if ($DebugEnabled) {
+            Write-Log "Password change response: $($response | ConvertTo-Json -Depth 3)"
+        }
+        if ($response.data.success -eq $true) {
+            Write-Log "Password change successful for user ID: $UserId" -Force
+        } else {
+            Write-Log "Password change response received but success was false." -Force
+        }
+    } catch {
+        Write-Log "Password change failed: $($_.Exception.Message)" -Force
+        if ($_.Exception.Response -and $_.Exception.Response -is [System.Net.HttpWebResponse]) {
+            try {
+                $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+                $responseBody = $reader.ReadToEnd()
+                Write-Log "ERROR BODY: $responseBody" -Force
+            } catch {
+                Write-Log "ERROR reading error body: $($_.Exception.Message)" -Force
+            }
+        }
     }
 }
 
 # --- MAIN ---
-try {
-    Write-Log "==== Script started ===="
-
-    # Authenticate and retrieve API token
-    $ApiToken = Get-ApiToken -ApiUrl $ApiUrl -Username $AdminUsername -Password $AdminPassword
-
-    # Attempt to change the user's password
-    $changeResult = Set-UserPassword -ApiUrl $ApiUrl -ApiToken $ApiToken -UserId $UserId -NewPassword $NewPassword
-
-    # Check if the password change was successful
-    if ($changeResult.data.success -eq $true) {
-        Write-Log "Password change successful for user ID: $UserId"
-    }
-    else {
-        Write-Log "WARNING: Password change may have failed for user ID: $UserId"
-    }
-
-    Write-Log "==== Script completed successfully ===="
+Write-Log "==== Password Change Script Started ====" -Force
+$userId = Get-UserIdByUsername -ApiUrl $ApiUrl -LoginToken $LoginToken -Username $TargetUsername
+if ($userId) {
+    Set-UserPassword -ApiUrl $ApiUrl -LoginToken $LoginToken -UserId $userId -NewPassword $NewPassword
+} else {
+    Write-Log "User ID not found for $TargetUsername. Aborting." -Force
 }
-catch {
-    Write-Log "FATAL: Password change script failed - $($_.Exception.Message)"
-}
+Write-Log "==== Password Change Script Ended ====" -Force

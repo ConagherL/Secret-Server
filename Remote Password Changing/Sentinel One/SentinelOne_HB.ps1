@@ -1,76 +1,71 @@
 <#
 .SYNOPSIS
-Validates a user's credentials against a SentinelOne instance.
-Logs the authentication result to a log file.
+Validates a SentinelOne login token using the /users/login/by-token endpoint.
+Logs success or failure of the token authentication to a local log file.
 #>
 
 # --- CONFIGURATION ---
-$ApiUrl         = $args[0]    # Example: 'https://your-sentinelone-server.com'
-$Username       = $args[1]    # Username to validate
-$Password       = $args[2]    # Password to validate
-$LogDir         = 'C:\Temp\Logs'  # Directory where logs will be stored
-$LogFile        = Join-Path $LogDir 'ValidationLog.txt'  # Full path to the log file
-$DebugEnabled   = $true        # Set to $false to disable debug logging
+$ApiUrl         = $args[0]    # Base URL of SentinelOne
+$LoginToken     = $args[1]    # Login token
+$LogDir         = 'C:\Temp\Logs'  
+$LogFile        = Join-Path $LogDir 'SentinelOne_HB.txt'
+$LoggingEnabled = $true       # Set to $false to disable all logging
+$DebugEnabled   = $false      # Set to $true for debug-level detail
 
 # --- PREP WORK ---
-# Ensure log directory exists
-if (!(Test-Path -Path $LogDir)) {
+if ($LoggingEnabled -and !(Test-Path -Path $LogDir)) {
     New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 }
 
 # --- FUNCTIONS ---
-function Write-DebugLog {
+function Write-Log {
     param(
-        [string]$Message
+        [string]$Message,
+        [switch]$Force
     )
-    if ($DebugEnabled) {
-        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    if (-not $LoggingEnabled) { return }
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    if ($DebugEnabled -or $Force) {
         Add-Content -Path $LogFile -Value "$timestamp - $Message"
     }
 }
 
-function Validate-UserCredentials {
+function Test-TokenValidity {
     param(
         [string]$ApiUrl,
-        [string]$Username,
-        [string]$Password
+        [string]$LoginToken
     )
 
-    $uri = "$ApiUrl/web/api/v2.1/login"
-    $body = @{ 
-        username = $Username
-        password = $Password
-    }
-
+    $uri = "$ApiUrl/web/api/v2.1/users/login/by-token?token=$LoginToken"
     try {
-        Write-DebugLog "Attempting authentication for user: $Username"
-        $response = Invoke-RestMethod -Method Post -Uri $uri -Body ($body | ConvertTo-Json -Depth 3) -ContentType 'application/json'
-        if ($response.data.token) {
-            Write-DebugLog "Authentication successful for user: $Username"
-            return $true
+        Write-Log "Attempting token validation via GET $uri"
+        $response = Invoke-RestMethod -Method Get -Uri $uri -ErrorAction Stop
+        Write-Log "Token is valid. User logged in successfully."
+        if ($DebugEnabled) {
+            Write-Log "Returned user data: $($response | ConvertTo-Json -Depth 3)"
         }
-        else {
-            Write-DebugLog "Authentication failed for user: $Username"
-            return $false
+        return $true
+    } catch {
+        Write-Log "Token validation failed: $($_.Exception.Message)" -Force
+        if ($_.Exception.Response -and $_.Exception.Response -is [System.Net.HttpWebResponse]) {
+            try {
+                $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+                $responseBody = $reader.ReadToEnd()
+                Write-Log "ERROR BODY: $responseBody" -Force
+            } catch {
+                Write-Log "ERROR reading error body: $($_.Exception.Message)" -Force
+            }
         }
-    }
-    catch {
-        Write-DebugLog "Authentication error for user: $Username - $($_.Exception.Message)"
         return $false
     }
 }
 
 # --- MAIN ---
-try {
-    $validationResult = Validate-UserCredentials -ApiUrl $ApiUrl -Username $Username -Password $Password
-    
-    if ($validationResult) {
-        Write-DebugLog "User credentials are valid."
-    }
-    else {
-        Write-DebugLog "User credentials are invalid."
-    }
-}
-catch {
-    Write-DebugLog "Fatal error during validation process: $($_.Exception.Message)"
+Write-Log "==== Heartbeat Token Validation Started ====" -Force
+$valid = Test-TokenValidity -ApiUrl $ApiUrl -LoginToken $LoginToken
+Write-Log "Validation Result: $valid" -Force
+if ($valid) {
+    Write-Log "==== Heartbeat validation succeeded ====" -Force
+} else {
+    Write-Log "==== Heartbeat validation failed ====" -Force
 }
