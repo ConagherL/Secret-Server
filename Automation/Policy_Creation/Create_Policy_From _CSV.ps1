@@ -5,7 +5,7 @@
 
 #region ▶️ Parameters
 param(
-    [string]$BaseUrl   = "https://YOURSSURL",
+    [string]$BaseUrl   = "https://blt.secretservercloud.com",
     [string]$CsvPath   = "C:\temp\Policy_Creation\Policy_Info.csv",
     [string]$LogPath   = "C:\temp\Policy_Creation\Policy_CreateUpdate.log",
 

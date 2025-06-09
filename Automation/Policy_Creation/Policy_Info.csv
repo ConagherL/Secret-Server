@@ -1,0 +1,4 @@
+PolicyName,PolicyDescription,Approvers,FolderName
+TEST-1235,SOO Many Policies to build out,"bjones,ABC-CORP-Employees-DEMO",\Checkout\Policy-Test-5\test
+FUNNY-1234,CHANGE-TWOA good home,"ABC-CORP-Employees-DEMO,All Vault Users",	\Test9876\WillitWork
+HAPPY-1234,Happy Test Policy,"All Vault Users,ABC-CORP-Employees-DEMO",\Policy-Test-3
