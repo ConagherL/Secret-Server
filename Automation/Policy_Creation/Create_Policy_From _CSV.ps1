@@ -3,7 +3,6 @@
     Create or update Secret Server policies based on CSV input, then assign each policy to its folder
 #>
 
-#region ▶️ Parameters
 param(
     [string]$BaseUrl   = "https://yourssurl",
     [string]$CsvPath   = "C:\temp\Policy_Creation\Policy_Info.csv",
@@ -26,13 +25,13 @@ param(
     [bool]  $Log   = $true,
     [bool]  $Debug = $false
 )
-#endregion
+
 
 $OauthUrl = "$BaseUrl/oauth2/token"
 
 function Connect-SecretServer {
     param([string]$OauthEndpoint)
-    if ($Log) { Write-Host "🔐 Authenticating…" -ForegroundColor Yellow }
+    if ($Log) { Write-Host "Authenticating…" -ForegroundColor Yellow }
     $cred = Get-Credential
     $resp = Invoke-RestMethod -Uri $OauthEndpoint -Method Post -Body @{
         grant_type = "password"
@@ -40,7 +39,7 @@ function Connect-SecretServer {
         password   = $cred.GetNetworkCredential().Password
     } -ContentType 'application/x-www-form-urlencoded'
     $Global:AccessToken = $resp.access_token
-    if ($Log) { Write-Host "✅ Authenticated" -ForegroundColor Green }
+    if ($Log) { Write-Host "Authenticated" -ForegroundColor Green }
 }
 
 function Write-Log {
@@ -289,4 +288,4 @@ foreach ($row in $rows) {
     }
 }
 
-Write-Host "✔ All done." -ForegroundColor Green
+Write-Host "Processing Complete." -ForegroundColor Green
