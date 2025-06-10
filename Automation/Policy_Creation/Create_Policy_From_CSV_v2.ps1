@@ -180,7 +180,7 @@ function Set-FolderPolicy {
         $matches = @($resp.records | Where-Object { $_.folderPath.TrimStart('\').TrimEnd('\') -ieq $desired })
 
         if ($matches.Count -ne 1) {
-            Write-Log "Folder path '$FolderPath' not found or ambiguous (matched $($matches.Count))" -IsError
+            Write-Log "Folder path '$FolderPath' not found sor multiples were found (matched $($matches.Count))" -IsError
             return
         }
 
