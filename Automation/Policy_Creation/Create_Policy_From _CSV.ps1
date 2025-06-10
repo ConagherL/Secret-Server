@@ -4,7 +4,7 @@
 #>
 
 param(
-    [string]$BaseUrl   = "https://yourssurl",
+    [string]$BaseUrl   = "https://BLT.SECRETSERVERCLOUD.COM",
     [string]$CsvPath   = "C:\temp\Policy_Creation\Policy_Info.csv",
     [string]$LogPath   = "C:\temp\Policy_Creation\Policy_CreateUpdate.log",
 
@@ -23,7 +23,7 @@ param(
 
     # Logging & Debug
     [bool]  $Log   = $true,
-    [bool]  $Debug = $false
+    [bool]  $Debug = $true
 )
 
 
@@ -61,7 +61,7 @@ function Resolve-ApproverGroup {
         domainId                      = $null
         includeEveryone               = $true
         includeAll                    = $false
-        includeGroups                 = $false
+        includeGroups                 = $true
         includeUsers                  = $true
         onlyDoubleLockUsers           = $false
         includeInactive               = $false
