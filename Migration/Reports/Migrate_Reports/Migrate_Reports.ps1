@@ -20,14 +20,11 @@ The directory where report JSON files and logs will be saved.
 # Run the script with default settings.
 .\Migrate_Reports.ps1
 
-.NOTES
-Author: Conagher Lepley
-Date: 6/11/2025
 #>
 
 # Customizable Variables
-$sourceRootUrl       = 'ss-prod.blt.com/Secret_Server_PROD'       # Source tenant root URL
-$destinationRootUrl  = 'blt.secretservercloud.com'       # Destination tenant root URL
+$sourceRootUrl       = 'XXX.com/Secret_Server_PROD'       # Source tenant root URL
+$destinationRootUrl  = 'XXXX.secretservercloud.com'       # Destination tenant root URL
 $outputDirectory     = 'C:\temp\SQL_Reports'           # Directory for saving report details and logs
 $logFilePath         = Join-Path $outputDirectory 'SQL_Report_Migration.log'
 
