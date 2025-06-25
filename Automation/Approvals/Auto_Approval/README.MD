@@ -1,83 +1,92 @@
-# Auto Approval Script for Secret Server
+# Secret Server Auto Approval Script (v2)
 
-This PowerShell script automates the approval of secret access requests in Secret Server. It fetches pending requests, evaluates them against predefined criteria, and approves eligible requests.
+This PowerShell script automates the approval of Secret Server access requests. It is designed for use in environments with **multiple execution nodes**, ensuring each request is only approved once, even if processed concurrently.
 
-## Features
+---
 
-- **Authentication**: Supports both interactive and SDK-based authentication.
-- **Approval Criteria**:
-  - Excludes requests from a specific ticket system ID.
-  - Skips requests exceeding a maximum allowed duration.
-- **Logging**: Logs all actions, errors, and summaries to a specified log file.
-- **Pagination**: Handles paginated API responses to process all pending requests.
+## 🔐 Authentication Modes
 
-## Configuration
+The script supports two authentication modes:
 
-### Parameters
+### 1. Interactive OAuth
+- Prompts for username/password at runtime.
+- Uses Secret Server's OAuth2 `password` grant flow.
 
-- `-Interactive`: Enables interactive mode for authentication using user credentials. If not specified, SDK-based authentication is used.
+### 2. SDK CLI
+- Uses `tss.exe` CLI to generate an access token.
+- Requires:
+  - `-cd`: Path to SDK profile (`Config`)
+  - `-kd`: Path to key file (`Key`) if the profile is encrypted
 
-### Variables
+> SDK token example: `tss token -cd E:\SDK\Config -kd E:\SDK\Key`
 
-- **BaseUrl**: The base URL of your Secret Server instance.
-- **OauthUrl**: The OAuth token endpoint for authentication.
-- **ExcludedTicketSystemId**: The ticket system ID to exclude from approval.
-- **ApprovalReason**: The reason provided for approvals.
-- **MaxAllowedMinutes**: The maximum allowed duration (in minutes) for approval.
-- **PageSize**: The number of records to fetch per API call.
-- **EnableLogging**: Enables or disables logging to a file.
-- **EnableDebug**: Enables or disables debug output to the console.
-- **LogFilePath**: The file path for storing logs.
-- **SdkProfilePath**: The path to the SDK profile for authentication.
+---
 
-## Usage
+## 🧠 Key Features
 
-1. **Set Configuration**: Update the configuration variables in the script to match your environment.
-2. **Run the Script**:
-   - For interactive authentication:
-     ```powershell
-     .\Auto_Approval.ps1 -Interactive
-     ```
-   - For SDK-based authentication:
-     ```powershell
-     .\Auto_Approval.ps1
-     ```
-3. **Monitor Logs**: Check the log file specified in `$LogFilePath` for detailed information about the script's execution.
+- Approves only eligible access requests
+- Skips requests based on:
+  - Excluded Ticket System ID
+  - Maximum allowed access duration
+- Supports paging through pending requests
+- Handles concurrent node conflicts via:
+  - **Fallback check** for already-approved requests
+  - Tracks and logs `AlreadyApproved` requests instead of failing
 
-## Logging
+---
 
-The script logs informational and error messages to the specified log file. Debug messages can also be enabled by setting `$EnableDebug` to `$true`.
-
-## Error Handling
-
-- Authentication errors are logged and displayed in the console.
-- API errors during request fetching or approval are logged with detailed error messages.
-
-## Summary
-
-At the end of each run, the script logs a summary of the operation, including the number of approved, skipped, and failed requests, as well as the total execution time.
-
-## Requirements
-
-- PowerShell 5.1 or later.
-- Access to Secret Server API.
-- SDK installed and configured (if using SDK-based authentication).
-
-## Notes
-
-- Ensure the `$BaseUrl` and `$SdkProfilePath` are correctly configured for your environment.
-- The script skips requests that do not meet the approval criteria, such as those with excluded ticket system IDs or excessive durations.
-
-## Example
+## 📋 Configuration Parameters
 
 ```powershell
-# Run the script in interactive mode
-.\Auto_Approval.ps1 -Interactive
-
-# Run the script using SDK-based authentication
-.\Auto_Approval.ps1
+$BaseUrl             = "https://YOURURL.secretservercloud.com"
+$ExcludedTicketSystemId = 3
+$ApprovalReason      = "Approved via automation process"
+$MaxAllowedMinutes   = 60
+$PageSize            = 100
+$EnableLogging       = $true
+$EnableDebug         = $false
+$LogFilePath         = "C:\Temp\AccessApprovalLog.txt"
+$SdkProfilePath      = "E:\SDK\SDK_Profiles\ACCOUNTNAME\Config"
+$SdkKeypath          = "E:\SDK\SDK_Profiles\ACCOUNTNAME\Key"
 ```
 
-## License
+---
 
-This script is provided "as-is" without warranty of any kind. Use it at your own risk.
+## 📁 Logging
+
+Log file includes:
+- Execution start/stop
+- Requests approved, skipped, failed
+- Fallback checks for already-approved requests
+- Summary of run statistics
+
+Example:
+```
+[INFO] Approved request ID 123 for duration 45 mins
+[ERROR] Approval failed for request ID 124: Already processed.
+[INFO] Request ID 124 was already approved by another node.
+[INFO] Run Summary: Approved=15, Skipped=2, AlreadyApproved=3, Failed=1
+```
+
+---
+
+## 🧪 Recommended Use
+
+- Schedule this script to run every 2 minutes via Task Scheduler or cron.
+- Use the same logging path across nodes to consolidate logs (optional).
+- Ensure SDK profile is available on all nodes if using SDK auth.
+
+---
+
+## 🛡️ Notes
+
+- This script uses `$script:` scoped variables for compatibility with PSScriptAnalyzer and to avoid global state conflicts.
+- Requires PowerShell 5.1+ or PowerShell Core for REST API support.
+
+---
+
+## 🔄 Future Enhancements (Optional)
+
+- CSV/email summary reporting
+- Lock file or token-based run control for multi-node environments
+- Token refresh support for long-running instances
