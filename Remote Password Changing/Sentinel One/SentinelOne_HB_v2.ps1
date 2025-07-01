@@ -63,7 +63,7 @@ function Test-CredentialHeartbeat {
                     Write-Log "Heartbeat failed: Invalid username or password." -Force
                     return $false
                 } else {
-                    Write-Log "Heartbeat ambiguous failure." -Force
+                    Write-Log "Heartbeat failure." -Force
                 }
             } catch {
                 Write-Log "Unable to read error body: $($_.Exception.Message)" -Force
