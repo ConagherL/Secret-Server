@@ -38,8 +38,8 @@ function Get-UserIdByEmail {
         [string]$ApiToken,
         [string]$Email
     )
-    $encoded = [System.Web.HttpUtility]::UrlEncode($Email)
-    $uri = "$ApiUrl/web/api/v2.1/users?email__contains=$encoded"
+    #$encoded = [System.Web.HttpUtility]::UrlEncode($Email)
+    $uri = "$ApiUrl/web/api/v2.1/users?email__contains=$Email"
     $headers = @{ Authorization = "ApiToken $ApiToken"; 'Content-Type' = 'application/json' }
 
     Write-Log "Querying user by email: $Email"
@@ -48,9 +48,11 @@ function Get-UserIdByEmail {
         if ($DebugEnabled) {
             Write-Log "User query response: $($response | ConvertTo-Json -Depth 3)"
         }
-        return $response.data[0].id
+        return $response.data.id
     } catch {
         Write-Log "Failed to retrieve user ID: $($_.Exception.Message)" -Force
+        Write-Log "==== SentinelOne RPC Password Change Finished ====" -Force
+        throw "One the following error occurred: $_.Exception.Message"
         return $null
     }
 }
@@ -96,6 +98,17 @@ function Set-UserPassword {
         }
     }
 }
+# --- MAIN ---
+Write-Log "==== SentinelOne RPC Password Change Started ====" -Force
+$userId = Get-UserIdByEmail -ApiUrl $ApiUrl -ApiToken $ApiToken -Email $TargetUsername
+$success = Set-UserPassword -ApiUrl $ApiUrl -ApiToken $ApiToken -UserId $userId -NewPassword $NewPassword
+Write-Log "Password change result: $success" -Force
+
+if ($success -eq $false) {
+    throw "Password change failed"
+}
+
+<#Write-Log "==== SentinelOne RPC Password Change Finished ====" -Force
 
 # --- MAIN ---
 Write-Log "==== SentinelOne RPC Password Change Started ====" -Force
@@ -104,5 +117,8 @@ if ($userId) {
     Set-UserPassword -ApiUrl $ApiUrl -ApiToken $ApiToken -UserId $userId -NewPassword $NewPassword
 } else {
     Write-Log "Could not resolve user ID for $TargetUsername. Skipping password change." -Force
+    Write-Log "==== SentinelOne RPC Password Change Finished ====" -Force
+    throw "One of the follow errors occurred: User ID not found -- Username invalid"
 }
 Write-Log "==== SentinelOne RPC Password Change Finished ====" -Force
+#>
