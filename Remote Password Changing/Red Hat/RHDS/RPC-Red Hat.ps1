@@ -51,6 +51,7 @@ try {
 # Establish an LDAP connection  
 $ldapConnection = New-Object System.DirectoryServices.Protocols.LdapConnection("$ldaphost`:$ldapport")  
 $ldapConnection.SessionOptions.SecureSocketLayer = $useSSL
+$ldapConnection.SessionOptions.VerifyServerCertificate = { $true }
 $ldapConnection.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic  
 
 # Bind with admin credentials  
