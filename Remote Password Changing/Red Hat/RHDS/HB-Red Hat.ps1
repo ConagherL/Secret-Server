@@ -26,7 +26,7 @@
 # ========================
 
 $ldapport = 636                  # Change port if necessary (636 for LDAPS, 389 for LDAP)
-$useSSL = $true                  # Change to $false if not using SSL
+$useSSL = $true              # Change to $false if not using SSL
 
 # Ensure all required arguments are provided
 if ($args.Count -lt 3) {
@@ -54,6 +54,7 @@ try {
 # Create an LDAP connection  
 $ldapConnection = New-Object System.DirectoryServices.Protocols.LdapConnection("$ldaphost`:$ldapport")  
 $ldapConnection.SessionOptions.SecureSocketLayer = $useSSL
+$ldapConnection.SessionOptions.VerifyServerCertificate = { $true }
 $ldapConnection.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic  
 
 # Attempt authentication  
