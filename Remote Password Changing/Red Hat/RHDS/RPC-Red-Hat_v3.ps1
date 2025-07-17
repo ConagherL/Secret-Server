@@ -243,9 +243,47 @@ Write-LogInfo "=== LDAP Bind Attempt ==="
 
 try {
     $credential = New-Object System.Net.NetworkCredential($adminUser, $adminPassword)  
-    $ldapConnection.Bind($credential)  
+    
+    # Detailed bind operation debug
+    Write-LogInfo "=== Detailed Bind Operation Debug ==="
+    Write-LogInfo "Connection Details:"
+    Write-LogInfo "  Server: $($ldapConnection.Directory)"
+    Write-LogInfo "  AuthType: $($ldapConnection.AuthType)"
+    Write-LogInfo "  Timeout: $($ldapConnection.Timeout)"
+    Write-LogInfo "  SSL Enabled: $($ldapConnection.SessionOptions.SecureSocketLayer)"
+    
+    Write-LogInfo "Calling Bind() with detailed exception capture..."
+    $bindStart = Get-Date
+    $ldapConnection.Bind($credential)
+    $bindEnd = Get-Date
+    $bindDuration = ($bindEnd - $bindStart).TotalMilliseconds
+    
     Write-DebugInfo "Admin binding successful"
     Write-LogInfo "LDAP bind successful"
+    Write-LogInfo "Bind completed successfully in $bindDuration ms"
+    
+} catch [System.DirectoryServices.Protocols.LdapException] {
+    Write-Host "Error: LDAP Exception during bind"
+    Write-LogInfo "LdapException Details:"
+    Write-LogInfo "  ErrorCode: $($_.Exception.ErrorCode)"
+    Write-LogInfo "  ServerErrorMessage: $($_.Exception.ServerErrorMessage)"
+    Write-LogInfo "  MatchedDN: $($_.Exception.MatchedDN)"
+    Write-LogInfo "  Referral: $($_.Exception.Referral)"
+    Write-LogInfo "  Full Exception: $($_.Exception.ToString())"
+    
+    $ldapConnection.Dispose()
+    exit 1
+    
+} catch [System.ComponentModel.Win32Exception] {
+    Write-Host "Error: Win32 Exception during bind"
+    Write-LogInfo "Win32Exception Details:"
+    Write-LogInfo "  NativeErrorCode: $($_.Exception.NativeErrorCode)"
+    Write-LogInfo "  ErrorCode: $($_.Exception.ErrorCode)"
+    Write-LogInfo "  Full Exception: $($_.Exception.ToString())"
+    
+    $ldapConnection.Dispose()
+    exit 1
+    
 } catch {
     Write-Host "Error: Failed to bind with admin credentials"
     Write-DebugInfo "Bind error: $($_.Exception.Message)"
