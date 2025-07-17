@@ -54,19 +54,6 @@ function Write-LogInfo {
     }
 }
 
-Write-DebugInfo "Starting RHDS Password Change Script"
-Write-DebugInfo "LDAP Host: $ldaphost"
-Write-DebugInfo "LDAP Port: $ldapport"
-Write-DebugInfo "Using SSL: $useSSL"
-Write-DebugInfo "Admin User: $adminUser"
-Write-DebugInfo "Target User DN: $userDN"
-
-Write-LogInfo "=== LDAP Debug Session Started ==="
-Write-LogInfo "LDAP Host: $ldaphost"
-Write-LogInfo "LDAP Port: $ldapport"
-Write-LogInfo "Using SSL: $useSSL"
-Write-LogInfo "Admin User: $adminUser"
-Write-LogInfo "Target User DN: $userDN"
 
 # ========================
 # Script Execution
