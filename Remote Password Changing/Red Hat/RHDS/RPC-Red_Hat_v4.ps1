@@ -18,7 +18,6 @@ $ldapport = 636
 $useSSL = $true
 $debug = $false
 $logFile = "ldap_debug.log"
-$acceptAllCerts = $false
 
 # Arguments
 $ldaphost = $args[0]
@@ -72,30 +71,6 @@ $ldapConnection = New-Object System.DirectoryServices.Protocols.LdapConnection($
 # Configure SSL
 Write-DebugInfo "Configuring SSL options"
 $ldapConnection.SessionOptions.SecureSocketLayer = $useSSL
-$ldapConnection.SessionOptions.VerifyServerCertificate = {
-    param($connection, $certificate)
-    Write-LogInfo "SSL Certificate Validation"
-
-    try {
-        if ($certificate) {
-            Write-LogInfo "Subject: $($certificate.Subject)"
-            Write-LogInfo "Issuer: $($certificate.Issuer)"
-            Write-LogInfo "Serial Number: $($certificate.GetSerialNumberString())"
-            Write-LogInfo "Valid From: $($certificate.NotBefore)"
-            Write-LogInfo "Valid To: $($certificate.NotAfter)"
-            Write-LogInfo "Thumbprint: $($certificate.Thumbprint)"
-            Write-LogInfo "Has Private Key: $($certificate.HasPrivateKey)"
-            Write-LogInfo "Key Algorithm: $($certificate.PublicKey.Oid.FriendlyName)"
-            Write-LogInfo "Signature Algorithm: $($certificate.SignatureAlgorithm.FriendlyName)"
-        } else {
-            Write-LogInfo "No certificate provided by server"
-        }
-    } catch {
-        Write-LogInfo "Error capturing certificate details: $($_.Exception.Message)"
-    }
-
-    return $acceptAllCerts
-}
 
 $ldapConnection.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic
 
