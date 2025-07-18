@@ -14,11 +14,11 @@
 # Configuration Variables
 # ========================
 
-$ldapport = 636                  # Change port if necessary (636 for LDAPS, 389 for LDAP)
-$useSSL = $true                  # Change to $false if not using SSL
-$debug = $false                  # Change to $true to enable debug output
-$logFile = "ldap_debug.log"      # Log file for detailed SSL information. Stored in execution profile path
-$acceptAllCerts = $false         # Change to $false to enforce certificate validation
+$ldapport = 636
+$useSSL = $true
+$debug = $false
+$logFile = "ldap_debug.log"
+$acceptAllCerts = $false
 
 # Arguments
 $ldaphost = $args[0]
@@ -54,7 +54,7 @@ function Write-LogInfo {
 # ========================
 # Script Execution
 # ========================
- 
+
 # Load the required assembly
 try {
     Add-Type -AssemblyName "System.DirectoryServices.Protocols"
@@ -63,7 +63,8 @@ try {
     exit 1
 }
 
-# Create LDAP identifier correctly to enforce SSL/TLS behavior
+# ========================
+# LDAP Connection   
 Write-DebugInfo "Creating LDAP connection object using LdapDirectoryIdentifier"
 $ldapIdentifier = New-Object System.DirectoryServices.Protocols.LdapDirectoryIdentifier($ldaphost, $ldapport, $true, $false)
 $ldapConnection = New-Object System.DirectoryServices.Protocols.LdapConnection($ldapIdentifier)
@@ -105,6 +106,19 @@ try {
     $ldapConnection.Bind($credential)
     Write-DebugInfo "Admin binding successful"
     Write-LogInfo "LDAP bind successful"
+
+
+    if ($debug) {
+        Write-LogInfo "=== Detailed Bind Operation Debug ==="
+        Write-LogInfo "Connection Details:"
+        Write-LogInfo "  Server Identifier: $($ldapIdentifier.GetType().FullName)"
+        Write-LogInfo "  Host: $ldaphost"
+        Write-LogInfo "  Port: $ldapport"
+        Write-LogInfo "  AuthType: $($ldapConnection.AuthType)"
+        Write-LogInfo "  Timeout: $($ldapConnection.Timeout)"
+        Write-LogInfo "  SSL Enabled: $useSSL"
+    }
+
 } catch {
     Write-Host "Error: Failed to bind with admin credentials"
     Write-DebugInfo "Bind error: $($_.Exception.Message)"
