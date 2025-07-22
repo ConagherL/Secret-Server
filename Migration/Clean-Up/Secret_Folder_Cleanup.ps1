@@ -1,8 +1,12 @@
 # --- CONFIGURATION ---
-$BaseUrl        = "https://XXXXXXXXXXX.secretservercloud.com"                    # Change this to your Secret Server URL
+$BaseUrl        = "https://XXXXXXXXXXXX.secretservercloud.com"                    # Change this to your Secret Server URL
 $TokenUrl       = "$BaseUrl/oauth2/token"                                # OAuth2 token endpoint
 $FixDuplicates  = $true                                                  # Enable renaming of secrets with duplicate names
-$FixWhitespace  = $true                                                  # Enable trimming whitespace from folder/secret names
+$FixWhitespace  = $true                                             # Enable trimming whitespace from folder/secret names
+
+# COMMENT CONFIGURATION
+$UpdateComment = "Automated cleanup: Secret Name Cleanup for Migration"        # Comment used for all secret updates
+
 $OutputPath     = "C:\temp\SecretServerCleanup"
 $LogFile        = "$OutputPath\SS_Cleanup.log"
 $CsvSecretFile  = "$OutputPath\UpdatedSecrets.csv"
@@ -26,6 +30,7 @@ function Write-Log {
         'INFO'  { Write-Host $entry -ForegroundColor White }
         'ERROR' { Write-Host $entry -ForegroundColor Red }
         'SUCCESS' { Write-Host $entry -ForegroundColor Green }
+        'WARNING' { Write-Host $entry -ForegroundColor Yellow }
         default { Write-Host $entry }
     }
 
@@ -49,6 +54,11 @@ function Get-AuthToken {
     $response = Invoke-RestMethod -Uri $TokenUrl -Method Post -Body $body -ContentType "application/x-www-form-urlencoded"
     Write-Log "Authentication successful"
     return $response.access_token
+}
+
+# --- GET COMMENT FOR UPDATE ---
+function Get-UpdateComment {
+    return $UpdateComment
 }
 
 # --- PAGING HELPER ---
@@ -83,7 +93,7 @@ function Get-SSPagedItems {
     return $results
 }
 
-# --- UPDATE SECRET NAME ---
+# --- UPDATE SECRET NAME WITH COMMENT SUPPORT ---
 function Update-SecretName {
     param (
         [int]$SecretId,
@@ -95,10 +105,17 @@ function Update-SecretName {
     )
 
     $headers = @{ Authorization = "Bearer $AuthToken" }
-    $url = "$BaseUrl/api/v1/secrets/$SecretId/general"
     $body = @{ data = @{ name = @{ dirty = $true; value = $NewName } } } | ConvertTo-Json -Depth 10
 
+    # Get the comment
+    $comment = Get-UpdateComment
+    
+    # Build URL with comment parameter
+    $url = "$BaseUrl/api/v1/secrets/$SecretId/general?autoComment=" + [System.Web.HttpUtility]::UrlEncode($comment)
+
     try {
+        Write-Log "Updating secret ID=$SecretId with comment: '$comment'" "INFO"
+        
         Invoke-RestMethod -Uri $url -Method Patch -Headers $headers -Body $body -ContentType 'application/json' | Out-Null
         Write-Log "Updated secret ID=$SecretId to name '$NewName'" "SUCCESS"
 
@@ -108,6 +125,7 @@ function Update-SecretName {
             NewName    = $NewName
             FolderPath = $FolderPath
             Reason     = $Reason
+            Comment    = $comment
         }
 
         if ($Reason -eq "Whitespace Fix") {
@@ -239,10 +257,14 @@ function Find-DuplicateSecrets {
 # --- MAIN EXECUTION ---
 if (-not (Test-Path $OutputPath)) { New-Item -Path $OutputPath -ItemType Directory -Force | Out-Null }
 
-Write-Log "== Secret Server Cleanup =="
+# Load System.Web for URL encoding
+Add-Type -AssemblyName System.Web
+
+Write-Log "== Secret Server Cleanup with Comment Support =="
 Write-Log "* Base URL: $BaseUrl"
 Write-Log "* FixDuplicates = $FixDuplicates"
 Write-Log "* FixWhitespace = $FixWhitespace"
+Write-Log "* Update Comment: $UpdateComment"
 
 $Username       = Read-Host "Enter your Secret Server username"
 $securePassword = Read-Host -AsSecureString "Enter your Secret Server password"
