@@ -47,9 +47,9 @@ $adminCredential = New-Object System.Net.NetworkCredential($adminDN, $adminPassw
 try {
     $adminConnection.Bind($adminCredential)
 } catch {
-    Write-Host "Error: Failed to bind with admin credentials. $_" -ForegroundColor Red
+    Write-Host "Error: Failed to bind with admin credentials: $($_.Exception.Message)" -ForegroundColor Red
     $adminConnection.Dispose()
-    throw "Failed to bind with admin credentials: $_"
+    throw "Failed to bind with admin credentials: $($_.Exception.Message)"
 }
 
 # Search for the user account
@@ -69,8 +69,8 @@ try {
         Write-Host "Account found for DN $userDN." -ForegroundColor Green
     }
 } catch {
-    Write-Host "Error: Failed to search for user account. $_" -ForegroundColor Red
-    throw "Failed to search for user account: $_"
+    Write-Host "Error: Failed to search for user account: $($_.Exception.Message)" -ForegroundColor Red
+    throw "Failed to search for user account: $($_.Exception.Message)"
 } finally {
     $adminConnection.Dispose()
 }
@@ -87,8 +87,8 @@ try {
     $userConnection.Bind($userCredential)
     Write-Host "Heartbeat successful: Authentication successful for user $userDN." -ForegroundColor Green
 } catch {
-    Write-Host "Heartbeat failed: Authentication error for user $userDN. $_" -ForegroundColor Red
-    throw "Heartbeat failed: Authentication error for user $userDN.  $_"
+    Write-Host "Heartbeat failed: Authentication error for user $userDN : $($_.Exception.Message)" -ForegroundColor Red
+    throw "Heartbeat failed: Authentication error for user $userDN : $($_.Exception.Message)"
 } finally {
     $userConnection.Dispose()
 }
