@@ -224,6 +224,7 @@ function Find-WhitespaceSecrets {
 }
 
 # --- FIND DUPLICATE SECRETS ---
+# --- FIND DUPLICATE SECRETS WITH PERSONAL FOLDERS HANDLING ---
 function Find-DuplicateSecrets {
     param([string]$AuthToken)
     Write-Log "** Finding duplicate secret names..."
@@ -234,17 +235,88 @@ function Find-DuplicateSecrets {
     $filtered = $secrets | Select-Object id, name, folderPath
     Write-Log "Total secrets returned: $($filtered.Count)"
 
+    # PHASE 1: Handle Personal Folders duplicates
+    Write-Log "** Phase 1: Processing Personal Folders duplicates..."
+    
     $nameGroups = $filtered | Group-Object -Property name | Where-Object { $_.Count -gt 1 }
     Write-Log "Found $($nameGroups.Count) secret names with duplicates"
 
+    $personalFolderUpdates = @()
+    
     foreach ($group in $nameGroups) {
         Write-Log "[DUPLICATE] '$($group.Name)' appears $($group.Count) times"
+        
+        # Find secrets in Personal Folders paths
+        $personalFolderSecrets = $group.Group | Where-Object { 
+            $_.folderPath -match '\\Personal Folders\\([^\\]+)\\?' 
+        }
+        
+        if ($personalFolderSecrets.Count -gt 0) {
+            Write-Log "  Found $($personalFolderSecrets.Count) secrets in Personal Folders for '$($group.Name)'"
+            
+            foreach ($secret in $personalFolderSecrets) {
+                # Extract username from folder path
+                if ($secret.folderPath -match '\\Personal Folders\\([^\\]+)\\?') {
+                    $username = $matches[1]
+                    $newName = "$($secret.name) ($username)"
+                    
+                    Write-Log "  [PERSONAL] ID=$($secret.id) '$($secret.name)' → '$newName' (from path: $($secret.folderPath))"
+                    
+                    if ($FixDuplicates) {
+                        Update-SecretName -SecretId $secret.id -OldName $secret.name -NewName $newName -FolderPath $secret.folderPath -AuthToken $AuthToken -Reason "Personal Folders Fix"
+                        
+                        # Track this update for the second phase
+                        $personalFolderUpdates += [PSCustomObject]@{
+                            id = $secret.id
+                            oldName = $secret.name
+                            newName = $newName
+                            folderPath = $secret.folderPath
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    Write-Log "Phase 1 completed. Updated $($personalFolderUpdates.Count) Personal Folders secrets."
+    
+    # PHASE 2: Re-fetch secrets and handle remaining duplicates with numbering
+    Write-Log "** Phase 2: Processing remaining duplicates with numbering..."
+    
+    if ($FixDuplicates -and $personalFolderUpdates.Count -gt 0) {
+        # Re-fetch secrets to get updated names
+        Write-Log "Re-fetching secrets to check for remaining duplicates..."
+        $secretsRefresh = Get-SSPagedItems -Endpoint $endpoint -AuthToken $AuthToken
+        $filteredRefresh = $secretsRefresh | Select-Object id, name, folderPath
+    } else {
+        # Use original data if no Personal Folders updates were made
+        $filteredRefresh = $filtered
+        # Apply the Personal Folders name changes to our local data for accurate duplicate detection
+        foreach ($update in $personalFolderUpdates) {
+            $secretToUpdate = $filteredRefresh | Where-Object { $_.id -eq $update.id }
+            if ($secretToUpdate) {
+                $secretToUpdate.name = $update.newName
+            }
+        }
+    }
+    
+    # Find remaining duplicates
+    $remainingNameGroups = $filteredRefresh | Group-Object -Property name | Where-Object { $_.Count -gt 1 }
+    Write-Log "Found $($remainingNameGroups.Count) remaining secret names with duplicates"
+    
+    foreach ($group in $remainingNameGroups) {
+        Write-Log "[REMAINING DUPLICATE] '$($group.Name)' appears $($group.Count) times"
 
         $groupSorted = $group.Group | Sort-Object id
         for ($i = 1; $i -lt $groupSorted.Count; $i++) {
             $secret = $groupSorted[$i]
-            $newName = "$($group.Name)-$i"
-            Update-SecretName -SecretId $secret.id -OldName $secret.name -NewName $newName -FolderPath $secret.folderPath -AuthToken $AuthToken -Reason "Duplicate Fix"
+            $newName = "$($group.Name) - $i"
+            
+            Write-Log "  [NUMBERING] ID=$($secret.id) '$($secret.name)' → '$newName'"
+            
+            if ($FixDuplicates) {
+                Update-SecretName -SecretId $secret.id -OldName $secret.name -NewName $newName -FolderPath $secret.folderPath -AuthToken $AuthToken -Reason "Duplicate Numbering Fix"
+            }
         }
     }
 
@@ -252,6 +324,10 @@ function Find-DuplicateSecrets {
         $global:SecretUpdates | Export-Csv -Path $CsvSecretFile -NoTypeInformation -Encoding UTF8
         Write-Log "Exported $($global:SecretUpdates.Count) updated secrets to $CsvSecretFile"
     }
+    
+    Write-Log "** Duplicate processing completed **"
+    Write-Log "  Personal Folders fixes: $($personalFolderUpdates.Count)"
+    Write-Log "  Numbering fixes: $(($global:SecretUpdates | Where-Object { $_.Reason -eq 'Duplicate Numbering Fix' }).Count)"
 }
 
 # --- MAIN EXECUTION ---
