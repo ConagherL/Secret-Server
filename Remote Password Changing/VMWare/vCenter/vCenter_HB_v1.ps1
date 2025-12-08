@@ -83,15 +83,6 @@ function Log {
 
 Log "=== HEARTBEAT START ==="
 
-try {
-    Import-Module VMware.PowerCLI -ErrorAction Stop
-    Log "VMware.PowerCLI module loaded."
-}
-catch {
-    Log "VMware.PowerCLI module missing."
-    throw "VMware.PowerCLI is not installed."
-}
-
 # =====================================================================
 
 $esxiHost = $Machine

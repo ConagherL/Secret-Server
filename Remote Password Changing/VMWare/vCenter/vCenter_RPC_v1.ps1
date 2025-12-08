@@ -80,15 +80,6 @@ function Log {
 
 Log "=== RPC START ==="
 
-try {
-    Import-Module VMware.PowerCLI -ErrorAction Stop
-    Log "PowerCLI module loaded."
-}
-catch {
-    Log "PowerCLI module missing."
-    throw "VMware.PowerCLI is not installed."
-}
-
 # =====================================================================
 # VCENTER CRED
 # =====================================================================
