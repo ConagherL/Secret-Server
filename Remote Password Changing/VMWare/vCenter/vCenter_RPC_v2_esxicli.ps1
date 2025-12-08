@@ -12,7 +12,7 @@
         • Logs all actions to both console + log file
         • Uses THROW so Secret Server correctly marks failures
 
-ARGUMENTS: $MACHINE $USERNAME $NEWPASSWORD $VCENTER $[1]$DOMAIN $[1]$USERNAME $[1]$PASSWORD
+ARGUMENTS: $HOST $USERNAME $NEWPASSWORD $VCENTER $[1]DOMAIN $[1]USERNAME $[1]PASSWORD
 
     1. MACHINE        - ESXi Hostname or IP (FQDN preferred)
     2. USERNAME       - ESXi Local Account Username (e.g. root)
@@ -87,34 +87,10 @@ function Log {
 
 $ErrorActionPreference = 'Stop'
 
-[Net.ServicePointManager]::SecurityProtocol = `
-    [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
 Log "=== RPC START ==="
 Log "Target host: $Machine | Account: $Username | vCenter: $VCENTER"
-
-# =====================================================================
-# POWERCLI MODULE CHECK
-# =====================================================================
-
-try {
-    $coreModule = Get-Module -ListAvailable -Name VMware.VimAutomation.Core
-    if (-not $coreModule) {
-        Log "[ERROR] VMware.VimAutomation.Core module not found."
-        throw "Required module 'VMware.VimAutomation.Core' is not installed on this host."
-    }
-
-    if (-not (Get-Module -Name VMware.VimAutomation.Core -ErrorAction SilentlyContinue)) {
-        Import-Module VMware.VimAutomation.Core -ErrorAction Stop
-        Log "Imported VMware.VimAutomation.Core module."
-    }
-}
-catch {
-    Log "[ERROR] PowerCLI module load failed: $($_.Exception.Message)"
-    $fullErr = ($_ | Out-String)
-    Log "[ERROR] Full module error:`n$fullErr"
-    throw "Unable to load VMware.VimAutomation.Core: $($_.Exception.Message)"
-}
 
 # =====================================================================
 # BUILD CREDENTIAL
@@ -177,7 +153,6 @@ try {
 
     try {
         Log "Initializing ESXCLI context for host '$Machine' (via vCenter)..."
-        # V2 interface is recommended for structured args
         $esxcli = Get-EsxCli -VMHost $vmhost -V2 -Server $vcConn -ErrorAction Stop
         Log "ESXCLI context acquired for host '$Machine'."
     }
@@ -223,10 +198,11 @@ try {
 
         # Build structured args for system.account.set
         $setArgs = $esxcli.system.account.set.CreateArgs()
-        $setArgs.id       = $Username
-        $setArgs.password = $NewPassword
+        $setArgs.id                   = $Username
+        $setArgs.password             = $NewPassword
+        $setArgs.passwordconfirmation = $NewPassword
 
-        # Optional: preserve existing description if present
+
         if ($targetAccount -and $targetAccount.description) {
             $setArgs.description = $targetAccount.description
         }
