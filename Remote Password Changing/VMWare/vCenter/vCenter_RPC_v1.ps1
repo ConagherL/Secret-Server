@@ -76,9 +76,14 @@ function Log {
 # =====================================================================
 # PRE-CHECKS
 # =====================================================================
+
+# Make *everything* behave as terminating so try/catch actually works
+$ErrorActionPreference = 'Stop'
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
 Log "=== RPC START ==="
+Log "Target host: $Machine | Account: $Username | vCenter: $VCENTER"
 
 # =====================================================================
 # VCENTER CRED
@@ -109,6 +114,9 @@ try {
 }
 catch {
     Log "Failed to connect to vCenter."
+    Log "[ERROR] vCenter connection exception: $($_.Exception.Message)"
+    $fullErr = ($_ | Out-String)
+    Log "[ERROR] Full vCenter error:`n$fullErr"
     throw "vCenter login failed ($VCENTER): $($_.Exception.Message)"
 }
 
@@ -123,7 +131,10 @@ try {
 }
 catch {
     Log "Host not found in vCenter."
-    throw "Host '$Machine' not found in vCenter."
+    Log "[ERROR] Host lookup exception: $($_.Exception.Message)"
+    $fullErr = ($_ | Out-String)
+    Log "[ERROR] Full host error:`n$fullErr"
+    throw "Host '$Machine' not found in vCenter: $($_.Exception.Message)"
 }
 
 # =====================================================================
@@ -139,13 +150,23 @@ try {
         throw "Local account '$Username' does not exist on host '$Machine'."
     }
 
-    Log "Updating password for '$Username'..."
+    Log "Updating password for '$Username' on host '$Machine'..."
     Set-VMHostAccount -UserAccount $account -Password $NewPassword -Confirm:$false -ErrorAction Stop | Out-Null
 
     Log "Password update successful on '$Machine'."
 }
 catch {
     Log "Password change failed."
+    Log "[ERROR] Exception: $($_.Exception.Message)"
+
+    if ($_.CategoryInfo) {
+        Log "[ERROR] Category : $($_.CategoryInfo.Category)"
+        Log "[ERROR] Target   : $($_.CategoryInfo.TargetName)"
+    }
+
+    $fullErr = ($_ | Out-String)
+    Log "[ERROR] Full error record:`n$fullErr"
+
     throw "Password update failed on host '$Machine': $($_.Exception.Message)"
 }
 finally {
