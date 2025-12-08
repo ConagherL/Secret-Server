@@ -22,10 +22,9 @@ ARGUMENTS: $HOST $USERNAME $NEWPASSWORD $VCENTER $[1]DOMAIN $[1]USERNAME $[1]PAS
     7. PRIV_PASSWORD  - Service account password
 
 NOTES:
-    • This script does NOT connect directly to the ESXi host.
     • All operations go through vCenter using ESXCLI.
     • vCenter account must have permissions to manage local accounts
-      on the target ESXi host (Host → Local accounts / Admin equivalent).
+      on the target ESXi host
 #>
 
 # =====================================================================
@@ -195,18 +194,23 @@ try {
     try {
         Log "Updating password for '$Username' on host '$Machine' via ESXCLI..."
 
-        # Build structured args for system.account.set
+        # Build args for system.account.set
         $setArgs = $esxcli.system.account.set.CreateArgs()
         $setArgs.id                   = $Username
         $setArgs.password             = $NewPassword
         $setArgs.passwordconfirmation = $NewPassword
 
-
         if ($targetAccount -and $targetAccount.description) {
             $setArgs.description = $targetAccount.description
         }
 
-        $esxcli.system.account.set.Invoke($setArgs) | Out-Null
+        $result = $esxcli.system.account.set.Invoke($setArgs)
+        Log "ESXCLI returned: $result"
+
+        if ($result -ne $true) {
+            Log "ESXCLI did not return 'True' for password update on '$Username' (host '$Machine')."
+            throw "Password update did not complete successfully. ESXCLI result: $result"
+        }
 
         Log "Password update SUCCESSFUL for account '$Username' on host '$Machine'."
     }
