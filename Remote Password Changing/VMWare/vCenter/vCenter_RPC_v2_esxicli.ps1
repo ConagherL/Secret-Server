@@ -10,7 +10,6 @@
         • Validates the local ESXi account exists
         • Updates the local ESXi account password
         • Logs all actions to both console + log file
-        • Uses THROW so Secret Server correctly marks failures
 
 ARGUMENTS: $HOST $USERNAME $NEWPASSWORD $VCENTER $[1]DOMAIN $[1]USERNAME $[1]PASSWORD
 
@@ -18,7 +17,7 @@ ARGUMENTS: $HOST $USERNAME $NEWPASSWORD $VCENTER $[1]DOMAIN $[1]USERNAME $[1]PAS
     2. USERNAME       - ESXi Local Account Username (e.g. root)
     3. NEWPASSWORD    - New Password for ESXi Local Account
     4. VCENTER        - vCenter Server Hostname or IP
-    5. PRIV_DOMAIN    - Domain for the service account (optional)
+    5. PRIV_DOMAIN    - Domain for the service account
     6. PRIV_USERNAME  - Service account username
     7. PRIV_PASSWORD  - Service account password
 
