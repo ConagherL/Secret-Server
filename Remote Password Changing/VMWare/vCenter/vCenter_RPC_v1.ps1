@@ -77,7 +77,7 @@ function Log {
 # PRE-CHECKS
 # =====================================================================
 
-# Make *everything* behave as terminating so try/catch actually works
+
 $ErrorActionPreference = 'Stop'
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
