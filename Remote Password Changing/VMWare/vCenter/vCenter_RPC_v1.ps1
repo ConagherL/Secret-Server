@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Delinea RPC: Change ESXi Local Account Password via vCenter
+    Delinea RPC: Change ESXi Local Account Password via vCenter - version 1
 
 .DESCRIPTION
     Remote Password Change (RPC) script that:
@@ -8,7 +8,6 @@
         • Finds ESXi host
         • Updates local ESXi account password
         • Logs all actions to both console + log file
-        • Uses THROW for SS best-practice error reporting
         
 ARGUMENTS: $MACHINE $USERNAME $NEWPASSWORD $VCENTER $[1]$DOMAIN $[1]$USERNAME $[1]$PASSWORD
 
@@ -165,8 +164,5 @@ finally {
         Log "Disconnected."
     }
 }
-
-Log "RPC SUCCESS"
-Log "=== RPC END ==="
 
 exit 0

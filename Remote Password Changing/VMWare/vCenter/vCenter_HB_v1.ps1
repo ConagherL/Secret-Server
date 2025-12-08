@@ -9,7 +9,7 @@
         • Disables Lockdown Mode
         • Attempts direct login to the ESXi host using the current root password
         • Re-enables Lockdown Mode
-        • Uses THROW for failure so SS logs the error
+
 
 ARGUMENTS (in order):
     0 = $MACHINE        # ESXi host name or IP
