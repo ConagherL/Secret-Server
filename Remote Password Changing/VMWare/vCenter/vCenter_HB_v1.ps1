@@ -35,7 +35,7 @@ $PRIV_DOMAIN    = $args[4]
 $PRIV_USERNAME  = $args[5]
 $PRIV_PASSWORD  = $args[6]
 $LOG_ENABLED    = 'true'
-$LOG_PATH       = "C:\Logs\vcenter_${Machine}hb_v1.log"
+$LOG_PATH       = "C:\Logs\vcenter_${Machine}hb.log"
 
 # Normalize logging flag
 $LOG_ENABLED = [string]$LOG_ENABLED

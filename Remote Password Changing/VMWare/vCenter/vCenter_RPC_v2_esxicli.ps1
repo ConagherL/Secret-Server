@@ -39,7 +39,7 @@ $PRIV_DOMAIN    = $args[4]
 $PRIV_USERNAME  = $args[5]
 $PRIV_PASSWORD  = $args[6]
 $LOG_ENABLED    = 'true'
-$LOG_PATH       = "C:\Logs\vcenter_${Machine}_rpc_esxcli_v3.log"
+$LOG_PATH       = "C:\Logs\vcenter_${Machine}_rpc.log"
 
 # Normalize logging flag
 $LOG_ENABLED = [string]$LOG_ENABLED
