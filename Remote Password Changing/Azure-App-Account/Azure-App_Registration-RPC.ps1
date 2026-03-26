@@ -36,14 +36,35 @@ function Write-LogMessage {
 }
 
 # --- INPUT ARGUMENTS ---
-$SecretName   = $args[0].Trim()
-$ObjectId     = $args[1].Trim()
-$ClientId     = $args[2].Trim()
-$ClientSecret = $args[3].Trim()
-$TenantId     = $args[4].Trim()
+if ($args.Count -lt 5) {
+    Write-LogMessage "Missing required arguments. Expected 5 values in order: SecretName, ObjectId, ClientId, ClientSecret, TenantId." -Level "ERROR"
+    exit 1
+}
+
+$SecretName   = [string]$args[0]
+$ObjectId     = [string]$args[1]
+$ClientId     = [string]$args[2]
+$ClientSecret = [string]$args[3]
+$TenantId     = [string]$args[4]
+
+if ([string]::IsNullOrWhiteSpace($SecretName) -or
+    [string]::IsNullOrWhiteSpace($ObjectId) -or
+    [string]::IsNullOrWhiteSpace($ClientId) -or
+    [string]::IsNullOrWhiteSpace($ClientSecret) -or
+    [string]::IsNullOrWhiteSpace($TenantId)) {
+    Write-LogMessage "One or more required arguments are empty. Required: SecretName, ObjectId, ClientId, ClientSecret, TenantId." -Level "ERROR"
+    exit 1
+}
+
+$SecretName   = $SecretName.Trim()
+$ObjectId     = $ObjectId.Trim()
+$ClientId     = $ClientId.Trim()
+$ClientSecret = $ClientSecret.Trim()
+$TenantId     = $TenantId.Trim()
 
 Write-LogMessage "Script execution started."
 Write-LogMessage "Creating secret: '$SecretName' for App ObjectId: $ObjectId"
+Write-LogMessage "Auth parameters summary: TenantId=$TenantId, ClientId=$ClientId"
 
 # --- AUTHENTICATE TO GRAPH ---
 try {
@@ -56,12 +77,32 @@ try {
     }
 
     Write-LogMessage "Authenticating to Microsoft Graph..."
-    $tokenResponse = Invoke-RestMethod -Method Post -Uri $TokenUri -Body $TokenBody
+    $tokenResponse = Invoke-RestMethod -Method Post -Uri $TokenUri -Body $TokenBody -ContentType "application/x-www-form-urlencoded"
     $AccessToken = $tokenResponse.access_token
     if (-not $AccessToken) { throw "Access token is null or empty." }
     Write-LogMessage "Authentication successful."
 } catch {
-    Write-LogMessage "Graph token request failed: $_" -Level "ERROR"
+    $statusCode = "Unknown"
+    $statusDescription = ""
+    $responseBody = ""
+
+    if ($_.Exception -and $_.Exception.Response) {
+        try { $statusCode = [int]$_.Exception.Response.StatusCode } catch {}
+        try { $statusDescription = $_.Exception.Response.StatusDescription } catch {}
+        try {
+            $stream = $_.Exception.Response.GetResponseStream()
+            if ($stream) {
+                $reader = New-Object System.IO.StreamReader($stream)
+                $responseBody = $reader.ReadToEnd()
+                $reader.Close()
+            }
+        } catch {}
+    }
+
+    Write-LogMessage "Graph token request failed. StatusCode=$statusCode StatusDescription='$statusDescription' Error='$($_.Exception.Message)'" -Level "ERROR"
+    if (-not [string]::IsNullOrWhiteSpace($responseBody)) {
+        Write-LogMessage "Graph token response body: $responseBody" -Level "ERROR"
+    }
     exit 1
 }
 
