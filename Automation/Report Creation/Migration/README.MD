@@ -31,7 +31,7 @@ The script uses the following variables:
 1. **Clone the repository:**
 
     ```sh
-    git clone https://github.com/ConagherL/Secret-Server.git
+    git clone https://github.com/<your-org>/Secret-Server.git
     ```
 
 2. **Navigate to the script directory:**

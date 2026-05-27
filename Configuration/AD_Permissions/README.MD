@@ -35,12 +35,12 @@ Each permission is applied to the AdminSDHolder object to ensure that the passwo
 
 ```powershell
 Do you want to query the AdminSDHolder path dynamically? (Y/N): Y
-AdminSDHolder path dynamically retrieved: CN=AdminSDHolder,CN=System,DC=cnf-net,DC=niagarafalls,DC=ca
-Enter the account name (e.g., CNF-NET\AccountName): CNF-NET\RotationAccount
-Added Read Property (RP) permission for CNF-NET\RotationAccount
-Added Change Password permission for CNF-NET\RotationAccount
-Added Reset Password permission for CNF-NET\RotationAccount
-Added Write permission for lockoutTime for CNF-NET\RotationAccount
-Added Write permission for pwdLastSet for CNF-NET\RotationAccount
-Added Write permission for userAccountControl for CNF-NET\RotationAccount
-Permissions have been updated successfully for CNF-NET\RotationAccount.
+AdminSDHolder path dynamically retrieved: CN=AdminSDHolder,CN=System,DC=example,DC=local
+Enter the account name (e.g., EXAMPLE\AccountName): EXAMPLE\RotationAccount
+Added Read Property (RP) permission for EXAMPLE\RotationAccount
+Added Change Password permission for EXAMPLE\RotationAccount
+Added Reset Password permission for EXAMPLE\RotationAccount
+Added Write permission for lockoutTime for EXAMPLE\RotationAccount
+Added Write permission for pwdLastSet for EXAMPLE\RotationAccount
+Added Write permission for userAccountControl for EXAMPLE\RotationAccount
+Permissions have been updated successfully for EXAMPLE\RotationAccount.
