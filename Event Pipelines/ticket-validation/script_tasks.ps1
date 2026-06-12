@@ -7,16 +7,17 @@ $SecretId = $params[4]
 $MasAccountNumber = $params[5]
 $ByUser = $params[6]
 $EventUserId = $params[7]
+$CrmBaseUrl = $params[8]   # CRM/SData base URL, e.g. https://<crm-host>/sdata/slx/dynamic/-/vstargateabbrevs
 
 #region Static values
-$baseInforURL = 'http://atlmslx84webd1.noblesys.com/sdata/slx/dynamic/-/vstargateabbrevs'
+$baseInforURL = $CrmBaseUrl
 $soapUrl = "$SecretServerUrl/webservices/sswebservice.asmx"
 #endregion Static values
 
 #region Token request
 $credential = [pscredential]::new($SSUser,(ConvertTo-SecureString $SSPassword -AsPlainText -Force))
 
-$SecretServerHost = 'http://ss3'
+$SecretServerHost = $SecretServerUrl
 $apiUrl = "$SecretServerHost/api/v1"
 
 $Body = @{

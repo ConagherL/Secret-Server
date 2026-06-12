@@ -9,12 +9,12 @@ Details on IP and Hostnames collected are from public documentation:
 - https://docs.thycotic.com/ss-arc/1.0.0/secret-server/secret-server-cloud
 
 .EXAMPLE
-.\ssc-network-test.ps1 -SecretServer 'https://proservices.secretservercloud.com' -CustomerServiceBus 'sb-d7cf91b8-6279-47fc-943c-411a0bdb4701.servicebus.windows.net' -TransportType AMQP -Timeout 5
+.\ssc-network-test.ps1 -SecretServer 'https://mytenant.secretservercloud.com' -CustomerServiceBus 'sb-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.servicebus.windows.net' -TransportType AMQP -Timeout 5
 
 Run Hostname and IP port test for Tenant and Service Bus with ports 5671 and 5672 for AMQP, with a timeout of 5 seconds
 
 .EXAMPLE
-.\ssc-network-test.ps1 -SecretServer 'https://proservices.secretservercloud.com' -CustomerServiceBus 'sb-d7cf91b8-6279-47fc-943c-411a0bdb4701.servicebus.windows.net'
+.\ssc-network-test.ps1 -SecretServer 'https://mytenant.secretservercloud.com' -CustomerServiceBus 'sb-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.servicebus.windows.net'
 
 Run Hostname and IP port test for Tenant and Service Bus with port 443 (Web Sockets), with a default timeout of 3 seconds
 #>
