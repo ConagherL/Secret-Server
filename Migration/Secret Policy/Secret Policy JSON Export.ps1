@@ -30,7 +30,7 @@
 
 
 #Set Parameters
-$site = "https://iamaas-ispw-sitest.extnet.ocean.ibm.com/SecretServer"  #Must be set to the base url of secret server in  your environment with no trailing slash
+$site = "https://iYOURSSURL/SecretServer"  #Must be set to the base url of secret server in  your environment with no trailing slash
 
 $api = "$site/api/v2" # Do Not Change
 
